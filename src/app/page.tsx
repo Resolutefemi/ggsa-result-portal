@@ -210,9 +210,9 @@ export default function Home() {
             aria-label="Home"
           >
             <img
-              src="/logo.jpeg"
+              src="/logo.png"
               alt="GGSA Logo"
-              className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-200 group-hover:ring-purple-400 transition"
+              className="w-12 h-12 object-contain group-hover:scale-105 transition"
               draggable={false}
             />
             <div className="text-left hidden sm:block">
@@ -408,7 +408,7 @@ function HomeView({
               God Generals<br />Standard Academy
             </h1>
             <p className="text-purple-100 text-base sm:text-lg mb-5 max-w-md">
-              Check your term results online, or — for teachers — input and finalize student scores from any device.
+              Check your term results online with the PIN your teacher gives you.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" onClick={onCheckResult} className="bg-amber-400 text-purple-900 hover:bg-amber-300">
@@ -432,9 +432,9 @@ function HomeView({
             >
               <div className="absolute -inset-3 bg-amber-400/30 rounded-full blur-2xl group-hover:bg-amber-400/50 transition" />
               <img
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="God Generals Standard Academy logo"
-                className="relative w-48 h-48 sm:w-64 sm:h-64 rounded-full ring-4 ring-amber-400 object-cover shadow-2xl"
+                className="relative w-48 h-48 sm:w-64 sm:h-64 object-contain drop-shadow-2xl group-hover:scale-105 transition"
                 draggable={false}
               />
               {logoClicks > 0 && (
@@ -456,30 +456,13 @@ function HomeView({
             </div>
             <CardTitle className="text-lg">For Students</CardTitle>
             <CardDescription>
-              Check your result anywhere with your admission number and PIN.
+              Check your result anywhere with the unique PIN your teacher gives you.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" className="w-full" onClick={onCheckResult}>
               Check My Result <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="border-purple-100">
-          <CardHeader>
-            <div className="w-10 h-10 rounded-lg bg-amber-100 text-ggsa-gold flex items-center justify-center mb-2">
-              <ClipboardList className="w-5 h-5" />
-            </div>
-            <CardTitle className="text-lg">For Teachers</CardTitle>
-            <CardDescription>
-              Input scores, auto-calculate grades & positions, finalize results.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Tap the school logo above 3 times to reveal teacher login.
-            </p>
           </CardContent>
         </Card>
 
@@ -548,10 +531,7 @@ function StudentCheckView({
   onBack: () => void;
   onViewResult: (data: StudentResultData) => void;
 }) {
-  const [admissionNumber, setAdmissionNumber] = useState('');
   const [pin, setPin] = useState('');
-  const [term, setTerm] = useState('1st Term');
-  const [session, setSession] = useState('2025/2026');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -562,7 +542,7 @@ function StudentCheckView({
       const r = await fetch('/api/student/check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ admissionNumber, pin, term, session }),
+        body: JSON.stringify({ pin }),
       });
       const data = await r.json();
       if (!r.ok) {
@@ -590,65 +570,37 @@ function StudentCheckView({
           </div>
           <CardTitle className="text-2xl">Check Your Result</CardTitle>
           <CardDescription className="text-purple-100">
-            Enter your admission number and PIN to view your result.
+            Enter the PIN your teacher gave you to view your result.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="adm">Admission Number</Label>
-              <Input
-                id="adm"
-                placeholder="e.g., JSS1/001"
-                value={admissionNumber}
-                onChange={(e) => setAdmissionNumber(e.target.value)}
-                required
-                autoComplete="off"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pin">PIN (4 digits)</Label>
+              <Label htmlFor="pin">Result PIN</Label>
               <Input
                 id="pin"
                 type="password"
                 inputMode="numeric"
-                pattern="\d{4}"
-                maxLength={4}
-                placeholder="••••"
+                pattern="\d{4,6}"
+                maxLength={6}
+                placeholder="••••••"
                 value={pin}
                 onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
                 required
+                autoFocus
+                className="text-center text-2xl tracking-[0.4em] font-bold"
               />
+              <p className="text-[11px] text-muted-foreground text-center">
+                Each result has its own unique PIN. Different terms have different PINs.
+              </p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="term">Term</Label>
-                <Select value={term} onValueChange={setTerm}>
-                  <SelectTrigger id="term"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1st Term">1st Term</SelectItem>
-                    <SelectItem value="2nd Term">2nd Term</SelectItem>
-                    <SelectItem value="3rd Term">3rd Term</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="session">Session</Label>
-                <Input
-                  id="session"
-                  value={session}
-                  onChange={(e) => setSession(e.target.value)}
-                  placeholder="2025/2026"
-                />
-              </div>
-            </div>
-            <Button type="submit" className="w-full bg-ggsa-purple hover:bg-purple-800" disabled={loading}>
+            <Button type="submit" className="w-full bg-ggsa-purple hover:bg-purple-800" disabled={loading || pin.length < 4}>
               {loading ? 'Loading...' : (<><Search className="w-4 h-4 mr-2" /> View Result</>)}
             </Button>
           </form>
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900">
             <AlertCircle className="w-4 h-4 inline mr-1" />
-            Demo: try admission <strong>JSS1/001</strong> with PIN <strong>1234</strong> for term <strong>1st Term</strong> / session <strong>2025/2026</strong> (after a teacher has finalized a result).
+            Demo: enter PIN <strong>1234</strong> to view a sample result.
           </div>
         </CardContent>
       </Card>

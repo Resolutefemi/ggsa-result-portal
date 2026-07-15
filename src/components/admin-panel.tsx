@@ -226,7 +226,6 @@ function StudentDialog({
     sex: student?.sex || 'M',
     house: student?.house || '',
     year: student?.year || '2025/2026',
-    pin: '',
     teacherId: student?.teacherId || '',
   });
   const [saving, setSaving] = useState(false);
@@ -308,14 +307,10 @@ function StudentDialog({
               <Label>Year/Session</Label>
               <Input value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} placeholder="2025/2026" />
             </div>
-            <div>
-              <Label>{form.id ? 'New PIN (optional)' : 'PIN (default: 1234)'}</Label>
-              <Input
-                value={form.pin}
-                onChange={(e) => setForm({ ...form, pin: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-                placeholder="1234"
-                maxLength={4}
-              />
+            <div className="flex items-end">
+              <p className="text-[11px] text-muted-foreground">
+                Result PINs are auto-generated when a teacher finalizes a result — no student PIN needed here.
+              </p>
             </div>
           </div>
         </div>

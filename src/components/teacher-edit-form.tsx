@@ -240,7 +240,15 @@ export function TeacherEditForm({
         toast({ title: d.error || 'Finalize failed', variant: 'destructive' });
         return;
       }
-      toast({ title: 'Result finalized! Student can now check it.', variant: 'default' });
+      // Show the generated PIN prominently so the teacher can give it to the student
+      const pin = d.pin || data.result.pin;
+      toast({
+        title: 'Result finalized!',
+        description: pin
+          ? `Student PIN: ${pin} — give this to the student so they can check their result.`
+          : 'Student can now check their result.',
+        duration: 12000,
+      });
       await load();
     } catch {
       toast({ title: 'Network error', variant: 'destructive' });
@@ -315,6 +323,39 @@ export function TeacherEditForm({
           )}
         </div>
       </div>
+
+      {/* PIN banner — shown when finalized so the teacher can give it to the student */}
+      {isFinalized && data.result.pin && (
+        <div className="no-print flex flex-wrap items-center justify-between gap-3 p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider text-green-700 font-semibold">
+                Student Result PIN
+              </div>
+              <div className="text-3xl font-extrabold text-green-900 tracking-[0.3em]">
+                {data.result.pin}
+              </div>
+              <div className="text-xs text-green-700">
+                Give this 6-digit PIN to <strong>{student.name}</strong> so they can check their result on the homepage.
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-green-400 text-green-700 hover:bg-green-100"
+            onClick={() => {
+              navigator.clipboard?.writeText(data.result.pin || '');
+              toast({ title: 'PIN copied to clipboard' });
+            }}
+          >
+            Copy PIN
+          </Button>
+        </div>
+      )}
 
       <Card>
         <CardHeader>

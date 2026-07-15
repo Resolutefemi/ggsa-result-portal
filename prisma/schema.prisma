@@ -83,7 +83,6 @@ model Student {
   classId         String
   sex             String   @default("M") // M | F
   house           String?
-  pinHash         String   // for student result checking
   year            String?  // e.g., "2025/2026"
   teacherId       String?  // form teacher
   createdAt       DateTime @default(now())
@@ -103,6 +102,9 @@ model Result {
   term            String   // "1st Term" | "2nd Term" | "3rd Term"
   session         String   // e.g., "2025/2026"
   status          String   @default("DRAFT") // DRAFT | FINALIZED
+  // Per-result PIN — students enter ONLY this to view their result.
+  // Each term/year has a different PIN, so the PIN itself encodes (student, term, session).
+  pin             String?  @unique
   schoolOpened    Int      @default(0)
   timesSchoolOpened Int    @default(0)
   marksObtainable Int      @default(100)

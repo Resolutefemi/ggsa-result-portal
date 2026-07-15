@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { getCurrentTeacher } from '@/lib/session';
 import { computePositionsAndAverage, computeTotal, calculateGrade, gradeRemark } from '@/lib/calc';
 import { SKILL_TRAITS, BEHAVIOUR_TRAITS } from '@/lib/constants';
+import { generateResultPin } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
@@ -171,13 +172,29 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 3) Mark this student's result as FINALIZED
+  // 3) Mark this student's result as FINALIZED + assign a unique PIN if not already set
+  let finalPin = result.pin;
+  if (!finalPin) {
+    // Generate a unique 6-digit PIN (retry on rare collision)
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const candidate = generateResultPin();
+      const existing = await db.result.findUnique({ where: { pin: candidate }, select: { id: true } });
+      if (!existing) {
+        finalPin = candidate;
+        break;
+      }
+    }
+    if (!finalPin) {
+      return NextResponse.json({ error: 'Could not generate a unique PIN. Please try again.' }, { status: 500 });
+    }
+  }
+
   await db.result.update({
     where: { id: result.id },
-    data: { status: 'FINALIZED' },
+    data: { status: 'FINALIZED', pin: finalPin },
   });
 
-  return NextResponse.json({ ok: true, resultId: result.id, status: 'FINALIZED' });
+  return NextResponse.json({ ok: true, resultId: result.id, status: 'FINALIZED', pin: finalPin });
 }
 
 /**

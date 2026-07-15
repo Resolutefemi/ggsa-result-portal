@@ -1,5 +1,5 @@
 /**
- * Hash helper for passwords and PINs (simple SHA-256 with salt).
+ * Hash helper for passwords (simple SHA-256 with salt).
  * For production this should use bcrypt/argon2 but SQLite + edge runtime
  * prefer a crypto-based approach.
  */
@@ -16,12 +16,11 @@ export function verifySecret(input: string, hash: string): boolean {
 }
 
 /**
- * Generate a 4-digit PIN hash for a student.
+ * Generate a unique 6-digit numeric PIN for a result.
+ * (6 digits gives 1M possible PINs — plenty for a single school, easy to type.)
  */
-export function hashPin(pin: string): string {
-  return hashSecret(pin);
-}
-
-export function verifyPin(pin: string, hash: string): boolean {
-  return verifySecret(pin, hash);
+export function generateResultPin(): string {
+  // 6-digit code, leading zeros allowed (always 6 chars)
+  const n = crypto.randomInt(0, 1_000_000);
+  return n.toString().padStart(6, '0');
 }

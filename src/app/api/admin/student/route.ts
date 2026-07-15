@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getCurrentTeacher } from '@/lib/session';
-import { hashSecret, hashPin } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
   const body = await req.json();
-  const { name, admissionNumber, classId, sex, house, year, pin, teacherId } = body;
+  const { name, admissionNumber, classId, sex, house, year, teacherId } = body;
   if (!name || !admissionNumber || !classId) {
     return NextResponse.json({ error: 'name, admissionNumber, classId required' }, { status: 400 });
   }
@@ -41,7 +40,6 @@ export async function POST(req: NextRequest) {
         sex: sex || 'M',
         house,
         year,
-        pinHash: hashPin(pin || '1234'),
         teacherId,
       },
     });
@@ -61,11 +59,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Admin only' }, { status: 403 });
   }
   const body = await req.json();
-  const { id, name, admissionNumber, classId, sex, house, year, pin, teacherId } = body;
+  const { id, name, admissionNumber, classId, sex, house, year, teacherId } = body;
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
   const data: any = { name, admissionNumber, classId, sex, house, year, teacherId };
-  if (pin) data.pinHash = hashPin(pin);
-  // remove undefined
   Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
   const student = await db.student.update({ where: { id }, data });
   return NextResponse.json({ student });

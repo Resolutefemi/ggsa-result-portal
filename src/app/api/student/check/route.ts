@@ -1,47 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { verifyPin } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
 /**
  * POST /api/student/check
- * Body: { admissionNumber, pin, term, session }
- * Returns the student's result if PIN is correct and result is FINALIZED.
+ * Body: { pin }
+ * Looks up the result by its unique PIN.
+ * Returns the finalized result if found.
+ *
+ * Each result has a unique 6-digit PIN. Different terms / sessions
+ * produce different PINs, so the PIN alone identifies (student, term, session).
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { admissionNumber, pin, term, session } = body;
-  if (!admissionNumber || !pin || !term || !session) {
-    return NextResponse.json({ error: 'All fields required' }, { status: 400 });
+  const { pin } = body;
+  if (!pin) {
+    return NextResponse.json({ error: 'Please enter your PIN.' }, { status: 400 });
   }
 
-  const student = await db.student.findUnique({
-    where: { admissionNumber },
-    include: { class: true },
-  });
-  if (!student) {
-    return NextResponse.json({ error: 'Student not found. Check admission number.' }, { status: 404 });
-  }
-  if (!verifyPin(pin, student.pinHash)) {
-    return NextResponse.json({ error: 'Incorrect PIN. Please try again.' }, { status: 401 });
-  }
+  // Normalize: digits only
+  const cleanPin = String(pin).replace(/\D/g, '');
 
-  const result = await db.result.findFirst({
-    where: { studentId: student.id, term, session },
+  const result = await db.result.findUnique({
+    where: { pin: cleanPin },
     include: {
+      student: { include: { class: true } },
       items: { include: { subject: true } },
       traits: true,
     },
   });
 
-  if (!result || result.status !== 'FINALIZED') {
+  if (!result) {
+    return NextResponse.json({ error: 'No result found for that PIN. Please check and try again.' }, { status: 404 });
+  }
+
+  if (result.status !== 'FINALIZED') {
     return NextResponse.json({
       error: 'Your result has not been finalized yet. Please check back later.',
       student: {
-        name: student.name,
-        className: student.class.name,
-        admissionNumber: student.admissionNumber,
+        name: result.student.name,
+        className: result.student.class.name,
       },
     }, { status: 404 });
   }
@@ -72,18 +71,19 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     student: {
-      name: student.name,
-      admissionNumber: student.admissionNumber,
-      sex: student.sex,
-      house: student.house,
-      year: student.year,
-      className: student.class.name,
+      name: result.student.name,
+      admissionNumber: result.student.admissionNumber,
+      sex: result.student.sex,
+      house: result.student.house,
+      year: result.student.year,
+      className: result.student.class.name,
     },
     result: {
       id: result.id,
       term: result.term,
       session: result.session,
       status: result.status,
+      pin: result.pin,
       schoolOpened: result.schoolOpened,
       timesSchoolOpened: result.timesSchoolOpened,
       marksObtainable: result.marksObtainable,
@@ -94,17 +94,5 @@ export async function POST(req: NextRequest) {
     },
     items,
     traits,
-  });
-}
-
-// Helper: list available terms/sessions for dropdowns
-export async function GET() {
-  const sessions = await db.result.findMany({
-    select: { session: true, term: true },
-    distinct: ['session', 'term'],
-  });
-  return NextResponse.json({
-    terms: ['1st Term', '2nd Term', '3rd Term'],
-    sessions: [...new Set(sessions.map((s) => s.session))].sort().reverse(),
   });
 }

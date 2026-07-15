@@ -14,10 +14,12 @@ Teachers can input student exam scores from any device (phone or desktop), the s
 - ✏️ **Editable fields**: Test 1, Test 2, Exam, 1st/2nd/3rd term scores, character/behaviour traits, teacher's report, principal's report, teacher's signature, and "next term begins".
 - 📋 **Default subjects**: 16 default subjects (English, Maths, Yoruba, Basic Science, etc.) pre-loaded for each class.
 - 💾 **Save Draft / Finalize**: Save work-in-progress, finalize when ready (student can then view it).
+- 🔢 **Auto-generated PIN**: When you click Finalize, the system generates a unique 6-digit PIN for that student's result. The PIN is displayed prominently in a green banner so you can copy it and give it to the student.
 - 📄 **Printable result**: Click "View Result" to see a printable sheet — use your browser's Print to save as PDF.
 
 ### For Students
-- 🔢 **PIN-based access**: Enter admission number + 4-digit PIN + term + session.
+- 🔢 **PIN-only access**: Enter the 6-digit PIN your teacher gave you — that's it. No name, admission number, term, or session needed.
+- 🎯 **One PIN per result**: Each term/year has its own unique PIN. The PIN alone identifies the student, term, and session.
 - 📊 **Full result sheet**: Identical layout to the paper report card.
 - 🖨️ **Download/Print**: One click to print or save as PDF.
 
@@ -76,12 +78,14 @@ After seeding:
 | Admin    | `admin`    | `admin123`   |
 | Teacher  | `teacher1` | `teacher123` |
 
-Sample students (class JSS 1) — PIN is `1234` for all:
+Sample students (class JSS 1):
 - `JSS1/001` — Adeyemi Johnson
 - `JSS1/002` — Bola Adekunle
 - `JSS1/003` — Chinedu Okafor
 - `JSS1/004` — Fatima Bello
 - `JSS1/005` — Samuel Ojo
+
+Demo result PIN: `1234` (finalized 1st Term 2025/2026 result for Adeyemi Johnson)
 
 ## 📁 Project Structure
 

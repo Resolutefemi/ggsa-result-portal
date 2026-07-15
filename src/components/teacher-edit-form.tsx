@@ -1,0 +1,621 @@
+'use client';
+
+/**
+ * Teacher's result input form.
+ * - Pre-filled with default subjects for the student's class
+ * - Auto-calculates Total, Grade, Remark on the fly
+ * - Teacher enters: scores, character traits, reports, signature, next term
+ * - "Save Draft" button -> /api/teacher/result
+ * - "Finalize Result" button -> /api/finalize (computes positions, class average)
+ * - "View/Download Result" button -> shows printable sheet
+ */
+import { useEffect, useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
+import { calculateGrade, gradeRemark, SKILL_TRAITS, BEHAVIOUR_TRAITS } from '@/lib/constants';
+import { computeTotal } from '@/lib/calc';
+import { ResultSheet } from './result-sheet';
+import {
+  ArrowLeft,
+  Save,
+  CheckCheck,
+  Eye,
+  Lock,
+  Edit3,
+  AlertCircle,
+} from 'lucide-react';
+
+interface ItemRow {
+  id: string | null;
+  subjectId: string;
+  subjectName: string;
+  subjectCode: string;
+  order: number;
+  test1: number | null;
+  test2: number | null;
+  exam: number | null;
+  firstTermScore: number | null;
+  secondTermScore: number | null;
+  thirdTermScore: number | null;
+  totalScore: number | null;
+  classAverage: number | null;
+  position: number | null;
+  grade: string | null;
+  remark: string | null;
+}
+
+interface TraitRow {
+  id: string | null;
+  section: string;
+  name: string;
+  rating: string | null;
+}
+
+interface LoadResponse {
+  student: {
+    id: string;
+    name: string;
+    admissionNumber: string;
+    sex: string;
+    house: string | null;
+    year: string | null;
+    className: string;
+    classId: string;
+  };
+  result: {
+    id: string | null;
+    term: string;
+    session: string;
+    status: string;
+    schoolOpened: number;
+    timesSchoolOpened: number;
+    marksObtainable: number;
+    teacherReport: string;
+    principalReport: string;
+    teacherSignature: string;
+    nextTermBegins: string;
+  };
+  items: ItemRow[];
+  traits: TraitRow[];
+}
+
+export function TeacherEditForm({
+  student,
+  cls,
+  term,
+  session,
+  teacher,
+  onBack,
+  onViewResult,
+}: {
+  student: any;
+  cls: any;
+  term: string;
+  session: string;
+  teacher: any;
+  onBack: () => void;
+  onViewResult: (data: any) => void;
+}) {
+  const [data, setData] = useState<LoadResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const { toast } = useToast();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const r = await fetch(
+        `/api/teacher/result?studentId=${student.id}&term=${encodeURIComponent(term)}&session=${encodeURIComponent(session)}`
+      );
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Failed to load', variant: 'destructive' });
+        return;
+      }
+      setData(d);
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  }, [student.id, term, session, toast]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // === Update item field with auto-calc ===
+  const updateItem = (idx: number, field: keyof ItemRow, value: string) => {
+    if (!data) return;
+    const items = [...data.items];
+    const item = { ...items[idx] };
+    const numVal = value === '' ? null : Number(value);
+    (item as any)[field] = numVal;
+    // Recompute total + grade + remark
+    item.totalScore = computeTotal(item);
+    item.grade = calculateGrade(item.totalScore);
+    item.remark = gradeRemark(item.grade);
+    items[idx] = item;
+    setData({ ...data, items });
+  };
+
+  const updateTrait = (idx: number, value: string) => {
+    if (!data) return;
+    const traits = [...data.traits];
+    traits[idx] = { ...traits[idx], rating: value || null };
+    setData({ ...data, traits });
+  };
+
+  const updateResultField = (field: keyof LoadResponse['result'], value: any) => {
+    if (!data) return;
+    setData({ ...data, result: { ...data.result, [field]: value } });
+  };
+
+  const buildPayload = () => {
+    if (!data) return null;
+    return {
+      studentId: student.id,
+      term,
+      session,
+      items: data.items.map((i) => ({
+        id: i.id,
+        subjectId: i.subjectId,
+        test1: i.test1,
+        test2: i.test2,
+        exam: i.exam,
+        firstTermScore: i.firstTermScore,
+        secondTermScore: i.secondTermScore,
+        thirdTermScore: i.thirdTermScore,
+      })),
+      traits: data.traits.map((t) => ({
+        section: t.section,
+        name: t.name,
+        rating: t.rating,
+      })),
+      schoolOpened: data.result.schoolOpened,
+      timesSchoolOpened: data.result.timesSchoolOpened,
+      marksObtainable: data.result.marksObtainable,
+      teacherReport: data.result.teacherReport,
+      principalReport: data.result.principalReport,
+      teacherSignature: data.result.teacherSignature,
+      nextTermBegins: data.result.nextTermBegins,
+    };
+  };
+
+  const handleSaveDraft = async () => {
+    setSaving(true);
+    try {
+      const r = await fetch('/api/teacher/result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload()),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Save failed', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Draft saved successfully' });
+      load(); // refresh to get new IDs
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFinalize = async () => {
+    if (!data) return;
+    if (!data.result.teacherReport || !data.result.principalReport || !data.result.teacherSignature) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please fill in teacher report, principal report, and teacher signature before finalizing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setFinalizing(true);
+    try {
+      const r = await fetch('/api/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload()),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Finalize failed', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Result finalized! Student can now check it.', variant: 'default' });
+      await load();
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  const handleViewResult = async () => {
+    // Re-load to get latest cached position/classAverage, then open preview
+    await load();
+    if (!data) return;
+    setShowPreview(true);
+  };
+
+  if (loading) {
+    return <div className="py-12 text-center text-muted-foreground">Loading result form...</div>;
+  }
+  if (!data) {
+    return <div className="py-12 text-center text-destructive">Failed to load.</div>;
+  }
+
+  const isFinalized = data.result.status === 'FINALIZED';
+
+  if (showPreview && data) {
+    return (
+      <div className="space-y-4">
+        <div className="no-print flex flex-wrap items-center justify-between gap-3">
+          <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Edit
+          </Button>
+          <Button onClick={() => window.print()} className="bg-ggsa-purple hover:bg-purple-800">
+            Print / Save as PDF
+          </Button>
+        </div>
+        <ResultSheet
+          data={{
+            student: data.student,
+            result: data.result as any,
+            items: data.items,
+            traits: data.traits,
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 no-print">
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back to {cls.name}
+        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={handleViewResult}>
+            <Eye className="w-4 h-4 mr-1" /> View Result
+          </Button>
+          {!isFinalized && (
+            <Button variant="outline" onClick={handleSaveDraft} disabled={saving}>
+              <Save className="w-4 h-4 mr-1" /> {saving ? 'Saving...' : 'Save Draft'}
+            </Button>
+          )}
+          {!isFinalized && (
+            <Button onClick={handleFinalize} disabled={finalizing} className="bg-green-700 hover:bg-green-800">
+              <CheckCheck className="w-4 h-4 mr-1" /> {finalizing ? 'Finalizing...' : 'Finalize Result'}
+            </Button>
+          )}
+          {isFinalized && (
+            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-sm py-1.5">
+              <Lock className="w-3 h-3 mr-1" /> FINALIZED
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span>
+              {student.name}{' '}
+              <span className="text-sm font-normal text-muted-foreground">({student.admissionNumber})</span>
+            </span>
+            <Badge variant="outline">{cls.name} • {term} • {session}</Badge>
+          </CardTitle>
+          <CardDescription>
+            Enter test and exam scores. <strong>Total</strong>, <strong>Grade</strong>, and <strong>Remark</strong> are calculated automatically.
+            Position and Class Average are computed when you click <strong>Finalize</strong>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* SUBJECTS TABLE */}
+          <div className="overflow-x-auto -mx-2">
+            <table className="w-full text-xs border-collapse min-w-[900px]">
+              <thead>
+                <tr className="bg-purple-900 text-white">
+                  <th className="border border-purple-700 px-2 py-1 text-left">SUBJECT</th>
+                  <th className="border border-purple-700 px-1 py-1">(A) Test 1</th>
+                  <th className="border border-purple-700 px-1 py-1">(B) Test 2</th>
+                  <th className="border border-purple-700 px-1 py-1">(C) Exam</th>
+                  <th className="border border-purple-700 px-1 py-1 bg-purple-800">(D) Total</th>
+                  <th className="border border-purple-700 px-1 py-1">(E) 1st Term</th>
+                  <th className="border border-purple-700 px-1 py-1">(F) 2nd Term</th>
+                  <th className="border border-purple-700 px-1 py-1">(G) 3rd Term</th>
+                  <th className="border border-purple-700 px-1 py-1 bg-amber-700">(L) Grade</th>
+                  <th className="border border-purple-700 px-1 py-1">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((item, idx) => (
+                  <tr key={item.subjectId} className={idx % 2 ? 'bg-purple-50/30' : ''}>
+                    <td className="border border-gray-300 px-2 py-1 font-medium whitespace-nowrap">
+                      {item.subjectName}
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="20"
+                        value={item.test1 ?? ''}
+                        onChange={(e) => updateItem(idx, 'test1', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="20"
+                        value={item.test2 ?? ''}
+                        onChange={(e) => updateItem(idx, 'test2', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="60"
+                        value={item.exam ?? ''}
+                        onChange={(e) => updateItem(idx, 'exam', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-purple-100/40">
+                      {item.totalScore != null ? item.totalScore : '-'}
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        value={item.firstTermScore ?? ''}
+                        onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        value={item.secondTermScore ?? ''}
+                        onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-0.5">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        value={item.thirdTermScore ?? ''}
+                        onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)}
+                        disabled={isFinalized}
+                        className="h-8 text-center text-xs border-0"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-amber-100/40">
+                      {item.grade || '-'}
+                    </td>
+                    <td className="border border-gray-300 px-1 py-1 text-center text-[11px]">
+                      {item.remark || ''}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            <AlertCircle className="w-3 h-3 inline mr-1" />
+            (D) Total = Test 1 + Test 2 + Exam • Grade: A(70+), B(60-69), C(50-59), D(45-49), E(40-44), F(0-39)
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* TRAITS */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Development (Skills)</CardTitle>
+            <CardDescription>Rate each trait A–E.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {data.traits.filter((t) => t.section === 'SKILL').map((t, idx) => {
+              const realIdx = data.traits.findIndex((tt) => tt === t);
+              return (
+                <div key={t.name} className="flex items-center justify-between gap-2">
+                  <Label className="text-sm">{t.name}</Label>
+                  <select
+                    value={t.rating || ''}
+                    onChange={(e) => updateTrait(realIdx, e.target.value)}
+                    disabled={isFinalized}
+                    className="border rounded px-2 py-1 text-sm w-20"
+                  >
+                    <option value="">-</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                  </select>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Behaviour</CardTitle>
+            <CardDescription>Rate each trait A–E.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {data.traits.filter((t) => t.section === 'BEHAVIOUR').map((t) => {
+              const realIdx = data.traits.findIndex((tt) => tt === t);
+              return (
+                <div key={t.name} className="flex items-center justify-between gap-2">
+                  <Label className="text-sm">{t.name}</Label>
+                  <select
+                    value={t.rating || ''}
+                    onChange={(e) => updateTrait(realIdx, e.target.value)}
+                    disabled={isFinalized}
+                    className="border rounded px-2 py-1 text-sm w-20"
+                  >
+                    <option value="">-</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                  </select>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ATTENDANCE + REPORTS + SIGNATURE */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Attendance, Reports & Signature</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">No. of Times School Opened</Label>
+              <Input
+                type="number"
+                value={data.result.timesSchoolOpened || ''}
+                onChange={(e) => updateResultField('timesSchoolOpened', Number(e.target.value))}
+                disabled={isFinalized}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">No. of Attendance</Label>
+              <Input
+                type="number"
+                value={data.result.schoolOpened || ''}
+                onChange={(e) => updateResultField('schoolOpened', Number(e.target.value))}
+                disabled={isFinalized}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Marks Obtainable</Label>
+              <Input
+                type="number"
+                value={data.result.marksObtainable || 100}
+                onChange={(e) => updateResultField('marksObtainable', Number(e.target.value))}
+                disabled={isFinalized}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="tr">Class Teacher's Report</Label>
+            <Textarea
+              id="tr"
+              rows={3}
+              placeholder="e.g., A diligent student. More grease to your elbow."
+              value={data.result.teacherReport}
+              onChange={(e) => updateResultField('teacherReport', e.target.value)}
+              disabled={isFinalized}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="pr">Principal's Report</Label>
+            <Textarea
+              id="pr"
+              rows={3}
+              placeholder="e.g., Promoted, but more effort needed."
+              value={data.result.principalReport}
+              onChange={(e) => updateResultField('principalReport', e.target.value)}
+              disabled={isFinalized}
+            />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="ts">Teacher's Signature (Name)</Label>
+              <Input
+                id="ts"
+                placeholder="Your name as it should appear"
+                value={data.result.teacherSignature}
+                onChange={(e) => updateResultField('teacherSignature', e.target.value)}
+                disabled={isFinalized}
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Principal's signature is added automatically.
+              </p>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="nt">Next Term Begins</Label>
+              <Input
+                id="nt"
+                placeholder="e.g., 9th September, 2026"
+                value={data.result.nextTermBegins}
+                onChange={(e) => updateResultField('nextTermBegins', e.target.value)}
+                disabled={isFinalized}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              {isFinalized
+                ? 'This result is finalized and visible to the student. Edit disabled.'
+                : 'Remember to Save Draft often. Click Finalize when done.'}
+            </p>
+            {!isFinalized && (
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleSaveDraft} disabled={saving}>
+                  <Save className="w-4 h-4 mr-1" /> Save Draft
+                </Button>
+                <Button onClick={handleFinalize} disabled={finalizing} className="bg-green-700 hover:bg-green-800">
+                  <CheckCheck className="w-4 h-4 mr-1" /> Finalize
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

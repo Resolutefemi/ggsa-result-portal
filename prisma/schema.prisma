@@ -1,0 +1,173 @@
+// God Generals Standard Academy - Result Management System
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// === TEACHERS (login on phone/web to input scores) ===
+model Teacher {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  fullName     String
+  email        String?
+  subject      String? // main subject taught
+  role         String   @default("TEACHER") // TEACHER | ADMIN
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  classes  ClassAssignment[]
+  results  Result[]       @relation("ResultTeacher")
+  students Student[]
+}
+
+// Teacher <-> Class assignment (a teacher can be assigned to multiple classes)
+model ClassAssignment {
+  id        String @id @default(cuid())
+  teacherId String
+  classId   String
+  subject   String? // subject the teacher teaches in this class
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+}
+
+// === CLASSES (JSS 1, JSS 2, SS 1, etc.) ===
+model Class {
+  id        String @id @default(cuid())
+  name      String @unique // e.g., "JSS 1", "JSS 2", "SS 1"
+  category  String @default("JUNIOR") // JUNIOR | SENIOR
+  createdAt DateTime @default(now())
+
+  teachers    ClassAssignment[]
+  students    Student[]
+  results     Result[]
+  subjects    ClassSubject[]
+}
+
+// === SUBJECTS (default list pre-seeded) ===
+model Subject {
+  id        String @id @default(cuid())
+  name      String @unique
+  code      String @unique
+  order     Int    @default(0)
+  category  String @default("JUNIOR") // JUNIOR | SENIOR | BOTH
+
+  classSubjects ClassSubject[]
+  resultItems   ResultItem[]
+}
+
+// Subject <-> Class mapping (which subjects are taught in which class)
+model ClassSubject {
+  id        String @id @default(cuid())
+  classId   String
+  subjectId String
+
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, subjectId])
+}
+
+// === STUDENTS ===
+model Student {
+  id              String   @id @default(cuid())
+  name            String
+  admissionNumber String   @unique
+  classId         String
+  sex             String   @default("M") // M | F
+  house           String?
+  pinHash         String   // for student result checking
+  year            String?  // e.g., "2025/2026"
+  teacherId       String?  // form teacher
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
+  results Result[]
+}
+
+// === RESULTS (one per student per term per session) ===
+model Result {
+  id              String   @id @default(cuid())
+  studentId       String
+  classId         String
+  teacherId       String?  // teacher who last edited
+  term            String   // "1st Term" | "2nd Term" | "3rd Term"
+  session         String   // e.g., "2025/2026"
+  status          String   @default("DRAFT") // DRAFT | FINALIZED
+  schoolOpened    Int      @default(0)
+  timesSchoolOpened Int    @default(0)
+  marksObtainable Int      @default(100)
+  teacherReport   String?
+  principalReport String?
+  teacherSignature String? // teacher name for signature line
+  nextTermBegins  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class    Class    @relation(fields: [classId], references: [id])
+  teacher  Teacher? @relation("ResultTeacher", fields: [teacherId], references: [id])
+  items    ResultItem[]
+  traits   CharacterTrait[]
+}
+
+// One row per subject in a result (the big table)
+model ResultItem {
+  id              String  @id @default(cuid())
+  resultId        String
+  subjectId       String
+
+  test1           Float?  // (A) Test 1
+  test2           Float?  // (B) Test 2
+  exam            Float?  // (C) Term Exam
+  // (D) Total Incl. H.W. - calculated = test1 + test2 + exam
+  firstTermScore  Float?  // (E) 1st Term Score
+  secondTermScore Float?  // (F) 2nd Term Score
+  thirdTermScore  Float?  // (G) 3rd Term Score
+  // (H) Total Score - cumulative
+  // (I) Graded Score
+  // (J) Class Average - calculated
+  // (K) Position - calculated
+  // (L) Grade - calculated
+
+  // Cached calculated values (updated on finalize)
+  totalScore      Float?
+  classAverage    Float?
+  position        Int?
+  grade           String?
+  remark          String?
+
+  result  Result  @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@unique([resultId, subjectId])
+}
+
+// Character development & behaviour traits (A/B/C/D/E rating)
+model CharacterTrait {
+  id      String @id @default(cuid())
+  resultId String
+  section String  // "SKILL" | "BEHAVIOUR"
+  name    String  // e.g., "Handwriting", "Punctuality"
+  rating  String? // A | B | C | D | E
+
+  result Result @relation(fields: [resultId], references: [id], onDelete: Cascade)
+
+  @@unique([resultId, section, name])
+}
+
+// === SCHOOL SETTINGS (singleton-style key/value) ===
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}

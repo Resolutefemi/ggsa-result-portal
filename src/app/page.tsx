@@ -202,18 +202,18 @@ export default function Home() {
   // ===== RENDER =====
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-white to-purple-50">
-      {/* Top bar */}
+      {/* Top bar — slim navbar (60px mobile / 70px desktop) */}
       <header className="no-print sticky top-0 z-30 backdrop-blur-md bg-white/80 border-b border-purple-100">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-5 flex items-center justify-between gap-2 h-[60px] sm:h-[70px]">
           <button
             onClick={() => setView('home')}
-            className="flex items-center gap-2 sm:gap-3 group flex-shrink min-w-0"
+            className="flex items-center gap-2 sm:gap-3 group flex-shrink min-w-0 h-full"
             aria-label="Home"
           >
             <img
               src="/logo-transparent.png"
               alt="GGSA Logo"
-              className="w-20 h-20 sm:w-32 sm:h-32 object-contain flex-shrink-0"
+              className="h-10 sm:h-12 w-auto object-contain flex-shrink-0"
               style={{ backgroundColor: 'transparent' }}
               draggable={false}
             />

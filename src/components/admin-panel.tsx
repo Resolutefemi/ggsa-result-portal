@@ -179,8 +179,8 @@ function StudentsManager({ classes }: { classes: SchoolClass[] }) {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm">{s.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {s.admissionNumber} • {s.class?.name || '-'} • {s.sex === 'F' ? 'Female' : 'Male'}
-                      {s.house ? ` • ${s.house} House` : ''}
+                      {s.class?.name || '-'} • {s.sex === 'F' ? 'Female' : 'Male'}
+                      {s.admissionNumber ? ` • ADM ${s.admissionNumber}` : ''}
                     </div>
                   </div>
                   <Button size="sm" variant="ghost" onClick={() => setEditing(s)}>
@@ -219,13 +219,17 @@ function StudentDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  // Class selection mode: 'preset' (using existing classes) or 'manual' (type a new name)
+  const existingClassId = student?.classId || classes[0]?.id || '';
+  const [classMode, setClassMode] = useState<'preset' | 'manual'>(existingClassId ? 'preset' : 'manual');
+  const [manualClassName, setManualClassName] = useState('');
+
   const [form, setForm] = useState({
     id: student?.id || '',
     name: student?.name || '',
-    admissionNumber: student?.admissionNumber || '',
-    classId: student?.classId || classes[0]?.id || '',
+    // admissionNumber is no longer edited by the user; auto-generated on the server
+    classId: existingClassId,
     sex: student?.sex || 'M',
-    house: student?.house || '',
     year: student?.year || '2025/2026',
     teacherId: student?.teacherId || '',
   });
@@ -233,24 +237,57 @@ function StudentDialog({
   const { toast } = useToast();
 
   const save = async () => {
-    if (!form.name || !form.admissionNumber || !form.classId) {
-      toast({ title: 'Name, admission number, and class are required', variant: 'destructive' });
+    if (!form.name) {
+      toast({ title: 'Name is required', variant: 'destructive' });
       return;
     }
+    if (classMode === 'preset' && !form.classId) {
+      toast({ title: 'Please pick a class', variant: 'destructive' });
+      return;
+    }
+    if (classMode === 'manual' && !manualClassName.trim()) {
+      toast({ title: 'Please type a class name', variant: 'destructive' });
+      return;
+    }
+
     setSaving(true);
     try {
+      let finalClassId = form.classId;
+
+      // If "Write manually" is selected, find-or-create the class first
+      if (classMode === 'manual') {
+        const clsRes = await fetch('/api/admin/class/find-or-create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: manualClassName.trim() }),
+        });
+        const clsData = await clsRes.json();
+        if (!clsRes.ok) {
+          toast({ title: clsData.error || 'Failed to create class', variant: 'destructive' });
+          setSaving(false);
+          return;
+        }
+        finalClassId = clsData.class.id;
+      }
+
       const method = form.id ? 'PUT' : 'POST';
       const r = await fetch('/api/admin/student', {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, classId: finalClassId }),
       });
       const d = await r.json();
       if (!r.ok) {
         toast({ title: d.error || 'Save failed', variant: 'destructive' });
         return;
       }
-      toast({ title: form.id ? 'Student updated' : 'Student added' });
+      toast({
+        title: form.id ? 'Student updated' : 'Student added',
+        description: !form.id && d.student?.admissionNumber
+          ? `Auto-generated admission number: ${d.student.admissionNumber}`
+          : undefined,
+        duration: 8000,
+      });
       onSaved();
     } catch {
       toast({ title: 'Network error', variant: 'destructive' });
@@ -267,26 +304,56 @@ function StudentDialog({
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label>Full Name</Label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Label>Full Name <span className="text-destructive">*</span></Label>
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="e.g., Adeyemi Johnson"
+              autoFocus
+            />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label>Admission No.</Label>
-              <Input value={form.admissionNumber} onChange={(e) => setForm({ ...form, admissionNumber: e.target.value })} />
+
+          {/* Class: preset (JSS 1-3) or write manually */}
+          <div>
+            <Label>Class <span className="text-destructive">*</span></Label>
+            <div className="grid grid-cols-4 gap-1.5 mt-1">
+              {classes.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { setClassMode('preset'); setForm({ ...form, classId: c.id }); }}
+                  className={`px-2 py-2 rounded text-sm font-medium border transition ${
+                    classMode === 'preset' && form.classId === c.id
+                      ? 'bg-ggsa-purple text-white border-ggsa-purple'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                  }`}
+                >
+                  {c.name}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => { setClassMode('manual'); setForm({ ...form, classId: '' }); }}
+                className={`px-2 py-2 rounded text-sm font-medium border transition ${
+                  classMode === 'manual'
+                    ? 'bg-ggsa-purple text-white border-ggsa-purple'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                }`}
+              >
+                ✍️ Other
+              </button>
             </div>
-            <div>
-              <Label>Class</Label>
-              <Select value={form.classId} onValueChange={(v) => setForm({ ...form, classId: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {classes.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {classMode === 'manual' && (
+              <Input
+                className="mt-2"
+                value={manualClassName}
+                onChange={(e) => setManualClassName(e.target.value)}
+                placeholder="Type the class name (e.g., SS 1, Primary 5)"
+                autoFocus
+              />
+            )}
           </div>
+
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label>Sex</Label>
@@ -299,21 +366,19 @@ function StudentDialog({
               </Select>
             </div>
             <div>
-              <Label>House</Label>
-              <Input value={form.house} onChange={(e) => setForm({ ...form, house: e.target.value })} placeholder="e.g., Red" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
               <Label>Year/Session</Label>
-              <Input value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} placeholder="2025/2026" />
-            </div>
-            <div className="flex items-end">
-              <p className="text-[11px] text-muted-foreground">
-                Result PINs are auto-generated when a teacher finalizes a result — no student PIN needed here.
-              </p>
+              <Input
+                value={form.year}
+                onChange={(e) => setForm({ ...form, year: e.target.value })}
+                placeholder="2025/2026"
+              />
             </div>
           </div>
+
+          <p className="text-[11px] text-muted-foreground">
+            Admission number is auto-generated. House field is no longer collected.
+            Result PINs are auto-generated when a teacher finalizes a result.
+          </p>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>

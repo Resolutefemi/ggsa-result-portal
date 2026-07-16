@@ -81,7 +81,7 @@ model ClassSubject {
 model Student {
   id              String   @id @default(cuid())
   name            String
-  admissionNumber String   @unique
+  admissionNumber String?  @unique // optional now; auto-generated when not provided
   classId         String
   sex             String   @default("M") // M | F
   house           String?

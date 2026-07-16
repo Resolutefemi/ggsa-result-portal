@@ -33,9 +33,6 @@ export const DEFAULT_CLASSES = [
   { name: 'JSS 1', category: 'JUNIOR' },
   { name: 'JSS 2', category: 'JUNIOR' },
   { name: 'JSS 3', category: 'JUNIOR' },
-  { name: 'SS 1', category: 'SENIOR' },
-  { name: 'SS 2', category: 'SENIOR' },
-  { name: 'SS 3', category: 'SENIOR' },
 ];
 
 // Character / behaviour traits

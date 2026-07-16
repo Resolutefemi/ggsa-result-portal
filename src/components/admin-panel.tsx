@@ -50,6 +50,7 @@ import {
   Plus,
   CheckCheck,
 } from 'lucide-react';
+import { SignatureUpload } from './signature-upload';
 
 interface SchoolClass {
   id: string;
@@ -78,11 +79,12 @@ export function AdminPanel({
       </p>
 
       <Tabs defaultValue="students">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full max-w-2xl">
           <TabsTrigger value="students"><Users className="w-4 h-4 mr-1" /> Students</TabsTrigger>
           <TabsTrigger value="teachers"><Users className="w-4 h-4 mr-1" /> Teachers</TabsTrigger>
           <TabsTrigger value="classes"><School className="w-4 h-4 mr-1" /> Classes</TabsTrigger>
           <TabsTrigger value="subjects"><BookOpen className="w-4 h-4 mr-1" /> Subjects</TabsTrigger>
+          <TabsTrigger value="settings"><Shield className="w-4 h-4 mr-1" /> Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="students" className="mt-4">
@@ -96,6 +98,9 @@ export function AdminPanel({
         </TabsContent>
         <TabsContent value="subjects" className="mt-4">
           <SubjectsManager />
+        </TabsContent>
+        <TabsContent value="settings" className="mt-4">
+          <SettingsManager />
         </TabsContent>
       </Tabs>
     </div>
@@ -876,6 +881,96 @@ function SubjectsManager() {
             </div>
           ))}
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================
+// SETTINGS MANAGER (principal signature upload, etc.)
+// ============================================================
+function SettingsManager() {
+  const [principalSig, setPrincipalSig] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch('/api/admin/principal-signature');
+        const d = await r.json();
+        if (!cancelled) {
+          setPrincipalSig(d.signatureImage || null);
+          setDirty(false);
+        }
+      } catch {
+        if (!cancelled) setPrincipalSig(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const r = await fetch('/api/admin/principal-signature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signatureImage: principalSig }),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Save failed', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Principal signature saved', description: 'It will appear on every finalized result sheet.' });
+      setDirty(false);
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-8 text-muted-foreground">Loading...</div>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="w-5 h-5" /> School Settings
+        </CardTitle>
+        <CardDescription>
+          The principal signature is automatically added to every finalized result sheet.
+          Snap or upload it once here.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <SignatureUpload
+          label="Principal's Signature"
+          currentSignature={principalSig}
+          onChange={(newSig) => { setPrincipalSig(newSig); setDirty(true); }}
+        />
+        {dirty && (
+          <Button onClick={save} disabled={saving} className="bg-ggsa-purple hover:bg-purple-800">
+            {saving ? 'Saving...' : 'Save Principal Signature'}
+          </Button>
+        )}
+        {!dirty && principalSig && (
+          <p className="text-[11px] text-green-600">✓ Principal signature saved — will appear on all result sheets.</p>
+        )}
+        {!principalSig && !dirty && (
+          <p className="text-[11px] text-muted-foreground">
+            No principal signature uploaded yet. Result sheets will show a blank signature line until this is set.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

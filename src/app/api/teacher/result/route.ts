@@ -105,6 +105,9 @@ export async function GET(req: NextRequest) {
         ...BEHAVIOUR_TRAITS.map((name) => ({ section: 'BEHAVIOUR', name, rating: null })),
       ],
       classSubjectsCount: subjects.length,
+      // Teacher's saved signature (for preview / display)
+      teacherSignatureImage: teacher.signatureImage || null,
+      teacherName: teacher.fullName,
     });
   }
 
@@ -192,6 +195,9 @@ export async function GET(req: NextRequest) {
     items,
     traits,
     classSubjectsCount: subjects.length,
+    // Teacher's saved signature (for preview / display)
+    teacherSignatureImage: teacher.signatureImage || null,
+    teacherName: teacher.fullName,
   });
 }
 

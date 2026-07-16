@@ -31,9 +31,12 @@ export interface ResultSheetData {
     marksObtainable: number;
     teacherReport: string | null;
     principalReport: string | null;
-    teacherSignature: string | null;
+    teacherSignature: string | null; // teacher name (text)
     nextTermBegins: string | null;
   };
+  // Uploaded signature images (base64 data URLs) — snapped on the website
+  teacherSignatureImage?: string | null;
+  principalSignatureImage?: string | null;
   items: Array<{
     subjectName: string;
     subjectCode: string;
@@ -71,7 +74,7 @@ function fmt(n: number | null | undefined): string {
 }
 
 export function ResultSheet({ data }: { data: ResultSheetData }) {
-  const { student, result, items, traits } = data;
+  const { student, result, items, traits, teacherSignatureImage, principalSignatureImage } = data;
 
   const skillTraits = traits.filter((t) => t.section === 'SKILL');
   const behaviourTraits = traits.filter((t) => t.section === 'BEHAVIOUR');
@@ -87,9 +90,9 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
   return (
     <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
       {/* === HEADER (school name + logo + address) === */}
-      <div className="flex items-center gap-4 p-4 border-b-2 border-purple-900">
-        <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-purple-900 flex-shrink-0">
-          <img src="/logo.jpeg" alt="GGSA Logo" className="w-full h-full object-cover" />
+      <div className="flex items-center gap-4 p-4 border-b-2 border-black">
+        <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+          <img src="/logo.png" alt="GGSA Logo" className="w-full h-full object-contain" />
         </div>
         <div className="flex-1 text-center">
           <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide text-ggsa-purple uppercase">
@@ -137,21 +140,21 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       <div className="overflow-x-auto">
         <table className="w-full text-[10px] sm:text-xs border-collapse">
           <thead>
-            <tr className="bg-purple-900 text-white">
-              <th rowSpan={2} className="border border-purple-700 px-1 py-1 text-left">SUBJECT</th>
-              <th className="border border-purple-700 px-1 py-0.5">(A) Test 1</th>
-              <th className="border border-purple-700 px-1 py-0.5">(B) Test 2</th>
-              <th className="border border-purple-700 px-1 py-0.5">(C) Term Exam</th>
-              <th className="border border-purple-700 px-1 py-0.5">(D) Total</th>
-              <th className="border border-purple-700 px-1 py-0.5">(E) 1st Term</th>
-              <th className="border border-purple-700 px-1 py-0.5">(F) 2nd Term</th>
-              <th className="border border-purple-700 px-1 py-0.5">(G) 3rd Term</th>
-              <th className="border border-purple-700 px-1 py-0.5">(H) Total Score</th>
-              <th className="border border-purple-700 px-1 py-0.5">(I) Graded</th>
-              <th className="border border-purple-700 px-1 py-0.5">(J) Class Avg</th>
-              <th className="border border-purple-700 px-1 py-0.5">(K) Position</th>
-              <th className="border border-purple-700 px-1 py-0.5">(L) Grade</th>
-              <th className="border border-purple-700 px-1 py-0.5">Remark</th>
+            <tr className="bg-black text-white">
+              <th rowSpan={2} className="border border-black px-1 py-1 text-left">SUBJECT</th>
+              <th className="border border-black px-1 py-0.5">(A) Test 1</th>
+              <th className="border border-black px-1 py-0.5">(B) Test 2</th>
+              <th className="border border-black px-1 py-0.5">(C) Term Exam</th>
+              <th className="border border-black px-1 py-0.5">(D) Total</th>
+              <th className="border border-black px-1 py-0.5">(E) 1st Term</th>
+              <th className="border border-black px-1 py-0.5">(F) 2nd Term</th>
+              <th className="border border-black px-1 py-0.5">(G) 3rd Term</th>
+              <th className="border border-black px-1 py-0.5">(H) Total Score</th>
+              <th className="border border-black px-1 py-0.5">(I) Graded</th>
+              <th className="border border-black px-1 py-0.5">(J) Class Avg</th>
+              <th className="border border-black px-1 py-0.5">(K) Position</th>
+              <th className="border border-black px-1 py-0.5">(L) Grade</th>
+              <th className="border border-black px-1 py-0.5">Remark</th>
             </tr>
           </thead>
           <tbody>
@@ -191,7 +194,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       {/* === CHARACTER / BEHAVIOUR === */}
       <div className="grid grid-cols-2 gap-2 mt-2 px-2 text-[10px] sm:text-xs">
         <div className="border border-gray-400 rounded">
-          <div className="bg-purple-900 text-white px-2 py-0.5 font-semibold">DEVELOPMENT (Skills)</div>
+          <div className="bg-black text-white px-2 py-0.5 font-semibold">DEVELOPMENT (Skills)</div>
           <div className="grid grid-cols-2 gap-x-2 p-1">
             {skillTraits.map((t) => (
               <div key={t.name} className="flex justify-between">
@@ -202,7 +205,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           </div>
         </div>
         <div className="border border-gray-400 rounded">
-          <div className="bg-purple-900 text-white px-2 py-0.5 font-semibold">BEHAVIOUR</div>
+          <div className="bg-black text-white px-2 py-0.5 font-semibold">BEHAVIOUR</div>
           <div className="grid grid-cols-2 gap-x-2 p-1">
             {behaviourTraits.map((t) => (
               <div key={t.name} className="flex justify-between">
@@ -233,24 +236,37 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       {/* === SIGNATURES === */}
       <div className="grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
         <div className="text-center">
-          <div className="border-t border-gray-700 pt-1 mt-8">
+          {/* Teacher's signature (uploaded image) */}
+          {teacherSignatureImage ? (
+            <div className="h-16 flex items-end justify-center mb-1">
+              <img
+                src={teacherSignatureImage}
+                alt="Teacher signature"
+                className="max-h-16 max-w-[180px] object-contain"
+              />
+            </div>
+          ) : (
+            <div className="h-16 mb-1" />
+          )}
+          <div className="border-t border-gray-700 pt-1">
             <div className="font-semibold">Class Teacher's Signature</div>
             <div className="text-gray-700">{result.teacherSignature || '(Teacher name not set)'}</div>
           </div>
         </div>
-        <div className="text-center relative">
-          {/* Principal signature is auto-shown */}
-          <img
-            src="/principal-signature.png"
-            alt="Principal signature"
-            className="absolute left-1/2 -translate-x-1/2 -top-2 h-16 object-contain opacity-90"
-          />
-          <img
-            src="/principal-stamp.png"
-            alt="Principal stamp"
-            className="absolute right-0 -top-3 h-16 object-contain opacity-60"
-          />
-          <div className="border-t border-gray-700 pt-1 mt-8">
+        <div className="text-center">
+          {/* Principal's signature (uploaded image) */}
+          {principalSignatureImage ? (
+            <div className="h-16 flex items-end justify-center mb-1">
+              <img
+                src={principalSignatureImage}
+                alt="Principal signature"
+                className="max-h-16 max-w-[180px] object-contain"
+              />
+            </div>
+          ) : (
+            <div className="h-16 mb-1" />
+          )}
+          <div className="border-t border-gray-700 pt-1">
             <div className="font-semibold">Principal's Signature</div>
             <div className="text-gray-700 text-[10px]">God Generals Standard Academy</div>
           </div>

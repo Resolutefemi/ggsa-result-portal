@@ -11,16 +11,18 @@ datasource db {
 
 // === TEACHERS (login on phone/web to input scores) ===
 model Teacher {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  passwordHash String
-  fullName     String
-  email        String?
-  subject      String? // main subject taught
-  role         String   @default("TEACHER") // TEACHER | ADMIN
-  status       String   @default("PENDING") // PENDING (awaiting admin approval) | APPROVED | REJECTED
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(cuid())
+  username        String   @unique
+  passwordHash    String
+  fullName        String
+  email           String?
+  subject         String? // main subject taught
+  role            String   @default("TEACHER") // TEACHER | ADMIN
+  status          String   @default("PENDING") // PENDING (awaiting admin approval) | APPROVED | REJECTED
+  // Base64 data URL of the teacher's snapped signature image (for result sheets)
+  signatureImage  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   classes  ClassAssignment[]
   results  Result[]       @relation("ResultTeacher")

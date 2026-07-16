@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { calculateGrade, gradeRemark, SKILL_TRAITS, BEHAVIOUR_TRAITS } from '@/lib/constants';
 import { computeTotal } from '@/lib/calc';
 import { ResultSheet } from './result-sheet';
+import { SignatureUpload } from './signature-upload';
 import {
   ArrowLeft,
   Save,
@@ -89,6 +90,9 @@ interface LoadResponse {
   };
   items: ItemRow[];
   traits: TraitRow[];
+  // Teacher's saved signature image (base64 data URL)
+  teacherSignatureImage?: string | null;
+  teacherName?: string;
 }
 
 export function TeacherEditForm({
@@ -113,6 +117,13 @@ export function TeacherEditForm({
   const [saving, setSaving] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Teacher signature state
+  const [teacherSignature, setTeacherSignature] = useState<string | null>(null);
+  const [signatureDirty, setSignatureDirty] = useState(false);
+  const [signatureSaved, setSignatureSaved] = useState(false);
+  const [savingSignature, setSavingSignature] = useState(false);
+
   const { toast } = useToast();
 
   const load = useCallback(async () => {
@@ -127,6 +138,10 @@ export function TeacherEditForm({
         return;
       }
       setData(d);
+      // Load teacher signature from the response
+      setTeacherSignature(d.teacherSignatureImage || null);
+      setSignatureSaved(!!d.teacherSignatureImage);
+      setSignatureDirty(false);
     } catch {
       toast({ title: 'Network error', variant: 'destructive' });
     } finally {
@@ -264,6 +279,35 @@ export function TeacherEditForm({
     setShowPreview(true);
   };
 
+  // === Teacher signature handlers ===
+  const handleSignatureChange = (newSig: string | null) => {
+    setTeacherSignature(newSig);
+    setSignatureDirty(true);
+  };
+
+  const saveSignature = async () => {
+    setSavingSignature(true);
+    try {
+      const r = await fetch('/api/teacher/signature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signatureImage: teacherSignature }),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Failed to save signature', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Signature saved', description: 'It will appear on every result you finalize.' });
+      setSignatureDirty(false);
+      setSignatureSaved(true);
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setSavingSignature(false);
+    }
+  };
+
   if (loading) {
     return <div className="py-12 text-center text-muted-foreground">Loading result form...</div>;
   }
@@ -290,6 +334,8 @@ export function TeacherEditForm({
             result: data.result as any,
             items: data.items,
             traits: data.traits,
+            teacherSignatureImage: teacherSignature,
+            principalSignatureImage: null, // teacher preview doesn't need principal sig
           }}
         />
       </div>
@@ -356,6 +402,34 @@ export function TeacherEditForm({
           </Button>
         </div>
       )}
+
+      {/* === TEACHER SIGNATURE === */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            Your Signature
+          </CardTitle>
+          <CardDescription>
+            Snap or upload your signature once. It will be automatically added to every result you finalize.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SignatureUpload
+            label="Class Teacher's Signature"
+            currentSignature={teacherSignature}
+            onChange={handleSignatureChange}
+            disabled={false}
+          />
+          {signatureSaved && !signatureDirty && (
+            <p className="text-[11px] text-green-600 mt-2">✓ Signature saved — will appear on result sheets.</p>
+          )}
+          {signatureDirty && (
+            <Button size="sm" className="mt-2 bg-ggsa-purple hover:bg-purple-800" onClick={saveSignature} disabled={savingSignature}>
+              {savingSignature ? 'Saving...' : 'Save Signature'}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

@@ -213,7 +213,7 @@ export default function Home() {
             <img
               src="/logo-transparent.png"
               alt="GGSA Logo"
-              className="w-10 h-10 sm:w-16 sm:h-16 object-contain flex-shrink-0"
+              className="w-20 h-20 sm:w-32 sm:h-32 object-contain flex-shrink-0"
               style={{ backgroundColor: 'transparent' }}
               draggable={false}
             />
@@ -454,7 +454,7 @@ function HomeView({
               <img
                 src="/logo-transparent.png"
                 alt="God Generals Standard Academy logo"
-                className="relative w-40 h-40 sm:w-64 sm:h-64 lg:w-80 lg:h-80 object-contain drop-shadow-2xl group-hover:scale-105 transition"
+                className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[32rem] lg:h-[32rem] object-contain drop-shadow-2xl group-hover:scale-105 transition"
                 style={{ backgroundColor: 'transparent' }}
                 draggable={false}
               />

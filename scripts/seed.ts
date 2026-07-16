@@ -221,16 +221,10 @@ async function main() {
       PVS: { test1: 14, test2: 14, exam: 41 },
     };
 
-    // Create ResultItems for ALL subjects (parents + standalone + children).
-    // Parents and standalone subjects get scores; children get null scores
-    // (they're display-only).
+    // Create ResultItems for all 8 subjects (flat, no grouping)
     for (const cs of classSubjects) {
       const score = sampleScores[cs.subject.code];
-      const isParent = (cs.subject as any).isParent;
-      const isChild = !!(cs.subject as any).parentCode;
-
-      if ((isParent || !isChild) && score) {
-        // Parent or standalone with scores
+      if (score) {
         const total = computeTotal(score);
         const grade = calculateGrade(total);
         const remark = gradeRemark(grade);
@@ -249,7 +243,6 @@ async function main() {
           },
         });
       } else {
-        // Children (display-only) or subjects without sample scores
         await prisma.resultItem.create({
           data: {
             resultId: result.id,

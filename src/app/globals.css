@@ -210,7 +210,7 @@
     white-space: nowrap !important;
     padding: 6px 4px !important;
     font-weight: bold !important;
-    border-right: 2px solid black !important;
+    border-right: 3px solid black !important;
     font-size: 8px !important;
   }
 
@@ -252,7 +252,7 @@
   white-space: nowrap;
   padding: 10px;
   font-weight: bold;
-  border-right: 2px solid black;
+  border-right: 3px solid black;
 }
 
 /* Group-end: thick bottom border on screen too */

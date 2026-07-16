@@ -490,21 +490,21 @@ export function TeacherEditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* SUBJECTS TABLE — static, fixed layout, no scroll */}
-          <div className="result-table-wrap" style={{ overflowX: 'hidden', width: '100%' }}>
-            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', width: '100%' }}>
+          {/* SUBJECTS TABLE — scrollable on screen for input readability, static in print */}
+          <div className="result-table-wrap overflow-x-auto -mx-2">
+            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '1100px' }}>
               <colgroup>
-                <col style={{ width: '6%' }} />
-                <col style={{ width: '20%' }} />
-                <col style={{ width: '7.4%' }} />
-                <col style={{ width: '7.4%' }} />
-                <col style={{ width: '7.4%' }} />
-                <col style={{ width: '7.4%' }} />
-                <col style={{ width: '8.5%' }} />
-                <col style={{ width: '8.5%' }} />
-                <col style={{ width: '8.5%' }} />
-                <col style={{ width: '7.4%' }} />
-                <col style={{ width: '11%' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '180px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '90px' }} />
+                <col style={{ width: '90px' }} />
+                <col style={{ width: '90px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '120px' }} />
               </colgroup>
               <thead>
                 <tr className="bg-black text-white">

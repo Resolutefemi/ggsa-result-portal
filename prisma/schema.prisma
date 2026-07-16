@@ -57,11 +57,13 @@ model Class {
 
 // === SUBJECTS (default list pre-seeded) ===
 model Subject {
-  id        String @id @default(cuid())
-  name      String @unique
-  code      String @unique
-  order     Int    @default(0)
-  category  String @default("JUNIOR") // JUNIOR | SENIOR | BOTH
+  id         String  @id @default(cuid())
+  name       String  @unique
+  code       String  @unique
+  order      Int     @default(0)
+  category   String  @default("JUNIOR") // JUNIOR | SENIOR | BOTH
+  isParent   Boolean @default(false)    // true for parent categories (BST, RNV, PVS)
+  parentCode String? // code of the parent subject (for children)
 
   classSubjects ClassSubject[]
   resultItems   ResultItem[]

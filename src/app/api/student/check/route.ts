@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
       subjectName: i.subject.name,
       subjectCode: i.subject.code,
       order: i.subject.order,
+      isParent: (i.subject as any).isParent || false,
+      parentCode: (i.subject as any).parentCode || null,
       test1: i.test1,
       test2: i.test2,
       exam: i.exam,

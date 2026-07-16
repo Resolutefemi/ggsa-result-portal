@@ -1,6 +1,14 @@
 /**
  * Default subject list for God Generals Standard Academy
  * Based on the original paper report card template.
+ *
+ * Subjects are grouped under parent categories (Nigerian JSS curriculum):
+ *   - Basic Science & Technology (PHE, Basic Science, Info Tech, Basic Tech)
+ *   - Religion & National Value (CRS/IRS, Social Studies, Civic Edu, Security Edu)
+ *   - Prevocational Studies (Igbo/Music, Cultural & Creative Arts)
+ *
+ * The `parent` field links a child subject to its parent's code.
+ * Parent subjects have `isParent: true`.
  */
 
 export interface DefaultSubject {
@@ -8,6 +16,8 @@ export interface DefaultSubject {
   code: string;
   order: number;
   category: 'JUNIOR' | 'SENIOR' | 'BOTH';
+  isParent?: boolean;
+  parent?: string; // code of the parent subject (for children)
 }
 
 export const DEFAULT_SUBJECTS: DefaultSubject[] = [
@@ -15,18 +25,25 @@ export const DEFAULT_SUBJECTS: DefaultSubject[] = [
   { name: 'Mathematics', code: 'MATH', order: 2, category: 'BOTH' },
   { name: 'Yoruba Studies', code: 'YOR', order: 3, category: 'BOTH' },
   { name: 'Business Studies', code: 'BUS', order: 4, category: 'JUNIOR' },
-  { name: 'Physical & Health Edu.', code: 'PHE', order: 5, category: 'BOTH' },
-  { name: 'Basic Science', code: 'BSC', order: 6, category: 'JUNIOR' },
-  { name: 'Information Tech.', code: 'IT', order: 7, category: 'BOTH' },
-  { name: 'Basic Technology', code: 'BTECH', order: 8, category: 'JUNIOR' },
-  { name: 'CRS / IRS', code: 'CRS', order: 9, category: 'BOTH' },
-  { name: 'Social Studies', code: 'SOC', order: 10, category: 'JUNIOR' },
-  { name: 'Civic Education', code: 'CIV', order: 11, category: 'BOTH' },
-  { name: 'Security Education', code: 'SEC', order: 12, category: 'JUNIOR' },
-  { name: 'Igbo / Music', code: 'IGB', order: 13, category: 'BOTH' },
-  { name: 'Cultural & Creative Arts', code: 'CCA', order: 14, category: 'BOTH' },
-  { name: 'Agric Science', code: 'AGR', order: 15, category: 'BOTH' },
-  { name: 'Home Economics', code: 'HEC', order: 16, category: 'JUNIOR' },
+
+  // === Basic Science & Technology (parent) ===
+  { name: 'Basic Science & Technology', code: 'BST', order: 5, category: 'JUNIOR', isParent: true },
+  { name: 'Physical & Health Edu.', code: 'PHE', order: 6, category: 'BOTH', parent: 'BST' },
+  { name: 'Basic Science', code: 'BSC', order: 7, category: 'JUNIOR', parent: 'BST' },
+  { name: 'Information Tech.', code: 'IT', order: 8, category: 'BOTH', parent: 'BST' },
+  { name: 'Basic Technology', code: 'BTECH', order: 9, category: 'JUNIOR', parent: 'BST' },
+
+  // === Religion & National Value (parent) ===
+  { name: 'Religion & National Value', code: 'RNV', order: 10, category: 'JUNIOR', isParent: true },
+  { name: 'CRS / IRS', code: 'CRS', order: 11, category: 'BOTH', parent: 'RNV' },
+  { name: 'Social Studies', code: 'SOC', order: 12, category: 'JUNIOR', parent: 'RNV' },
+  { name: 'Civic Education', code: 'CIV', order: 13, category: 'BOTH', parent: 'RNV' },
+  { name: 'Security Education', code: 'SEC', order: 14, category: 'JUNIOR', parent: 'RNV' },
+
+  // === Prevocational Studies (parent) ===
+  { name: 'Prevocational Studies', code: 'PVS', order: 15, category: 'JUNIOR', isParent: true },
+  { name: 'Igbo / Music', code: 'IGB', order: 16, category: 'BOTH', parent: 'PVS' },
+  { name: 'Cultural & Creative Arts', code: 'CCA', order: 17, category: 'BOTH', parent: 'PVS' },
 ];
 
 export const DEFAULT_CLASSES = [

@@ -41,6 +41,8 @@ export interface ResultSheetData {
     subjectName: string;
     subjectCode: string;
     order: number;
+    isParent?: boolean;
+    parentCode?: string | null;
     test1: number | null;
     test2: number | null;
     exam: number | null;
@@ -170,28 +172,62 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
                 </td>
               </tr>
             )}
-            {items.map((item, idx) => (
-              <tr key={idx} className={idx % 2 ? 'bg-purple-50/40' : 'bg-white'}>
-                <td className="border border-gray-300 px-1 py-0.5 font-medium">{item.subjectName}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.test1)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.test2)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.exam)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center font-semibold">{fmt(item.totalScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.firstTermScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.secondTermScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.thirdTermScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center font-semibold">{fmt(item.totalScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.totalScore)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.classAverage)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center">{ordinal(item.position)}</td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center font-bold">
-                  {item.grade || '-'}
-                </td>
-                <td className="border border-gray-300 px-1 py-0.5 text-center text-[10px]">
-                  {item.remark || ''}
-                </td>
-              </tr>
-            ))}
+            {items.map((item, idx) => {
+              const isParentRow = item.isParent;
+              const isChildRow = !!item.parentCode;
+              return (
+                <tr
+                  key={idx}
+                  className={
+                    isParentRow
+                      ? 'bg-gray-200 font-bold'
+                      : isChildRow
+                      ? 'bg-white'
+                      : idx % 2
+                      ? 'bg-purple-50/40'
+                      : 'bg-white'
+                  }
+                >
+                  <td
+                    className={`border border-gray-300 px-1 py-0.5 ${
+                      isParentRow
+                        ? 'font-bold'
+                        : isChildRow
+                        ? 'pl-4 italic text-gray-700'
+                        : 'font-medium'
+                    }`}
+                  >
+                    {item.subjectName}
+                  </td>
+                  {isParentRow ? (
+                    // Parent rows: span all the score columns with a blank/empty cell
+                    <td colSpan={13} className="border border-gray-300 px-1 py-0.5 text-center text-[10px] text-gray-500 italic">
+                      (see sub-subjects below)
+                    </td>
+                  ) : (
+                    <>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.test1)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.test2)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.exam)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center font-semibold">{fmt(item.totalScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.firstTermScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.secondTermScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.thirdTermScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center font-semibold">{fmt(item.totalScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.totalScore)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{fmt(item.classAverage)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center">{ordinal(item.position)}</td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center font-bold">
+                        {item.grade || '-'}
+                      </td>
+                      <td className="border border-gray-300 px-1 py-0.5 text-center text-[10px]">
+                        {item.remark || ''}
+                      </td>
+                    </>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

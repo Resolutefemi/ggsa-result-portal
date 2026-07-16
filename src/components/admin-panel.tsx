@@ -224,16 +224,10 @@ function StudentDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  // Class selection mode: 'preset' (using existing classes) or 'manual' (type a new name)
-  const existingClassId = student?.classId || classes[0]?.id || '';
-  const [classMode, setClassMode] = useState<'preset' | 'manual'>(existingClassId ? 'preset' : 'manual');
-  const [manualClassName, setManualClassName] = useState('');
-
   const [form, setForm] = useState({
     id: student?.id || '',
     name: student?.name || '',
-    // admissionNumber is no longer edited by the user; auto-generated on the server
-    classId: existingClassId,
+    classId: student?.classId || classes[0]?.id || '',
     sex: student?.sex || 'M',
     year: student?.year || '2025/2026',
     teacherId: student?.teacherId || '',
@@ -246,40 +240,18 @@ function StudentDialog({
       toast({ title: 'Name is required', variant: 'destructive' });
       return;
     }
-    if (classMode === 'preset' && !form.classId) {
+    if (!form.classId) {
       toast({ title: 'Please pick a class', variant: 'destructive' });
-      return;
-    }
-    if (classMode === 'manual' && !manualClassName.trim()) {
-      toast({ title: 'Please type a class name', variant: 'destructive' });
       return;
     }
 
     setSaving(true);
     try {
-      let finalClassId = form.classId;
-
-      // If "Write manually" is selected, find-or-create the class first
-      if (classMode === 'manual') {
-        const clsRes = await fetch('/api/admin/class/find-or-create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: manualClassName.trim() }),
-        });
-        const clsData = await clsRes.json();
-        if (!clsRes.ok) {
-          toast({ title: clsData.error || 'Failed to create class', variant: 'destructive' });
-          setSaving(false);
-          return;
-        }
-        finalClassId = clsData.class.id;
-      }
-
       const method = form.id ? 'PUT' : 'POST';
       const r = await fetch('/api/admin/student', {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, classId: finalClassId }),
+        body: JSON.stringify(form),
       });
       const d = await r.json();
       if (!r.ok) {
@@ -318,45 +290,19 @@ function StudentDialog({
             />
           </div>
 
-          {/* Class: preset (JSS 1-3) or write manually */}
+          {/* Class dropdown (JSS 1, JSS 2, JSS 3) */}
           <div>
             <Label>Class <span className="text-destructive">*</span></Label>
-            <div className="grid grid-cols-4 gap-1.5 mt-1">
-              {classes.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => { setClassMode('preset'); setForm({ ...form, classId: c.id }); }}
-                  className={`px-2 py-2 rounded text-sm font-medium border transition ${
-                    classMode === 'preset' && form.classId === c.id
-                      ? 'bg-ggsa-purple text-white border-ggsa-purple'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
-                  }`}
-                >
-                  {c.name}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => { setClassMode('manual'); setForm({ ...form, classId: '' }); }}
-                className={`px-2 py-2 rounded text-sm font-medium border transition ${
-                  classMode === 'manual'
-                    ? 'bg-ggsa-purple text-white border-ggsa-purple'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
-                }`}
-              >
-                ✍️ Other
-              </button>
-            </div>
-            {classMode === 'manual' && (
-              <Input
-                className="mt-2"
-                value={manualClassName}
-                onChange={(e) => setManualClassName(e.target.value)}
-                placeholder="Type the class name (e.g., SS 1, Primary 5)"
-                autoFocus
-              />
-            )}
+            <Select value={form.classId} onValueChange={(v) => setForm({ ...form, classId: v })}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select a class" />
+              </SelectTrigger>
+              <SelectContent>
+                {classes.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -381,8 +327,7 @@ function StudentDialog({
           </div>
 
           <p className="text-[11px] text-muted-foreground">
-            Admission number is auto-generated. House field is no longer collected.
-            Result PINs are auto-generated when a teacher finalizes a result.
+            Admission number is auto-generated. Result PINs are auto-generated when a teacher finalizes a result.
           </p>
         </div>
         <DialogFooter>

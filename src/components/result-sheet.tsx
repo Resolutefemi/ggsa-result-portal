@@ -140,7 +140,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       <div className="overflow-x-auto">
         <table className="w-full text-[10px] sm:text-xs border-collapse">
           <thead>
-            <tr className="bg-black text-white">
+            <tr className="bg-white text-black font-bold">
               <th rowSpan={2} className="border border-black px-1 py-1 text-left">SUBJECT</th>
               <th className="border border-black px-1 py-0.5">(A) Test 1</th>
               <th className="border border-black px-1 py-0.5">(B) Test 2</th>

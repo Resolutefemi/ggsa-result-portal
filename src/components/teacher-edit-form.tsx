@@ -513,7 +513,7 @@ export function TeacherEditForm({
                           <td rowSpan={rs} className="border border-black px-2 py-1 font-bold align-middle bg-gray-200">
                             {item.subjectName}
                           </td>
-                          <td className="border border-black px-1 py-0.5 italic text-gray-600 text-[11px]">
+                          <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">
                             {children[0]?.it.subjectName || ''}
                           </td>
                           {/* Score inputs — rowspan'd so one set per group */}
@@ -556,7 +556,7 @@ export function TeacherEditForm({
                       children.slice(1).forEach(({ it: child }, ci) => {
                         rows.push(
                           <tr key={`ch-${idx}-${ci}`} className="bg-white">
-                            <td className="border border-black px-1 py-0.5 italic text-gray-600 text-[11px]">{child.subjectName}</td>
+                            <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">{child.subjectName}</td>
                           </tr>
                         );
                       });

@@ -93,7 +93,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
     <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
       {/* === HEADER (school name + logo + address) === */}
       <div className="flex items-center gap-4 p-4 border-b-2 border-black">
-        <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+        <div className="w-[110px] h-[110px] flex-shrink-0 flex items-center justify-center">
           <img
             src="/logo-transparent.png"
             alt="GGSA Logo"
@@ -102,7 +102,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           />
         </div>
         <div className="flex-1 text-center">
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide text-ggsa-purple uppercase">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-ggsa-purple uppercase">
             {SCHOOL_INFO.name}
           </h1>
           <p className="text-[11px] sm:text-xs text-gray-700 mt-0.5">
@@ -117,7 +117,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
         <div className="w-20 flex-shrink-0 hidden sm:block">
           {/* motto ribbon placeholder for symmetry */}
-          <div className="text-[9px] text-center italic text-ggsa-gold font-semibold bg-ggsa-purple rounded px-1 py-1">
+          <div className="text-[11px] text-center italic text-ggsa-gold font-semibold bg-ggsa-purple rounded px-1 py-1">
             {SCHOOL_INFO.motto}
           </div>
         </div>
@@ -149,34 +149,34 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           <thead>
             <tr className="bg-white text-black font-bold">
               <th rowSpan={2} className="border border-black px-1 py-1 text-left" style={{ minWidth: '120px' }}>SUBJECT</th>
-              <th className="border border-black px-1 py-0.5">Test 1</th>
-              <th className="border border-black px-1 py-0.5">Test 2</th>
-              <th className="border border-black px-1 py-0.5">Term Exam</th>
-              <th className="border border-black px-1 py-0.5">Total</th>
-              <th className="border border-black px-1 py-0.5">1st Term</th>
-              <th className="border border-black px-1 py-0.5">2nd Term</th>
-              <th className="border border-black px-1 py-0.5">3rd Term</th>
-              <th className="border border-black px-1 py-0.5">Total Score</th>
-              <th className="border border-black px-1 py-0.5">Graded</th>
-              <th className="border border-black px-1 py-0.5">Class Avg</th>
-              <th className="border border-black px-1 py-0.5">Position</th>
-              <th className="border border-black px-1 py-0.5">Grade</th>
-              <th className="border border-black px-1 py-0.5">Remark</th>
+              <th className="border border-black px-2 py-1">Test 1</th>
+              <th className="border border-black px-2 py-1">Test 2</th>
+              <th className="border border-black px-2 py-1">Term Exam</th>
+              <th className="border border-black px-2 py-1">Total</th>
+              <th className="border border-black px-2 py-1">1st Term</th>
+              <th className="border border-black px-2 py-1">2nd Term</th>
+              <th className="border border-black px-2 py-1">3rd Term</th>
+              <th className="border border-black px-2 py-1">Total Score</th>
+              <th className="border border-black px-2 py-1">Graded</th>
+              <th className="border border-black px-2 py-1">Class Avg</th>
+              <th className="border border-black px-2 py-1">Position</th>
+              <th className="border border-black px-2 py-1">Grade</th>
+              <th className="border border-black px-2 py-1">Remark</th>
             </tr>
-            <tr className="bg-gray-100 text-gray-700 font-semibold text-[9px]">
-              <th className="border border-black px-1 py-0.5">20</th>
-              <th className="border border-black px-1 py-0.5">20</th>
-              <th className="border border-black px-1 py-0.5">60</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">-</th>
-              <th className="border border-black px-1 py-0.5">-</th>
-              <th className="border border-black px-1 py-0.5">-</th>
+            <tr className="bg-gray-100 text-gray-700 font-semibold text-[11px]">
+              <th className="border border-black px-2 py-1">20</th>
+              <th className="border border-black px-2 py-1">20</th>
+              <th className="border border-black px-2 py-1">60</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">100</th>
+              <th className="border border-black px-2 py-1">-</th>
+              <th className="border border-black px-2 py-1">-</th>
+              <th className="border border-black px-2 py-1">-</th>
             </tr>
           </thead>
           <tbody>
@@ -207,26 +207,26 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
                     <tr key={`group-${idx}`} className="bg-gray-50">
                       <td
                         rowSpan={rowspan}
-                        className="border border-black px-1 py-0.5 font-bold text-[10px] align-middle bg-gray-200"
+                        className="border border-black px-2 py-1 font-bold text-xs align-middle bg-gray-200"
                       >
                         {item.subjectName}
                       </td>
-                      <td className="border border-black px-1 py-0.5 italic text-gray-700 text-[10px]">
+                      <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
                         {children[0]?.it.subjectName || ''}
                       </td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.test1)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.test2)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.exam)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.firstTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.secondTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.thirdTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.classAverage)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px]">{ordinal(item.position)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[10px] font-bold">{item.grade || '-'}</td>
-                      <td rowSpan={rowspan} className="border border-black px-1 py-0.5 text-center text-[9px]">{item.remark || ''}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
+                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
                     </tr>
                   );
 
@@ -234,7 +234,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
                   children.slice(1).forEach(({ it: child }, ci) => {
                     rows.push(
                       <tr key={`child-${idx}-${ci}`} className="bg-white">
-                        <td className="border border-black px-1 py-0.5 italic text-gray-700 text-[10px]">
+                        <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
                           {child.subjectName}
                         </td>
                       </tr>
@@ -248,22 +248,22 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
                   // Standalone subject: name spans 2 columns (colspan=2)
                   rows.push(
                     <tr key={`standalone-${idx}`} className={idx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
-                      <td colSpan={2} className="border border-black px-1 py-0.5 font-medium text-[10px]">
+                      <td colSpan={2} className="border border-black px-2 py-1 font-medium text-xs">
                         {item.subjectName}
                       </td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.test1)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.test2)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.exam)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.firstTermScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.secondTermScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.thirdTermScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{fmt(item.classAverage)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px]">{ordinal(item.position)}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[10px] font-bold">{item.grade || '-'}</td>
-                      <td className="border border-black px-1 py-0.5 text-center text-[9px]">{item.remark || ''}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
+                      <td className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
+                      <td className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
                     </tr>
                   );
                   usedIndices.add(idx);
@@ -278,7 +278,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === CHARACTER / BEHAVIOUR === */}
-      <div className="grid grid-cols-2 gap-2 mt-2 px-2 text-[10px] sm:text-xs">
+      <div className="grid grid-cols-2 gap-2 mt-2 px-2 text-xs sm:text-xs">
         <div className="border border-gray-400 rounded">
           <div className="bg-black text-white px-2 py-0.5 font-semibold">DEVELOPMENT (Skills)</div>
           <div className="grid grid-cols-2 gap-x-2 p-1">
@@ -354,13 +354,13 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           )}
           <div className="border-t border-gray-700 pt-1">
             <div className="font-semibold">Principal's Signature</div>
-            <div className="text-gray-700 text-[10px]">God Generals Standard Academy</div>
+            <div className="text-gray-700 text-xs">God Generals Standard Academy</div>
           </div>
         </div>
       </div>
 
       {/* === GRADING KEY + NEXT TERM === */}
-      <div className="grid sm:grid-cols-3 gap-2 px-2 pb-4 text-[10px]">
+      <div className="grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
         <div className="border border-gray-400 rounded p-2 col-span-2">
           <div className="font-semibold text-ggsa-purple mb-1">KEYS TO RATING / SCORE RATING</div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2">
@@ -377,7 +377,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
       </div>
 
-      <div className="text-center text-[9px] text-gray-500 pb-2 px-2">
+      <div className="text-center text-[11px] text-gray-500 pb-2 px-2">
         Generated by God Generals Standard Academy Result Portal • {new Date().toLocaleDateString()}
       </div>
     </div>

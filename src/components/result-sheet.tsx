@@ -88,8 +88,8 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
     <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
       {/* === HEADER (school name + logo + address) === */}
       <div className="flex items-center gap-4 p-4 border-b-2 border-purple-900">
-        <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-          <img src="/logo.png" alt="GGSA Logo" className="w-full h-full object-contain" />
+        <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-purple-900 flex-shrink-0">
+          <img src="/logo.jpeg" alt="GGSA Logo" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 text-center">
           <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide text-ggsa-purple uppercase">

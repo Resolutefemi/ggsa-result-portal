@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     where: { pin: cleanPin },
     include: {
       student: { include: { class: true } },
+      teacher: { select: { id: true, fullName: true, signatureImage: true } },
       items: { include: { subject: true } },
       traits: true,
     },
@@ -69,6 +70,11 @@ export async function POST(req: NextRequest) {
     ...result.traits.filter((t) => t.section === 'BEHAVIOUR'),
   ];
 
+  // Fetch the principal signature from settings
+  const principalSigSetting = await db.setting.findUnique({
+    where: { key: 'principalSignatureImage' },
+  });
+
   return NextResponse.json({
     student: {
       name: result.student.name,
@@ -92,6 +98,9 @@ export async function POST(req: NextRequest) {
       teacherSignature: result.teacherSignature,
       nextTermBegins: result.nextTermBegins,
     },
+    // Signature images (base64 data URLs) — snapped on the website
+    teacherSignatureImage: result.teacher?.signatureImage || null,
+    principalSignatureImage: principalSigSetting?.value || null,
     items,
     traits,
   });

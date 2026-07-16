@@ -333,32 +333,6 @@ export function TeacherEditForm({
 
   const isFinalized = data.result.status === 'FINALIZED';
 
-  // === Pre-group items into standalone subjects and parent groups ===
-  // Each unit tracks the original array index so updateItem(idx, ...) works.
-  type ItemWithIdx = { item: typeof data.items[0]; idx: number };
-  type StandaloneUnit = { type: 'standalone'; item: ItemWithIdx };
-  type GroupUnit = { type: 'group'; parent: ItemWithIdx; children: ItemWithIdx[] };
-  type Unit = StandaloneUnit | GroupUnit;
-
-  const units: Unit[] = [];
-  const usedIdx = new Set<number>();
-
-  data.items.forEach((item, idx) => {
-    if (usedIdx.has(idx)) return;
-    if (item.isParent) {
-      const children = data.items
-        .map((it, i) => ({ it, i }))
-        .filter(({ it }) => it.parentCode === item.subjectCode)
-        .map(({ it, i }) => ({ item: it, idx: i }));
-      units.push({ type: 'group', parent: { item, idx }, children });
-      usedIdx.add(idx);
-      children.forEach((c) => usedIdx.add(c.idx));
-    } else if (!item.parentCode) {
-      units.push({ type: 'standalone', item: { item, idx } });
-      usedIdx.add(idx);
-    }
-  });
-
   if (showPreview && data) {
     return (
       <div className="space-y-4">
@@ -490,25 +464,23 @@ export function TeacherEditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* SUBJECTS TABLE — scrollable on screen for input readability, static in print */}
+          {/* SUBJECTS TABLE — flat, scrollable on screen for input readability */}
           <div className="result-table-wrap overflow-x-auto -mx-2">
-            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '1100px' }}>
+            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '1000px' }}>
               <colgroup>
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '180px' }} />
+                <col style={{ width: '200px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '70px' }} />
                 <col style={{ width: '80px' }} />
                 <col style={{ width: '80px' }} />
                 <col style={{ width: '80px' }} />
-                <col style={{ width: '80px' }} />
-                <col style={{ width: '90px' }} />
-                <col style={{ width: '90px' }} />
-                <col style={{ width: '90px' }} />
-                <col style={{ width: '80px' }} />
-                <col style={{ width: '120px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '100px' }} />
               </colgroup>
               <thead>
                 <tr className="bg-black text-white">
-                  <th className="border border-black px-1 py-1 text-center text-[10px]">CAT</th>
                   <th className="border border-black px-2 py-1 text-left text-[10px]">SUBJECT</th>
                   <th className="border border-black px-1 py-1 text-[10px]">Test 1</th>
                   <th className="border border-black px-1 py-1 text-[10px]">Test 2</th>
@@ -521,7 +493,6 @@ export function TeacherEditForm({
                   <th className="border border-black px-1 py-1 text-[10px]">Remark</th>
                 </tr>
                 <tr className="bg-gray-100 text-gray-600 text-[9px]">
-                  <th className="border border-black px-1 py-0.5">-</th>
                   <th className="border border-black px-1 py-0.5">Max: 100</th>
                   <th className="border border-black px-1 py-0.5">20</th>
                   <th className="border border-black px-1 py-0.5">20</th>
@@ -535,111 +506,44 @@ export function TeacherEditForm({
                 </tr>
               </thead>
               <tbody>
-                {units.map((unit, uIdx) => {
-                  if (unit.type === 'standalone') {
-                    // === Standalone subject: empty CAT + name + scores ===
-                    const { item, idx } = unit.item;
-                    return (
-                      <tr key={`std-${uIdx}`} className={uIdx % 2 ? 'bg-purple-50/30' : ''}>
-                        <td className="border border-black px-1 py-1 text-center text-[10px] text-gray-400">—</td>
-                        <td className="border border-black px-2 py-1 font-medium whitespace-nowrap">{item.subjectName}</td>
-                        <td className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="20" value={item.test1 ?? ''} onChange={(e) => updateItem(idx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="20" value={item.test2 ?? ''} onChange={(e) => updateItem(idx, 'test2', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="60" value={item.exam ?? ''} onChange={(e) => updateItem(idx, 'exam', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td className="border border-black px-1 py-1 text-center font-bold bg-purple-100/40">{item.totalScore != null ? item.totalScore : '-'}</td>
-                        <td className={`border border-black p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '1st Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.firstTermScore != null ? item.firstTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={item.firstTermScore ?? ''} onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td className={`border border-black p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '2nd Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.secondTermScore != null ? item.secondTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={item.secondTermScore ?? ''} onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td className={`border border-black p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '3rd Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.thirdTermScore != null ? item.thirdTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={item.thirdTermScore ?? ''} onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td className="border border-black px-1 py-1 text-center font-bold bg-amber-100/40">{item.grade || '-'}</td>
-                        <td className="border border-black px-1 py-1 text-center text-[11px]">{item.remark || ''}</td>
-                      </tr>
-                    );
-                  }
-
-                  // === Grouped subject: vertical category (rowspan) + children + ONE set of score inputs (rowspan) ===
-                  const { parent, children } = unit;
-                  const rs = children.length || 1;
-                  const allChildren = children.length > 0 ? children : [{ item: { subjectName: '' } as any, idx: -1 }];
-                  const pIdx = parent.idx;
-                  const lastChildIdx = allChildren.length - 1;
-
-                  return (
-                    <React.Fragment key={`grp-${uIdx}`}>
-                      {/* First row: vertical category (rowspan) + first child name + all score inputs (rowspan) */}
-                      <tr className="bg-gray-50">
-                        <td rowSpan={rs} className="category-cell border border-black align-middle bg-gray-200" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', whiteSpace: 'nowrap', padding: '10px', fontWeight: 'bold', borderRight: '2px solid black' }}>
-                          {parent.item.subjectName}
-                        </td>
-                        <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">
-                          {allChildren[0].item.subjectName}
-                        </td>
-                        <td rowSpan={rs} className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="20" value={parent.item.test1 ?? ''} onChange={(e) => updateItem(pIdx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td rowSpan={rs} className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="20" value={parent.item.test2 ?? ''} onChange={(e) => updateItem(pIdx, 'test2', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td rowSpan={rs} className="border border-black p-0.5">
-                          <Input type="number" step="0.5" min="0" max="60" value={parent.item.exam ?? ''} onChange={(e) => updateItem(pIdx, 'exam', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                        </td>
-                        <td rowSpan={rs} className="border border-black px-1 py-1 text-center font-bold bg-purple-100/40">{parent.item.totalScore != null ? parent.item.totalScore : '-'}</td>
-                        <td rowSpan={rs} className={`border border-black p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '1st Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{parent.item.firstTermScore != null ? parent.item.firstTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={parent.item.firstTermScore ?? ''} onChange={(e) => updateItem(pIdx, 'firstTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td rowSpan={rs} className={`border border-black p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '2nd Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{parent.item.secondTermScore != null ? parent.item.secondTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={parent.item.secondTermScore ?? ''} onChange={(e) => updateItem(pIdx, 'secondTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td rowSpan={rs} className={`border border-black p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
-                          {term === '3rd Term' ? (
-                            <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{parent.item.thirdTermScore != null ? parent.item.thirdTermScore : '-'}</div>
-                          ) : (
-                            <Input type="number" step="0.5" value={parent.item.thirdTermScore ?? ''} onChange={(e) => updateItem(pIdx, 'thirdTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
-                          )}
-                        </td>
-                        <td rowSpan={rs} className="border border-black px-1 py-1 text-center font-bold bg-amber-100/40">{parent.item.grade || '-'}</td>
-                        <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[11px]">{parent.item.remark || ''}</td>
-                      </tr>
-                      {/* Remaining child rows: just the child name */}
-                      {allChildren.slice(1).map((child, cIdx) => (
-                        <tr key={`child-${uIdx}-${cIdx}`} className={`bg-white ${cIdx === lastChildIdx - 1 ? 'group-end' : ''}`}>
-                          <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">{child.item.subjectName}</td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  );
-                })}
+                {data.items.map((item, idx) => (
+                  <tr key={idx} className={idx % 2 ? 'bg-purple-50/30' : ''}>
+                    <td className="border border-black px-2 py-1 font-medium whitespace-nowrap">{item.subjectName}</td>
+                    <td className="border border-black p-0.5">
+                      <Input type="number" step="0.5" min="0" max="20" value={item.test1 ?? ''} onChange={(e) => updateItem(idx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                    </td>
+                    <td className="border border-black p-0.5">
+                      <Input type="number" step="0.5" min="0" max="20" value={item.test2 ?? ''} onChange={(e) => updateItem(idx, 'test2', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                    </td>
+                    <td className="border border-black p-0.5">
+                      <Input type="number" step="0.5" min="0" max="60" value={item.exam ?? ''} onChange={(e) => updateItem(idx, 'exam', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                    </td>
+                    <td className="border border-black px-1 py-1 text-center font-bold bg-purple-100/40">{item.totalScore != null ? item.totalScore : '-'}</td>
+                    <td className={`border border-black p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '1st Term' ? (
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.firstTermScore != null ? item.firstTermScore : '-'}</div>
+                      ) : (
+                        <Input type="number" step="0.5" value={item.firstTermScore ?? ''} onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                      )}
+                    </td>
+                    <td className={`border border-black p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '2nd Term' ? (
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.secondTermScore != null ? item.secondTermScore : '-'}</div>
+                      ) : (
+                        <Input type="number" step="0.5" value={item.secondTermScore ?? ''} onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                      )}
+                    </td>
+                    <td className={`border border-black p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '3rd Term' ? (
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.thirdTermScore != null ? item.thirdTermScore : '-'}</div>
+                      ) : (
+                        <Input type="number" step="0.5" value={item.thirdTermScore ?? ''} onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                      )}
+                    </td>
+                    <td className="border border-black px-1 py-1 text-center font-bold bg-amber-100/40">{item.grade || '-'}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[11px]">{item.remark || ''}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

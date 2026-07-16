@@ -25,30 +25,10 @@ export const DEFAULT_SUBJECTS: DefaultSubject[] = [
   { name: 'Mathematics', code: 'MATH', order: 2, category: 'BOTH' },
   { name: 'Yoruba Studies', code: 'YOR', order: 3, category: 'BOTH' },
   { name: 'Business Studies', code: 'BUS', order: 4, category: 'JUNIOR' },
-
-  // === Basic Science & Technology (parent, 4 children) ===
-  { name: 'Basic Sci & Tech', code: 'BST', order: 5, category: 'JUNIOR', isParent: true },
-  { name: 'Physical & Health Edu.', code: 'PHE', order: 6, category: 'BOTH', parent: 'BST' },
-  { name: 'Basic Science', code: 'BSC', order: 7, category: 'JUNIOR', parent: 'BST' },
-  { name: 'Information Tech.', code: 'IT', order: 8, category: 'BOTH', parent: 'BST' },
-  { name: 'Basic Technology', code: 'BTECH', order: 9, category: 'JUNIOR', parent: 'BST' },
-
-  // === Religion & National Value (parent, 4 children) ===
-  { name: 'Rel & Nat Value', code: 'RNV', order: 10, category: 'JUNIOR', isParent: true },
-  { name: 'CRS / IRS', code: 'CRS', order: 11, category: 'BOTH', parent: 'RNV' },
-  { name: 'Social Studies', code: 'SOC', order: 12, category: 'JUNIOR', parent: 'RNV' },
-  { name: 'Civic Education', code: 'CIV', order: 13, category: 'BOTH', parent: 'RNV' },
-  { name: 'Security Education', code: 'SEC', order: 14, category: 'JUNIOR', parent: 'RNV' },
-
-  // === Cultural & Creative Art (parent, 2 children) ===
-  { name: 'Cult & Creat Art', code: 'CCA', order: 15, category: 'JUNIOR', isParent: true },
-  { name: 'Igbo / Music', code: 'IGB', order: 16, category: 'BOTH', parent: 'CCA' },
-  { name: 'Cult & Creat Arts', code: 'CART', order: 17, category: 'JUNIOR', parent: 'CCA' },
-
-  // === Prevocational Studies (parent, 2 children) ===
-  { name: 'Prevocational Studies', code: 'PVS', order: 18, category: 'JUNIOR', isParent: true },
-  { name: 'Agric Science', code: 'AGR', order: 19, category: 'BOTH', parent: 'PVS' },
-  { name: 'Home Economics', code: 'HEC', order: 20, category: 'JUNIOR', parent: 'PVS' },
+  { name: 'Basic Science & Technology', code: 'BST', order: 5, category: 'JUNIOR' },
+  { name: 'Religion & National Value', code: 'RNV', order: 6, category: 'JUNIOR' },
+  { name: 'Cultural & Creative Art', code: 'CCA', order: 7, category: 'JUNIOR' },
+  { name: 'Prevocational Studies', code: 'PVS', order: 8, category: 'JUNIOR' },
 ];
 
 export const DEFAULT_CLASSES = [

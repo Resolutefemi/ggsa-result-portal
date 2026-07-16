@@ -82,36 +82,6 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
   const skillTraits = traits.filter((t) => t.section === 'SKILL');
   const behaviourTraits = traits.filter((t) => t.section === 'BEHAVIOUR');
 
-  // === Pre-group items into standalone subjects and parent groups ===
-  // This produces a clean list of "render units" that the tbody maps over.
-  type StandaloneUnit = { type: 'standalone'; item: typeof items[0] };
-  type GroupUnit = {
-    type: 'group';
-    parent: typeof items[0];
-    children: typeof items[];
-  };
-  type Unit = StandaloneUnit | GroupUnit;
-
-  const units: Unit[] = [];
-  const usedCodes = new Set<string>();
-
-  items.forEach((item) => {
-    if (usedCodes.has(item.subjectCode)) return;
-
-    if (item.isParent) {
-      // Collect all children
-      const children = items.filter((it) => it.parentCode === item.subjectCode);
-      units.push({ type: 'group', parent: item, children });
-      usedCodes.add(item.subjectCode);
-      children.forEach((c) => usedCodes.add(c.subjectCode));
-    } else if (!item.parentCode) {
-      // Standalone subject
-      units.push({ type: 'standalone', item });
-      usedCodes.add(item.subjectCode);
-    }
-    // Skip child items — they're handled by their parent group
-  });
-
   // Compute overall position (sum of totals / number of subjects)
   const totals = items.map((i) => i.totalScore).filter((t): t is number => t != null);
   const overallTotal = totals.reduce((a, b) => a + b, 0);
@@ -173,33 +143,30 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
       </div>
 
-      {/* === SUBJECTS TABLE — static A4 print-ready, fixed layout === */}
+      {/* === SUBJECTS TABLE — flat, 8 rows, A4-optimized === */}
       <div className="result-table-wrap" style={{ overflowX: 'hidden', width: '100%' }}>
         <table className="result-table w-full border-collapse border border-black" style={{ tableLayout: 'fixed', width: '100%' }}>
           <colgroup>
-            {/* Category column ~6% */}
+            {/* Subject column ~22% */}
+            <col style={{ width: '22%' }} />
+            {/* 13 score columns — fixed equal width */}
             <col style={{ width: '6%' }} />
-            {/* Subject column ~18% */}
-            <col style={{ width: '18%' }} />
-            {/* 12 score columns — fixed equal width */}
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
-            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '6%' }} />
             <col style={{ width: '5%' }} />
             <col style={{ width: '5%' }} />
-            <col style={{ width: '6%' }} />
+            <col style={{ width: '8%' }} />
           </colgroup>
           <thead>
             <tr className="bg-white text-black font-bold">
-              <th rowSpan={2} className="border border-black px-1 py-1 text-center text-[10px]">CAT</th>
-              <th rowSpan={2} className="border border-black px-2 py-1 text-left text-[10px]">SUBJECT</th>
+              <th rowSpan={2} className="border border-black px-2 py-1 text-left text-[11px]">SUBJECT</th>
               <th className="border border-black px-1 py-1 text-[10px]">Test 1</th>
               <th className="border border-black px-1 py-1 text-[10px]">Test 2</th>
               <th className="border border-black px-1 py-1 text-[10px]">Term Exam</th>
@@ -231,81 +198,33 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
             </tr>
           </thead>
           <tbody>
-            {units.length === 0 && (
+            {items.length === 0 && (
               <tr>
-                <td colSpan={15} className="border border-black p-4 text-center text-gray-500">
+                <td colSpan={14} className="border border-black p-4 text-center text-gray-500">
                   No subjects recorded.
                 </td>
               </tr>
             )}
-            {units.map((unit, uIdx) => {
-              if (unit.type === 'standalone') {
-                // === Standalone subject: category cell empty + name + scores ===
-                const item = unit.item;
-                return (
-                  <tr key={`std-${uIdx}`} className={uIdx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
-                    <td className="border border-black px-1 py-1 text-center text-[10px] text-gray-400">—</td>
-                    <td className="border border-black px-2 py-1 font-medium text-[10px]">
-                      {item.subjectName}
-                    </td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.test1)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.test2)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.exam)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.firstTermScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.secondTermScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.thirdTermScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.classAverage)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px]">{ordinal(item.position)}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[10px] font-bold">{item.grade || '-'}</td>
-                    <td className="border border-black px-1 py-1 text-center text-[9px]">{item.remark || ''}</td>
-                  </tr>
-                );
-              }
-
-              // === Grouped subject: vertical category (rowspan) + children + ONE set of scores (rowspan) ===
-              const { parent, children } = unit;
-              const rs = children.length || 1;
-              const allChildren = children.length > 0 ? children : [{ subjectName: '' } as any];
-              const lastChildIdx = allChildren.length - 1;
-
-              return (
-                <React.Fragment key={`grp-${uIdx}`}>
-                  {/* First row: vertical category (rowspan) + first child name + all score cells (rowspan) */}
-                  <tr className="bg-gray-50">
-                    <td rowSpan={rs} className="category-cell border border-black align-middle bg-gray-200" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', whiteSpace: 'nowrap', padding: '10px', fontWeight: 'bold', borderRight: '2px solid black' }}>
-                      {parent.subjectName}
-                    </td>
-                    <td className="border border-black px-2 py-1 italic text-gray-700 text-[10px]">
-                      {allChildren[0].subjectName}
-                    </td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.test1)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.test2)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.exam)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.firstTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.secondTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.thirdTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.classAverage)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{ordinal(parent.position)}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-bold">{parent.grade || '-'}</td>
-                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[9px]">{parent.remark || ''}</td>
-                  </tr>
-                  {/* Remaining child rows: just the child name */}
-                  {allChildren.slice(1).map((child, cIdx) => (
-                    <tr key={`child-${uIdx}-${cIdx}`} className={`bg-white ${cIdx === lastChildIdx - 1 ? 'group-end' : ''}`}>
-                      <td className="border border-black px-2 py-1 italic text-gray-700 text-[10px]">
-                        {child.subjectName}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              );
-            })}
+            {items.map((item, idx) => (
+              <tr key={idx} className={idx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
+                <td className="border border-black px-2 py-1 font-medium text-[11px]">
+                  {item.subjectName}
+                </td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.test1)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.test2)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.exam)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px] font-semibold">{fmt(item.totalScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.firstTermScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.secondTermScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.thirdTermScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px] font-semibold">{fmt(item.totalScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.totalScore)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.classAverage)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px]">{ordinal(item.position)}</td>
+                <td className="border border-black px-1 py-1 text-center text-[11px] font-bold">{item.grade || '-'}</td>
+                <td className="border border-black px-1 py-1 text-center text-[10px]">{item.remark || ''}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

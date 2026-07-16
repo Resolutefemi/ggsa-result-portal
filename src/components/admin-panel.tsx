@@ -48,6 +48,7 @@ import {
   BookOpen,
   Shield,
   Plus,
+  CheckCheck,
 } from 'lucide-react';
 
 interface SchoolClass {
@@ -352,18 +353,55 @@ function TeachersManager({ classes }: { classes: SchoolClass[] }) {
     setTeachers(d.teachers || []);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this teacher?')) return;
+  const handleDelete = async (id: string, fullName: string) => {
+    if (!confirm(`Delete teacher "${fullName}"? This cannot be undone.`)) return;
     const r = await fetch(`/api/admin/teacher?id=${id}`, { method: 'DELETE' });
     if (r.ok) { toast({ title: 'Teacher deleted' }); load(); }
+    else {
+      const d = await r.json().catch(() => ({}));
+      toast({ title: d.error || 'Delete failed', variant: 'destructive' });
+    }
   };
+
+  const handleApprove = async (id: string, action: 'APPROVE' | 'REJECT', fullName: string) => {
+    const verb = action === 'APPROVE' ? 'approve' : 'reject';
+    if (!confirm(`${verb.charAt(0).toUpperCase()}${verb.slice(1)} signup request from "${fullName}"?`)) return;
+    const r = await fetch('/api/admin/teacher/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teacherId: id, action }),
+    });
+    const d = await r.json();
+    if (r.ok) {
+      toast({ title: d.message || 'Done' });
+      load();
+    } else {
+      toast({ title: d.error || 'Failed', variant: 'destructive' });
+    }
+  };
+
+  // Sort: PENDING first, then APPROVED, then REJECTED, then by name
+  const sortedTeachers = [...teachers].sort((a, b) => {
+    const order: Record<string, number> = { PENDING: 0, APPROVED: 1, REJECTED: 2 };
+    const sa = order[a.status] ?? 3;
+    const sb = order[b.status] ?? 3;
+    if (sa !== sb) return sa - sb;
+    return a.fullName.localeCompare(b.fullName);
+  });
+
+  const pendingCount = teachers.filter((t) => t.status === 'PENDING').length;
 
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="flex items-center gap-2">
             <Users className="w-5 h-5" /> Teachers ({teachers.length})
+            {pendingCount > 0 && (
+              <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                {pendingCount} pending
+              </Badge>
+            )}
           </CardTitle>
           <Button onClick={() => setShowAdd(true)}>
             <UserPlus className="w-4 h-4 mr-1" /> Add Teacher
@@ -376,25 +414,81 @@ function TeachersManager({ classes }: { classes: SchoolClass[] }) {
             <div className="text-center py-8 text-muted-foreground">No teachers yet.</div>
           ) : (
             <div className="space-y-1">
-              {teachers.map((t) => (
-                <div key={t.id} className="flex items-center justify-between gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50">
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm flex items-center gap-2">
-                      {t.fullName}
-                      {t.role === 'ADMIN' && <Badge variant="secondary" className="text-xs">ADMIN</Badge>}
+              {sortedTeachers.map((t) => {
+                const isPending = t.status === 'PENDING';
+                const isRejected = t.status === 'REJECTED';
+                return (
+                  <div
+                    key={t.id}
+                    className={`flex items-center justify-between gap-2 p-2 rounded border ${
+                      isPending ? 'border-amber-300 bg-amber-50' :
+                      isRejected ? 'border-red-200 bg-red-50/40 opacity-70' :
+                      'border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm flex items-center gap-2 flex-wrap">
+                        {t.fullName}
+                        {t.role === 'ADMIN' && <Badge variant="secondary" className="text-xs">ADMIN</Badge>}
+                        {isPending && (
+                          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 text-xs">
+                            Pending approval
+                          </Badge>
+                        )}
+                        {isRejected && (
+                          <Badge variant="outline" className="text-xs text-red-700 border-red-300">
+                            Rejected
+                          </Badge>
+                        )}
+                        {t.status === 'APPROVED' && t.role !== 'ADMIN' && (
+                          <Badge variant="outline" className="text-xs text-green-700 border-green-300">
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        @{t.username}
+                        {t.email ? ` • ${t.email}` : ''}
+                        {t.subject ? ` • ${t.subject}` : ''}
+                        {t.status === 'APPROVED' && ` • ${t.classes?.length || 0} class(es)`}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      @{t.username} • {t.subject || 'No subject'} • {t.classes?.length || 0} class(es)
-                    </div>
+
+                    {/* Approve / Reject buttons for pending teachers */}
+                    {isPending && (
+                      <>
+                        <Button
+                          size="sm"
+                          className="bg-green-700 hover:bg-green-800 h-8"
+                          onClick={() => handleApprove(t.id, 'APPROVE', t.fullName)}
+                        >
+                          <CheckCheck className="w-3 h-3 mr-1" /> Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-300 text-red-700 hover:bg-red-50 h-8"
+                          onClick={() => handleApprove(t.id, 'REJECT', t.fullName)}
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    )}
+
+                    {/* Edit + Delete buttons for non-admin teachers */}
+                    {t.role !== 'ADMIN' && (
+                      <>
+                        <Button size="sm" variant="ghost" onClick={() => setEditing(t)}>
+                          <Pencil className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDelete(t.id, t.fullName)}>
+                          <Trash2 className="w-3 h-3 text-destructive" />
+                        </Button>
+                      </>
+                    )}
                   </div>
-                  <Button size="sm" variant="ghost" onClick={() => setEditing(t)}>
-                    <Pencil className="w-3 h-3" />
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleDelete(t.id)}>
-                    <Trash2 className="w-3 h-3 text-destructive" />
-                  </Button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </ScrollArea>

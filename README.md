@@ -73,10 +73,14 @@ Open http://localhost:3000 in your browser.
 
 After seeding:
 
-| Role     | Username   | Password     |
-|----------|------------|--------------|
-| Admin    | `admin`    | `admin123`   |
-| Teacher  | `teacher1` | `teacher123` |
+| Role     | Username   | Password           |
+|----------|------------|--------------------|
+| Admin    | `Ariyo`    | `Samuel2474life`   |
+| Teacher  | `teacher1` | `teacher123` (auto-approved demo) |
+
+**Teachers can sign up themselves** — click "Sign up" on the teacher login page (revealed by clicking the school logo 3 times). New signups are created with `PENDING` status and **must be approved by the admin** before they can log in.
+
+Admin → Admin Panel → Teachers tab → click **Approve** or **Reject** on each pending signup. Admin can also delete any teacher account (except other admins).
 
 Sample students (class JSS 1):
 - `JSS1/001` — Adeyemi Johnson

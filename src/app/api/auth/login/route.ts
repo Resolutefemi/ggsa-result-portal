@@ -13,7 +13,20 @@ export async function POST(req: NextRequest) {
     }
     const teacher = await db.teacher.findUnique({ where: { username } });
     if (!teacher || !verifySecret(password, teacher.passwordHash)) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid username or password.' }, { status: 401 });
+    }
+    // Block login if account is not approved
+    if (teacher.status === 'PENDING') {
+      return NextResponse.json(
+        { error: 'Your account is awaiting admin approval. Please check back later.' },
+        { status: 403 }
+      );
+    }
+    if (teacher.status === 'REJECTED') {
+      return NextResponse.json(
+        { error: 'Your signup request was not approved. Please contact the school administrator.' },
+        { status: 403 }
+      );
     }
     await setSession(teacher.id, teacher.username);
     return NextResponse.json({
@@ -32,6 +45,7 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     message: 'Teacher login endpoint. POST {username, password}.',
-    demo: { admin: 'admin123', teacher1: 'teacher123' },
+    demo: { admin: 'Ariyo / Samuel2474life', teacher1: 'teacher123' },
   });
 }
+

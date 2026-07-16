@@ -80,6 +80,7 @@ type View =
   | 'student-check'
   | 'student-result'
   | 'teacher-login'
+  | 'teacher-signup'
   | 'teacher-dash'
   | 'teacher-students'
   | 'teacher-edit'
@@ -289,10 +290,18 @@ export default function Home() {
         {view === 'teacher-login' && (
           <TeacherLoginView
             onBack={() => setView('home')}
+            onGoSignup={() => setView('teacher-signup')}
             onSuccess={(t) => {
               setTeacher(t);
               setView(t.role === 'ADMIN' ? 'admin-manage' : 'teacher-dash');
             }}
+          />
+        )}
+
+        {view === 'teacher-signup' && (
+          <TeacherSignupView
+            onBack={() => setView('teacher-login')}
+            onSignupSuccess={() => setView('teacher-login')}
           />
         )}
 
@@ -638,9 +647,11 @@ function StudentResultView({
 // ============================================================
 function TeacherLoginView({
   onBack,
+  onGoSignup,
   onSuccess,
 }: {
   onBack: () => void;
+  onGoSignup: () => void;
   onSuccess: (t: Teacher) => void;
 }) {
   const [username, setUsername] = useState('');
@@ -694,7 +705,7 @@ function TeacherLoginView({
                 id="u"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g., teacher1"
+                placeholder="Enter your username"
                 required
                 autoComplete="username"
               />
@@ -715,10 +726,212 @@ function TeacherLoginView({
               {loading ? 'Signing in...' : (<><LogIn className="w-4 h-4 mr-2" /> Sign In</>)}
             </Button>
           </form>
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <button
+              type="button"
+              onClick={onGoSignup}
+              className="font-semibold text-ggsa-purple hover:underline"
+            >
+              Sign up
+            </button>
+          </div>
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900">
-            <strong>Demo accounts:</strong><br />
-            Admin: <code>admin</code> / <code>admin123</code><br />
-            Teacher: <code>teacher1</code> / <code>teacher123</code>
+            <AlertCircle className="w-4 h-4 inline mr-1" />
+            New signups require admin approval. After you sign up, the school administrator must approve your account before you can log in.
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ============================================================
+// TEACHER SIGNUP VIEW
+// ============================================================
+function TeacherSignupView({
+  onBack,
+  onSignupSuccess,
+}: {
+  onBack: () => void;
+  onSignupSuccess: () => void;
+}) {
+  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Client-side validation
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+      toast({
+        title: 'Invalid username',
+        description: 'Username must be 3-30 characters: letters, numbers, or underscores only.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (fullName.trim().length < 3) {
+      toast({
+        title: 'Name too short',
+        description: 'Please enter your full name (at least 3 characters).',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (password.length < 6) {
+      toast({
+        title: 'Password too short',
+        description: 'Password must be at least 6 characters long.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({
+        title: 'Passwords do not match',
+        description: 'Please make sure both password fields are identical.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const r = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, fullName, email, subject }),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        toast({ title: data.error || 'Signup failed', variant: 'destructive' });
+        return;
+      }
+      toast({
+        title: 'Signup received!',
+        description: 'Your account is now awaiting admin approval. You will be able to log in once the administrator approves your request.',
+        duration: 10000,
+      });
+      onSignupSuccess();
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto">
+      <Button variant="ghost" size="sm" onClick={onBack} className="mb-3">
+        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Login
+      </Button>
+      <Card className="border-purple-200 shadow-xl">
+        <CardHeader className="text-center bg-gradient-to-br from-purple-700 to-purple-900 text-white rounded-t-lg">
+          <div className="mx-auto mb-3 w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+            <UserPlus className="w-10 h-10" />
+          </div>
+          <CardTitle className="text-2xl">Teacher Sign Up</CardTitle>
+          <CardDescription className="text-purple-100">
+            Request a teacher account. The admin will approve your signup.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="su-fullname">Full Name <span className="text-destructive">*</span></Label>
+              <Input
+                id="su-fullname"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g., Mr. Samuel Ariyo"
+                required
+                autoComplete="name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="su-username">Username <span className="text-destructive">*</span></Label>
+              <Input
+                id="su-username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="3-30 chars: letters, numbers, underscores"
+                required
+                autoComplete="username"
+                pattern="[a-zA-Z0-9_]{3,30}"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                3-30 characters: letters, numbers, or underscores only.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="su-email">Email (optional)</Label>
+                <Input
+                  id="su-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@school.edu"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="su-subject">Subject (optional)</Label>
+                <Input
+                  id="su-subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="e.g., Mathematics"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="su-password">Password <span className="text-destructive">*</span></Label>
+              <Input
+                id="su-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                required
+                autoComplete="new-password"
+                minLength={6}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="su-confirm">Confirm Password <span className="text-destructive">*</span></Label>
+              <Input
+                id="su-confirm"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                required
+                autoComplete="new-password"
+                minLength={6}
+                className={confirmPassword && confirmPassword !== password ? 'border-destructive' : ''}
+              />
+              {confirmPassword && confirmPassword !== password && (
+                <p className="text-[11px] text-destructive">Passwords do not match.</p>
+              )}
+              {confirmPassword && confirmPassword === password && (
+                <p className="text-[11px] text-green-600">Passwords match.</p>
+              )}
+            </div>
+            <Button type="submit" className="w-full bg-ggsa-purple hover:bg-purple-800" disabled={loading}>
+              {loading ? 'Submitting...' : (<><UserPlus className="w-4 h-4 mr-2" /> Request Account</>)}
+            </Button>
+          </form>
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900">
+            <AlertCircle className="w-4 h-4 inline mr-1" />
+            After submitting, your request will be reviewed by the school administrator. You cannot log in until your account is approved.
           </div>
         </CardContent>
       </Card>

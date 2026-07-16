@@ -15,11 +15,18 @@ import {
   gradeRemark,
 } from '../src/lib/constants';
 import { computeTotal } from '../src/lib/calc';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter } as any);
 
 async function main() {
   console.log('🌱 Seeding database...');
+
+  // 0) Clean up old demo admin user (no longer used; replaced by Ariyo)
+  await prisma.teacher.deleteMany({ where: { username: 'admin' } }).catch(() => {});
 
   // 1) Settings
   for (const [key, value] of Object.entries(SCHOOL_INFO)) {
@@ -71,23 +78,31 @@ async function main() {
   }
   console.log(`✓ ${classes.length} classes with subject mappings`);
 
-  // 4) Admin teacher (username: admin, password: admin123)
+  // 4) Admin teacher (username: Ariyo, password: Samuel2474life)
   const admin = await prisma.teacher.upsert({
-    where: { username: 'admin' },
-    update: {},
+    where: { username: 'Ariyo' },
+    update: {
+      passwordHash: hashSecret('Samuel2474life'),
+      fullName: 'Ariyo (Administrator)',
+      role: 'ADMIN',
+      status: 'APPROVED',
+    },
     create: {
-      username: 'admin',
-      passwordHash: hashSecret('admin123'),
-      fullName: 'School Administrator',
+      username: 'Ariyo',
+      passwordHash: hashSecret('Samuel2474life'),
+      fullName: 'Ariyo (Administrator)',
       email: 'admin@godgenerals.edu',
       role: 'ADMIN',
+      status: 'APPROVED',
     },
   });
 
-  // Sample teacher
+  // Sample teacher (auto-approved so the demo flow works without admin action)
   const teacher = await prisma.teacher.upsert({
     where: { username: 'teacher1' },
-    update: {},
+    update: {
+      status: 'APPROVED',
+    },
     create: {
       username: 'teacher1',
       passwordHash: hashSecret('teacher123'),
@@ -95,6 +110,7 @@ async function main() {
       email: 'teacher1@godgenerals.edu',
       subject: 'Mathematics',
       role: 'TEACHER',
+      status: 'APPROVED',
     },
   });
 
@@ -225,8 +241,8 @@ async function main() {
   }
 
   console.log('\n🎉 Seed complete!');
-  console.log('   Admin:    admin / admin123');
-  console.log('   Teacher:  teacher1 / teacher123');
+  console.log('   Admin:    Ariyo / Samuel2474life');
+  console.log('   Teacher:  teacher1 / teacher123 (auto-approved demo teacher)');
   console.log('   Demo result PIN: 1234');
 }
 
@@ -237,4 +253,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });

@@ -173,28 +173,28 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
       </div>
 
-      {/* === SUBJECTS TABLE — fixed layout, vertical category headers, no scroll on print === */}
-      <div className="result-table-wrap overflow-x-auto">
-        <table className="result-table w-full border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
+      {/* === SUBJECTS TABLE — static A4 print-ready, fixed layout === */}
+      <div className="result-table-wrap" style={{ overflowX: 'hidden', width: '100%' }}>
+        <table className="result-table w-full border-collapse border border-black" style={{ tableLayout: 'fixed', width: '100%' }}>
           <colgroup>
-            {/* Category column (vertical text) */}
-            <col style={{ width: '40px' }} />
-            {/* Subject name column (widest) */}
-            <col style={{ width: '130px' }} />
-            {/* 12 score columns — narrow, equal width */}
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '50px' }} />
-            <col style={{ width: '45px' }} />
-            <col style={{ width: '45px' }} />
-            <col style={{ width: '70px' }} />
+            {/* Category column ~6% */}
+            <col style={{ width: '6%' }} />
+            {/* Subject column ~18% */}
+            <col style={{ width: '18%' }} />
+            {/* 12 score columns — fixed equal width */}
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '6.3%' }} />
+            <col style={{ width: '5%' }} />
+            <col style={{ width: '5%' }} />
+            <col style={{ width: '6%' }} />
           </colgroup>
           <thead>
             <tr className="bg-white text-black font-bold">
@@ -275,10 +275,8 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
                 <React.Fragment key={`grp-${uIdx}`}>
                   {/* First row: vertical category (rowspan) + first child name + all score cells (rowspan) */}
                   <tr className="bg-gray-50">
-                    <td rowSpan={rs} className="border border-black px-1 py-1 align-middle bg-gray-200">
-                      <div className="vertical-cat font-bold text-[10px] text-ggsa-purple" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', minHeight: '80px' }}>
-                        {parent.subjectName}
-                      </div>
+                    <td rowSpan={rs} className="category-cell border border-black align-middle bg-gray-200" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', whiteSpace: 'nowrap', padding: '10px', fontWeight: 'bold', borderRight: '2px solid black' }}>
+                      {parent.subjectName}
                     </td>
                     <td className="border border-black px-2 py-1 italic text-gray-700 text-[10px]">
                       {allChildren[0].subjectName}

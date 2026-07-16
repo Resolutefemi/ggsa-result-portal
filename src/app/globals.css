@@ -135,13 +135,12 @@
 .text-ggsa-gold { color: var(--ggsa-gold); }
 .border-ggsa-purple { border-color: var(--ggsa-purple); }
 
-/* Print styles for result — full A4 page, no scroll */
+/* Print styles for result — static A4 print-ready, no scroll */
 @media print {
   body { background: white !important; margin: 0 !important; padding: 0 !important; }
   .no-print, .no-print * { display: none !important; }
   .print-only { display: block !important; }
 
-  /* Force the main wrapper to fill the paper */
   .result-sheet {
     box-shadow: none !important;
     border: none !important;
@@ -158,23 +157,24 @@
     margin: 10mm;
   }
 
-  /* Table container: NO scroll in print, full width */
+  /* Table container: NO scroll, hidden overflow */
   .result-table-wrap {
-    overflow: visible !important;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
     width: 100% !important;
   }
 
-  /* Header: remove all margin-bottom, center across full width */
+  /* Header: remove all margin-bottom */
   .result-sheet > div:first-child {
     margin: 0 !important;
     padding: 4px 6px !important;
     width: 100% !important;
   }
-  .result-sheet h1 { font-size: 18px !important; margin: 0 !important; }
-  .result-sheet h2 { font-size: 12px !important; margin: 0 !important; }
+  .result-sheet h1 { font-size: 16px !important; margin: 0 !important; }
+  .result-sheet h2 { font-size: 11px !important; margin: 0 !important; }
   .result-sheet p { margin: 0 !important; font-size: 8px !important; }
 
-  /* Student info bar — tight, full width */
+  /* Student info bar — tight */
   .result-sheet .student-info-bar {
     padding: 2px 4px !important;
     margin: 0 !important;
@@ -182,45 +182,52 @@
     font-size: 8px !important;
   }
 
-  /* Force the table to stretch to full page width — NO min-width in print */
+  /* Table — static, fixed layout, full width, NO min-width */
   .result-table {
     width: 100% !important;
     max-width: none !important;
-    min-width: auto !important;
+    min-width: 0 !important;
     table-layout: fixed !important;
-    font-size: 9px !important;
+    font-size: 8px !important;
     border-collapse: collapse !important;
   }
 
-  /* Every cell: clear border + readable padding */
+  /* Every cell: clear border + tight padding */
   .result-table th, .result-table td {
     border: 1px solid black !important;
-    padding: 2px 2px !important;
-    font-size: 9px !important;
-    line-height: 1.1 !important;
-    word-wrap: break-word;
-  }
-
-  /* Vertical category headers — keep compact in print */
-  .result-table .vertical-cat {
+    padding: 1px 1px !important;
     font-size: 8px !important;
-    min-height: 60px !important;
+    line-height: 1 !important;
+    word-wrap: break-word;
+    overflow: hidden;
   }
 
-  /* Group-end: thick bottom border on last row of each group */
+  /* Category cell — vertical text, professional look */
+  .result-table .category-cell {
+    writing-mode: vertical-rl !important;
+    transform: rotate(180deg) !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    padding: 6px 4px !important;
+    font-weight: bold !important;
+    border-right: 2px solid black !important;
+    font-size: 8px !important;
+  }
+
+  /* Group-end: thick bottom border */
   .result-table .group-end td,
   .result-table tr.group-end td {
     border-bottom: 3px solid black !important;
   }
 
-  /* Character/behaviour + reports — full width, tight */
+  /* Character/behaviour + reports — tight */
   .result-sheet .grid {
     margin-top: 3px !important;
     padding: 0 4px !important;
     width: 100% !important;
   }
 
-  /* Signatures — spread across full width */
+  /* Signatures */
   .result-sheet .signature-section {
     margin-top: 6px !important;
     padding: 0 6px !important;
@@ -228,7 +235,7 @@
   }
   .result-sheet .signature-section img { max-height: 36px !important; }
 
-  /* Grading key — full width */
+  /* Grading key */
   .result-sheet .grading-key {
     margin-top: 3px !important;
     padding: 2px 4px !important;
@@ -237,7 +244,18 @@
 }
 .print-only { display: none; }
 
-/* Group-end: thick bottom border on screen too (visible in browser) */
+/* Category cell — vertical text (screen + print) */
+.category-cell {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  white-space: nowrap;
+  padding: 10px;
+  font-weight: bold;
+  border-right: 2px solid black;
+}
+
+/* Group-end: thick bottom border on screen too */
 .result-table .group-end td,
 .result-table tr.group-end td {
   border-bottom: 3px solid black !important;

@@ -235,6 +235,14 @@ function StudentDialog({
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
+  // If classes load after the form is initialized (e.g., async), make sure
+  // we default to the first class so the dropdown isn't empty.
+  useEffect(() => {
+    if (!form.classId && classes.length > 0) {
+      setForm((f) => ({ ...f, classId: classes[0].id }));
+    }
+  }, [classes, form.classId]);
+
   const save = async () => {
     if (!form.name) {
       toast({ title: 'Name is required', variant: 'destructive' });

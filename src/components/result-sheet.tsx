@@ -91,7 +91,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
     <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
       {/* === HEADER (school name + logo + address) === */}
       <div className="flex items-center gap-4 p-4 border-b-2 border-black">
-        <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+        <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center">
           <img
             src="/logo-transparent.png"
             alt="GGSA Logo"

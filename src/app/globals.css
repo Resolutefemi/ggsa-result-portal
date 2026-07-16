@@ -135,13 +135,11 @@
 .text-ggsa-gold { color: var(--ggsa-gold); }
 .border-ggsa-purple { border-color: var(--ggsa-purple); }
 
-/* Print styles for result — strict A4 one-page fit */
+/* Print styles for result — A4 one-page fit */
 @media print {
-  body { background: white !important; margin: 0 !important; padding: 0 !important; }
+  body { background: white !important; }
   .no-print, .no-print * { display: none !important; }
   .print-only { display: block !important; }
-
-  /* Scale everything down to guarantee one page */
   .result-sheet {
     box-shadow: none !important;
     border: none !important;
@@ -149,83 +147,25 @@
     padding: 0 !important;
     width: 100% !important;
     max-width: none !important;
-    page-break-inside: avoid !important;
-    page-break-after: auto !important;
-    transform: scale(0.85) !important;
-    transform-origin: top left !important;
-    font-size: 8px !important;
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
-
   @page {
     size: A4 portrait;
-    margin: 5mm; /* Minimum margin */
+    margin: 10mm 15mm;
   }
 
-  /* Header — compact */
-  .result-sheet > div:first-child {
-    padding: 3px 4px !important;
-    margin: 0 !important;
-    gap: 4px !important;
-  }
-  .result-sheet > div:first-child > div:first-child {
-    width: 60px !important;
-    height: 60px !important;
-  }
-  .result-sheet > div:first-child img {
-    width: 60px !important;
-    height: 60px !important;
-  }
-  .result-sheet h1 { font-size: 14px !important; margin: 0 !important; }
-  .result-sheet h2 { font-size: 11px !important; margin: 0 !important; }
-  .result-sheet p { margin: 0 !important; font-size: 8px !important; }
-
-  /* Student info bar — very tight */
-  .result-sheet .student-info-bar {
-    padding: 1px 4px !important;
-    margin: 0 !important;
-    gap: 1px 6px !important;
-    font-size: 8px !important;
-  }
-
-  /* Table — very tight, smaller font */
-  .result-table {
-    font-size: 7px !important;
-    min-width: auto !important;
-    width: 100% !important;
-  }
+  /* Print: keep readable font sizes but tighten padding/line-height */
+  .result-sheet { font-size: 11px !important; }
+  .result-sheet h1 { font-size: 22px !important; }
+  .result-sheet h2 { font-size: 14px !important; }
+  .result-table { font-size: 10px !important; min-width: auto !important; width: 100% !important; }
   .result-table th, .result-table td {
-    padding: 0.5px 1px !important;
-    font-size: 7px !important;
-    line-height: 1 !important;
+    padding: 2px 3px !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
   }
-
-  /* Character/behaviour + reports — tight */
-  .result-sheet .grid {
-    margin-top: 2px !important;
-    padding: 0 4px !important;
-    gap: 2px !important;
-  }
-
-  /* Signatures — minimal spacing */
-  .result-sheet .signature-section {
-    margin-top: 4px !important;
-    padding: 0 4px 2px 4px !important;
-    gap: 4px !important;
-  }
-  .result-sheet .signature-section > div { margin-top: 0 !important; }
-  .result-sheet .signature-section .h-16 { height: 28px !important; }
-  .result-sheet .signature-section img { max-height: 28px !important; }
-  .result-sheet .signature-section .mt-8 { margin-top: 8px !important; }
-
-  /* Grading key / next term — tight */
-  .result-sheet .grading-key {
-    margin-top: 2px !important;
-    padding: 2px 4px !important;
-    gap: 2px !important;
-  }
-
-  /* Remove any extra bottom padding on the sheet */
-  .result-sheet > *:last-child { padding-bottom: 2px !important; }
+  .result-sheet .print-tight { padding: 4px !important; margin: 2px 0 !important; }
 }
 .print-only { display: none; }
 

@@ -490,21 +490,21 @@ export function TeacherEditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* SUBJECTS TABLE — fixed layout, vertical category, horizontal scroll on mobile */}
-          <div className="result-table-wrap overflow-x-auto -mx-2">
-            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
+          {/* SUBJECTS TABLE — static, fixed layout, no scroll */}
+          <div className="result-table-wrap" style={{ overflowX: 'hidden', width: '100%' }}>
+            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', width: '100%' }}>
               <colgroup>
-                <col style={{ width: '40px' }} />
-                <col style={{ width: '150px' }} />
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '70px' }} />
-                <col style={{ width: '70px' }} />
-                <col style={{ width: '70px' }} />
-                <col style={{ width: '60px' }} />
-                <col style={{ width: '90px' }} />
+                <col style={{ width: '6%' }} />
+                <col style={{ width: '20%' }} />
+                <col style={{ width: '7.4%' }} />
+                <col style={{ width: '7.4%' }} />
+                <col style={{ width: '7.4%' }} />
+                <col style={{ width: '7.4%' }} />
+                <col style={{ width: '8.5%' }} />
+                <col style={{ width: '8.5%' }} />
+                <col style={{ width: '8.5%' }} />
+                <col style={{ width: '7.4%' }} />
+                <col style={{ width: '11%' }} />
               </colgroup>
               <thead>
                 <tr className="bg-black text-white">
@@ -591,10 +591,8 @@ export function TeacherEditForm({
                     <React.Fragment key={`grp-${uIdx}`}>
                       {/* First row: vertical category (rowspan) + first child name + all score inputs (rowspan) */}
                       <tr className="bg-gray-50">
-                        <td rowSpan={rs} className="border border-black px-1 py-1 align-middle bg-gray-200">
-                          <div className="vertical-cat font-bold text-[10px] text-ggsa-purple" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', minHeight: '80px' }}>
-                            {parent.item.subjectName}
-                          </div>
+                        <td rowSpan={rs} className="category-cell border border-black align-middle bg-gray-200" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', whiteSpace: 'nowrap', padding: '10px', fontWeight: 'bold', borderRight: '2px solid black' }}>
+                          {parent.item.subjectName}
                         </td>
                         <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">
                           {allChildren[0].item.subjectName}

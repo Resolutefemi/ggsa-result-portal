@@ -298,19 +298,19 @@ function StudentDialog({
             />
           </div>
 
-          {/* Class dropdown (JSS 1, JSS 2, JSS 3) */}
+          {/* Class dropdown (JSS 1, JSS 2, JSS 3) — native select for reliability inside Dialog */}
           <div>
             <Label>Class <span className="text-destructive">*</span></Label>
-            <Select value={form.classId} onValueChange={(v) => setForm({ ...form, classId: v })}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select a class" />
-              </SelectTrigger>
-              <SelectContent>
-                {classes.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              className="mt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              value={form.classId}
+              onChange={(e) => setForm({ ...form, classId: e.target.value })}
+            >
+              {classes.length === 0 && <option value="">No classes available</option>}
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-2">

@@ -92,7 +92,12 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       {/* === HEADER (school name + logo + address) === */}
       <div className="flex items-center gap-4 p-4 border-b-2 border-black">
         <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-          <img src="/logo.png" alt="GGSA Logo" className="w-full h-full object-contain" />
+          <img
+            src="/logo-transparent.png"
+            alt="GGSA Logo"
+            className="w-full h-full object-contain"
+            style={{ backgroundColor: 'transparent' }}
+          />
         </div>
         <div className="flex-1 text-center">
           <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide text-ggsa-purple uppercase">
@@ -142,18 +147,18 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           <thead>
             <tr className="bg-white text-black font-bold">
               <th rowSpan={2} className="border border-black px-1 py-1 text-left">SUBJECT</th>
-              <th className="border border-black px-1 py-0.5">(A) Test 1</th>
-              <th className="border border-black px-1 py-0.5">(B) Test 2</th>
-              <th className="border border-black px-1 py-0.5">(C) Term Exam</th>
-              <th className="border border-black px-1 py-0.5">(D) Total</th>
-              <th className="border border-black px-1 py-0.5">(E) 1st Term</th>
-              <th className="border border-black px-1 py-0.5">(F) 2nd Term</th>
-              <th className="border border-black px-1 py-0.5">(G) 3rd Term</th>
-              <th className="border border-black px-1 py-0.5">(H) Total Score</th>
-              <th className="border border-black px-1 py-0.5">(I) Graded</th>
-              <th className="border border-black px-1 py-0.5">(J) Class Avg</th>
-              <th className="border border-black px-1 py-0.5">(K) Position</th>
-              <th className="border border-black px-1 py-0.5">(L) Grade</th>
+              <th className="border border-black px-1 py-0.5">Test 1</th>
+              <th className="border border-black px-1 py-0.5">Test 2</th>
+              <th className="border border-black px-1 py-0.5">Term Exam</th>
+              <th className="border border-black px-1 py-0.5">Total</th>
+              <th className="border border-black px-1 py-0.5">1st Term</th>
+              <th className="border border-black px-1 py-0.5">2nd Term</th>
+              <th className="border border-black px-1 py-0.5">3rd Term</th>
+              <th className="border border-black px-1 py-0.5">Total Score</th>
+              <th className="border border-black px-1 py-0.5">Graded</th>
+              <th className="border border-black px-1 py-0.5">Class Avg</th>
+              <th className="border border-black px-1 py-0.5">Position</th>
+              <th className="border border-black px-1 py-0.5">Grade</th>
               <th className="border border-black px-1 py-0.5">Remark</th>
             </tr>
           </thead>

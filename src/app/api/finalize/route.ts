@@ -85,13 +85,24 @@ export async function POST(req: NextRequest) {
     const total = computeTotal(item);
     const grade = calculateGrade(total);
     const remark = gradeRemark(grade);
+
+    // Auto-fill the current term's score column with the Total
+    let firstTermScore = item.firstTermScore ?? null;
+    let secondTermScore = item.secondTermScore ?? null;
+    let thirdTermScore = item.thirdTermScore ?? null;
+    if (total != null) {
+      if (term === '1st Term') firstTermScore = total;
+      else if (term === '2nd Term') secondTermScore = total;
+      else if (term === '3rd Term') thirdTermScore = total;
+    }
+
     const data = {
       test1: item.test1 ?? null,
       test2: item.test2 ?? null,
       exam: item.exam ?? null,
-      firstTermScore: item.firstTermScore ?? null,
-      secondTermScore: item.secondTermScore ?? null,
-      thirdTermScore: item.thirdTermScore ?? null,
+      firstTermScore,
+      secondTermScore,
+      thirdTermScore,
       totalScore: total,
       grade,
       remark,

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   keywords: ["God Generals Standard Academy", "GGSA", "result", "school portal", "Ikare-Akoko"],
   authors: [{ name: "God Generals Standard Academy" }],
   icons: {
-    icon: "/logo.png",
+    icon: "/logo-transparent.png",
   },
 };
 

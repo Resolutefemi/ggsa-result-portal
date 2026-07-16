@@ -208,39 +208,29 @@ async function main() {
       orderBy: { subject: { order: 'asc' } },
     });
 
+    // Scores are entered for PARENT and STANDALONE subjects only.
+    // Children are display-only (listed under their parent in the table).
     const sampleScores: Record<string, { test1: number; test2: number; exam: number }> = {
       ENG: { test1: 15, test2: 16, exam: 45 },
       MATH: { test1: 14, test2: 15, exam: 42 },
       YOR: { test1: 16, test2: 17, exam: 48 },
-      PHE: { test1: 14, test2: 15, exam: 43 },
-      BSC: { test1: 13, test2: 14, exam: 40 },
-      IT: { test1: 15, test2: 16, exam: 44 },
-      BTECH: { test1: 14, test2: 14, exam: 41 },
-      CRS: { test1: 16, test2: 15, exam: 46 },
-      SOC: { test1: 17, test2: 16, exam: 47 },
-      CIV: { test1: 15, test2: 15, exam: 44 },
-      SEC: { test1: 14, test2: 15, exam: 42 },
-      IGB: { test1: 15, test2: 14, exam: 43 },
-      CCA: { test1: 16, test2: 15, exam: 45 },
+      BUS: { test1: 14, test2: 15, exam: 43 },
+      BST: { test1: 14, test2: 15, exam: 43 },
+      RNV: { test1: 15, test2: 16, exam: 45 },
+      CCA: { test1: 16, test2: 15, exam: 44 },
+      PVS: { test1: 14, test2: 14, exam: 41 },
     };
 
-    // Create a ResultItem for EVERY subject in the class (including parent
-    // categories) so the result sheet shows the full grouped structure.
+    // Create ResultItems for ALL subjects (parents + standalone + children).
+    // Parents and standalone subjects get scores; children get null scores
+    // (they're display-only).
     for (const cs of classSubjects) {
       const score = sampleScores[cs.subject.code];
       const isParent = (cs.subject as any).isParent;
-      if (isParent) {
-        // Parent rows have no scores — they're just category headers
-        await prisma.resultItem.create({
-          data: {
-            resultId: result.id,
-            subjectId: cs.subjectId,
-            test1: null, test2: null, exam: null,
-            totalScore: null, classAverage: null, position: null,
-            grade: null, remark: null,
-          },
-        });
-      } else if (score) {
+      const isChild = !!(cs.subject as any).parentCode;
+
+      if ((isParent || !isChild) && score) {
+        // Parent or standalone with scores
         const total = computeTotal(score);
         const grade = calculateGrade(total);
         const remark = gradeRemark(grade);
@@ -252,10 +242,21 @@ async function main() {
             test2: score.test2,
             exam: score.exam,
             totalScore: total,
-            classAverage: total - 2, // demo value
+            classAverage: total - 2,
             position: 1,
             grade,
             remark,
+          },
+        });
+      } else {
+        // Children (display-only) or subjects without sample scores
+        await prisma.resultItem.create({
+          data: {
+            resultId: result.id,
+            subjectId: cs.subjectId,
+            test1: null, test2: null, exam: null,
+            totalScore: null, classAverage: null, position: null,
+            grade: null, remark: null,
           },
         });
       }

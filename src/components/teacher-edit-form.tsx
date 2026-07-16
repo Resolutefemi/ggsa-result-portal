@@ -44,6 +44,8 @@ interface ItemRow {
   subjectName: string;
   subjectCode: string;
   order: number;
+  isParent?: boolean;
+  parentCode?: string | null;
   test1: number | null;
   test2: number | null;
   exam: number | null;
@@ -480,9 +482,22 @@ export function TeacherEditForm({
                 </tr>
               </thead>
               <tbody>
-                {data.items.map((item, idx) => (
-                  <tr key={item.subjectId} className={idx % 2 ? 'bg-purple-50/30' : ''}>
-                    <td className="border border-gray-300 px-2 py-1 font-medium whitespace-nowrap">
+                {data.items.map((item, idx) => {
+                  const isParentRow = item.isParent;
+                  const isChildRow = !!item.parentCode;
+                  if (isParentRow) {
+                    // Parent category header row — bold, shaded, spans all columns
+                    return (
+                      <tr key={item.subjectId} className="bg-gray-200">
+                        <td colSpan={10} className="border border-gray-300 px-2 py-1 font-bold text-sm">
+                          {item.subjectName}
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return (
+                    <tr key={item.subjectId} className={isChildRow ? '' : idx % 2 ? 'bg-purple-50/30' : ''}>
+                    <td className={`border border-gray-300 px-2 py-1 whitespace-nowrap ${isChildRow ? 'pl-5 italic text-gray-700' : 'font-medium'}`}>
                       {item.subjectName}
                     </td>
                     <td className="border border-gray-300 p-0.5">
@@ -530,7 +545,6 @@ export function TeacherEditForm({
                     {/* 1st Term Score column */}
                     <td className={`border border-gray-300 p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
                       {term === '1st Term' ? (
-                        // Auto-filled from Total — read-only
                         <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
                           {item.firstTermScore != null ? item.firstTermScore : '-'}
                         </div>
@@ -589,7 +603,8 @@ export function TeacherEditForm({
                       {item.remark || ''}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -204,31 +204,31 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-white to-purple-50">
       {/* Top bar */}
       <header className="no-print sticky top-0 z-30 backdrop-blur-md bg-white/80 border-b border-purple-100">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-2">
           <button
             onClick={() => setView('home')}
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-2 sm:gap-3 group flex-shrink min-w-0"
             aria-label="Home"
           >
             <img
               src="/logo-transparent.png"
               alt="GGSA Logo"
-              className="w-16 h-16 object-contain"
+              className="w-10 h-10 sm:w-16 sm:h-16 object-contain flex-shrink-0"
               style={{ backgroundColor: 'transparent' }}
               draggable={false}
             />
-            <div className="text-left hidden sm:block">
-              <div className="text-base font-bold text-ggsa-purple leading-tight">
+            <div className="text-left hidden sm:block min-w-0">
+              <div className="text-sm sm:text-base font-bold text-ggsa-purple leading-tight truncate">
                 God Generals Standard Academy
               </div>
               <div className="text-xs text-muted-foreground">Ikare-Akoko, Ondo State</div>
             </div>
           </button>
 
-          <nav className="flex items-center gap-2">
+          <nav className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {teacher ? (
               <>
-                <span className="hidden md:inline text-sm text-muted-foreground">
+                <span className="hidden lg:inline text-sm text-muted-foreground">
                   Hi, <span className="font-semibold text-foreground">{teacher.fullName}</span>
                 </span>
                 {teacher.role === 'ADMIN' && (
@@ -236,31 +236,39 @@ export default function Home() {
                     size="sm"
                     variant={view === 'admin-manage' ? 'default' : 'outline'}
                     onClick={() => setView('admin-manage')}
+                    className="px-2 sm:px-3"
                   >
-                    <Shield className="w-4 h-4 mr-1" /> Admin
+                    <Shield className="w-4 h-4 sm:mr-1" />
+                    <span className="hidden sm:inline">Admin</span>
                   </Button>
                 )}
                 <Button
                   size="sm"
                   variant={view === 'teacher-dash' ? 'default' : 'outline'}
                   onClick={() => setView('teacher-dash')}
+                  className="px-2 sm:px-3"
                 >
-                  <School className="w-4 h-4 mr-1" /> My Classes
+                  <School className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">My Classes</span>
+                  <span className="sm:hidden">Classes</span>
                 </Button>
-                <Button size="sm" variant="ghost" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4 mr-1" /> Logout
+                <Button size="sm" variant="ghost" onClick={handleLogout} className="px-2 sm:px-3">
+                  <LogOut className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Logout</span>
                 </Button>
               </>
             ) : (
-              <Button size="sm" variant="outline" onClick={() => setView('student-check')}>
-                <Eye className="w-4 h-4 mr-1" /> Check Result
+              <Button size="sm" variant="outline" onClick={() => setView('student-check')} className="px-2 sm:px-3">
+                <Eye className="w-4 h-4 sm:mr-1" />
+                <span className="hidden sm:inline">Check Result</span>
+                <span className="sm:hidden">Result</span>
               </Button>
             )}
           </nav>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {view === 'home' && (
           <HomeView
             onCheckResult={() => setView('student-check')}
@@ -407,26 +415,28 @@ function HomeView({
   return (
     <div className="space-y-8">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900 via-purple-800 to-amber-800 text-white p-8 sm:p-12 shadow-2xl">
+      <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-purple-900 via-purple-800 to-amber-800 text-white p-5 sm:p-8 lg:p-12 shadow-2xl">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_30%_30%,white_2px,transparent_2px)] [background-size:24px_24px]" />
-        <div className="relative grid md:grid-cols-2 gap-6 items-center">
+        <div className="relative grid md:grid-cols-2 gap-4 sm:gap-6 items-center">
           <div>
             <Badge className="bg-amber-400 text-purple-900 hover:bg-amber-400 mb-3">
               Result Portal
             </Badge>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-3">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-3">
               God Generals<br />Standard Academy
             </h1>
-            <p className="text-purple-100 text-base sm:text-lg mb-5 max-w-md">
+            <p className="text-purple-100 text-sm sm:text-base lg:text-lg mb-4 sm:mb-5 max-w-md">
               Check your term results online with the PIN your teacher gives you.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" onClick={onCheckResult} className="bg-amber-400 text-purple-900 hover:bg-amber-300">
-                <Eye className="w-5 h-5 mr-2" /> Check Result
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <Button size="sm" onClick={onCheckResult} className="bg-amber-400 text-purple-900 hover:bg-amber-300 sm:text-base sm:py-2 sm:px-4">
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="text-sm sm:text-base">Check Result</span>
               </Button>
               {teacher && (
-                <Button size="lg" variant="outline" onClick={onGoToDash} className="bg-white/10 border-white/30 text-white hover:bg-white/20">
-                  <School className="w-5 h-5 mr-2" /> Teacher Dashboard
+                <Button size="sm" variant="outline" onClick={onGoToDash} className="bg-white/10 border-white/30 text-white hover:bg-white/20 sm:text-base sm:py-2 sm:px-4">
+                  <School className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                  <span className="text-sm sm:text-base">Teacher Dashboard</span>
                 </Button>
               )}
             </div>
@@ -444,7 +454,7 @@ function HomeView({
               <img
                 src="/logo-transparent.png"
                 alt="God Generals Standard Academy logo"
-                className="relative w-64 h-64 sm:w-80 sm:h-80 object-contain drop-shadow-2xl group-hover:scale-105 transition"
+                className="relative w-40 h-40 sm:w-64 sm:h-64 lg:w-80 lg:h-80 object-contain drop-shadow-2xl group-hover:scale-105 transition"
                 style={{ backgroundColor: 'transparent' }}
                 draggable={false}
               />
@@ -459,7 +469,7 @@ function HomeView({
       </section>
 
       {/* Info cards */}
-      <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <Card className="border-purple-100">
           <CardHeader>
             <div className="w-10 h-10 rounded-lg bg-purple-100 text-ggsa-purple flex items-center justify-center mb-2">
@@ -496,7 +506,7 @@ function HomeView({
       </section>
 
       {/* School info section */}
-      <section className="grid md:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
         <Card className="bg-ggsa-cream border-amber-200">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -956,21 +966,22 @@ function TeacherDashView({
   onGoAdmin: () => void;
 }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-ggsa-purple">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-ggsa-purple">
             Welcome, {teacher.fullName.split(' ')[0]}!
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs sm:text-sm">
             {teacher.subject ? `Subject: ${teacher.subject}` : 'School Administrator'}
             {' • '}
             {teacher.role === 'ADMIN' ? 'Administrator' : 'Teacher'}
           </p>
         </div>
         {teacher.role === 'ADMIN' && (
-          <Button variant="outline" onClick={onGoAdmin}>
-            <Shield className="w-4 h-4 mr-2" /> Admin Panel
+          <Button variant="outline" onClick={onGoAdmin} size="sm" className="sm:size-default">
+            <Shield className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="text-sm">Admin Panel</span>
           </Button>
         )}
       </div>
@@ -990,7 +1001,7 @@ function TeacherDashView({
               No classes assigned to you yet. {teacher.role === 'ADMIN' && 'Use the Admin Panel to assign yourself to classes.'}
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
               {classes.map((c) => (
                 <button
                   key={c.id}
@@ -1088,7 +1099,7 @@ function TeacherStudentsView({
               No students in this class yet.
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {students.map((s) => {
                 const isFinalized = s.latestResult?.status === 'FINALIZED' &&
                   s.latestResult?.term === term &&

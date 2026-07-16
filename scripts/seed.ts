@@ -43,15 +43,24 @@ async function main() {
   }
   console.log('✓ School settings');
 
-  // 2) Subjects
+  // 2) Subjects — wipe and re-seed (structure changed: parent/child grouping)
+  // Also clean up old ClassSubject and ResultItem rows that reference old subjects
+  await prisma.resultItem.deleteMany({});
+  await prisma.classSubject.deleteMany({});
+  await prisma.subject.deleteMany({});
   for (const s of DEFAULT_SUBJECTS) {
-    await prisma.subject.upsert({
-      where: { code: s.code },
-      update: { name: s.name, order: s.order, category: s.category },
-      create: s,
+    await prisma.subject.create({
+      data: {
+        name: s.name,
+        code: s.code,
+        order: s.order,
+        category: s.category,
+        isParent: s.isParent || false,
+        parentCode: s.parent || null,
+      },
     });
   }
-  console.log(`✓ ${DEFAULT_SUBJECTS.length} subjects`);
+  console.log(`✓ ${DEFAULT_SUBJECTS.length} subjects (with parent grouping)`);
 
   // 3) Classes
   const classes: { id: string; name: string; category: string }[] = [];
@@ -203,31 +212,53 @@ async function main() {
       ENG: { test1: 15, test2: 16, exam: 45 },
       MATH: { test1: 14, test2: 15, exam: 42 },
       YOR: { test1: 16, test2: 17, exam: 48 },
+      PHE: { test1: 14, test2: 15, exam: 43 },
       BSC: { test1: 13, test2: 14, exam: 40 },
+      IT: { test1: 15, test2: 16, exam: 44 },
+      BTECH: { test1: 14, test2: 14, exam: 41 },
+      CRS: { test1: 16, test2: 15, exam: 46 },
       SOC: { test1: 17, test2: 16, exam: 47 },
       CIV: { test1: 15, test2: 15, exam: 44 },
+      SEC: { test1: 14, test2: 15, exam: 42 },
+      IGB: { test1: 15, test2: 14, exam: 43 },
+      CCA: { test1: 16, test2: 15, exam: 45 },
     };
 
+    // Create a ResultItem for EVERY subject in the class (including parent
+    // categories) so the result sheet shows the full grouped structure.
     for (const cs of classSubjects) {
       const score = sampleScores[cs.subject.code];
-      if (!score) continue;
-      const total = computeTotal(score);
-      const grade = calculateGrade(total);
-      const remark = gradeRemark(grade);
-      await prisma.resultItem.create({
-        data: {
-          resultId: result.id,
-          subjectId: cs.subjectId,
-          test1: score.test1,
-          test2: score.test2,
-          exam: score.exam,
-          totalScore: total,
-          classAverage: total - 2, // demo value
-          position: 1,
-          grade,
-          remark,
-        },
-      });
+      const isParent = (cs.subject as any).isParent;
+      if (isParent) {
+        // Parent rows have no scores — they're just category headers
+        await prisma.resultItem.create({
+          data: {
+            resultId: result.id,
+            subjectId: cs.subjectId,
+            test1: null, test2: null, exam: null,
+            totalScore: null, classAverage: null, position: null,
+            grade: null, remark: null,
+          },
+        });
+      } else if (score) {
+        const total = computeTotal(score);
+        const grade = calculateGrade(total);
+        const remark = gradeRemark(grade);
+        await prisma.resultItem.create({
+          data: {
+            resultId: result.id,
+            subjectId: cs.subjectId,
+            test1: score.test1,
+            test2: score.test2,
+            exam: score.exam,
+            totalScore: total,
+            classAverage: total - 2, // demo value
+            position: 1,
+            grade,
+            remark,
+          },
+        });
+      }
     }
 
     // Add character traits

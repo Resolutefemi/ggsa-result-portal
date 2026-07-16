@@ -121,7 +121,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
   const numInClass = items.length > 0 ? '(see position)' : '';
 
   return (
-    <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
+    <div className="result-sheet bg-white text-black mx-auto w-full shadow-xl border border-gray-200 print:shadow-none print:border-0" style={{ maxWidth: 'none' }}>
       {/* === HEADER (school name + logo + address) — condensed === */}
       <div className="flex items-center gap-3 px-3 py-2 border-b-2 border-black">
         <div className="w-[90px] h-[90px] flex-shrink-0 flex items-center justify-center">
@@ -154,7 +154,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === STUDENT INFO BAR === */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
+      <div className="student-info-bar grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
         <div><span className="font-semibold">Name:</span> {student.name || '-'}</div>
         <div><span className="font-semibold">Class:</span> {student.className}</div>
         {student.admissionNumber && (
@@ -330,7 +330,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === SIGNATURES === */}
-      <div className="grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
+      <div className="signature-section grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
         <div className="text-center">
           {/* Teacher's signature (uploaded image) */}
           {teacherSignatureImage ? (
@@ -370,7 +370,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === GRADING KEY + NEXT TERM === */}
-      <div className="grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
+      <div className="grading-key grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
         <div className="border border-gray-400 rounded p-2 col-span-2">
           <div className="font-semibold text-ggsa-purple mb-1">KEYS TO RATING / SCORE RATING</div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2">

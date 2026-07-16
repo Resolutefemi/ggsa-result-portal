@@ -122,9 +122,9 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
 
   return (
     <div className="result-sheet bg-white text-black mx-auto max-w-[210mm] shadow-xl border border-gray-200 print:shadow-none print:border-0">
-      {/* === HEADER (school name + logo + address) === */}
-      <div className="flex items-center gap-4 p-4 border-b-2 border-black">
-        <div className="w-[110px] h-[110px] flex-shrink-0 flex items-center justify-center">
+      {/* === HEADER (school name + logo + address) — condensed === */}
+      <div className="flex items-center gap-3 px-3 py-2 border-b-2 border-black">
+        <div className="w-[90px] h-[90px] flex-shrink-0 flex items-center justify-center">
           <img
             src="/logo-transparent.png"
             alt="GGSA Logo"
@@ -133,22 +133,21 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
           />
         </div>
         <div className="flex-1 text-center">
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-ggsa-purple uppercase">
+          <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-ggsa-purple uppercase whitespace-nowrap" style={{ margin: 0 }}>
             {SCHOOL_INFO.name}
           </h1>
-          <p className="text-[11px] sm:text-xs text-gray-700 mt-0.5">
+          <p className="text-[10px] text-gray-700" style={{ margin: 0 }}>
             {SCHOOL_INFO.address}
           </p>
-          <p className="text-[11px] sm:text-xs text-gray-700">
+          <p className="text-[10px] text-gray-700" style={{ margin: 0 }}>
             Tel: {SCHOOL_INFO.phones} • E-mail: {SCHOOL_INFO.email}
           </p>
-          <h2 className="text-base sm:text-lg font-bold mt-1 text-ggsa-purple">
+          <h2 className="text-sm font-bold text-ggsa-purple" style={{ margin: 0 }}>
             REPORT CARD FOR {student.className.startsWith('SS') ? 'SENIOR' : 'JUNIOR'} SECONDARY SCHOOL
           </h2>
         </div>
-        <div className="w-20 flex-shrink-0 hidden sm:block">
-          {/* motto ribbon placeholder for symmetry */}
-          <div className="text-[11px] text-center italic text-ggsa-gold font-semibold bg-ggsa-purple rounded px-1 py-1">
+        <div className="w-16 flex-shrink-0 hidden sm:block">
+          <div className="text-[9px] text-center italic text-ggsa-gold font-semibold bg-ggsa-purple rounded px-1 py-0.5">
             {SCHOOL_INFO.motto}
           </div>
         </div>

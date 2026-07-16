@@ -135,7 +135,7 @@
 .text-ggsa-gold { color: var(--ggsa-gold); }
 .border-ggsa-purple { border-color: var(--ggsa-purple); }
 
-/* Print styles for result — full A4 page */
+/* Print styles for result — full A4 page, no scroll */
 @media print {
   body { background: white !important; margin: 0 !important; padding: 0 !important; }
   .no-print, .no-print * { display: none !important; }
@@ -148,11 +148,7 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    max-width: none !important; /* Remove any max-width cap */
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important; /* content flows top-down */
+    max-width: none !important;
     page-break-inside: avoid !important;
     page-break-after: auto !important;
   }
@@ -162,65 +158,90 @@
     margin: 10mm;
   }
 
+  /* Table container: NO scroll in print, full width */
+  .result-table-wrap {
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
   /* Header: remove all margin-bottom, center across full width */
   .result-sheet > div:first-child {
     margin: 0 !important;
     padding: 4px 6px !important;
     width: 100% !important;
   }
-  .result-sheet h1 { font-size: 20px !important; margin: 0 !important; }
-  .result-sheet h2 { font-size: 13px !important; margin: 0 !important; }
-  .result-sheet p { margin: 0 !important; }
+  .result-sheet h1 { font-size: 18px !important; margin: 0 !important; }
+  .result-sheet h2 { font-size: 12px !important; margin: 0 !important; }
+  .result-sheet p { margin: 0 !important; font-size: 8px !important; }
 
   /* Student info bar — tight, full width */
-  .result-sheet .student-info-bar,
-  .result-sheet > div:nth-child(2) {
+  .result-sheet .student-info-bar {
     padding: 2px 4px !important;
     margin: 0 !important;
     width: 100% !important;
+    font-size: 8px !important;
   }
 
-  /* Force the table to stretch to full page width */
+  /* Force the table to stretch to full page width — NO min-width in print */
   .result-table {
     width: 100% !important;
     max-width: none !important;
-    min-width: auto !important; /* Remove the 900px min-width cap */
-    table-layout: fixed !important; /* Columns distribute evenly */
-    font-size: 11px !important;
+    min-width: auto !important;
+    table-layout: fixed !important;
+    font-size: 9px !important;
     border-collapse: collapse !important;
   }
 
   /* Every cell: clear border + readable padding */
   .result-table th, .result-table td {
     border: 1px solid black !important;
-    padding: 4px 3px !important;
-    font-size: 11px !important;
-    line-height: 1.2 !important;
+    padding: 2px 2px !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
     word-wrap: break-word;
+  }
+
+  /* Vertical category headers — keep compact in print */
+  .result-table .vertical-cat {
+    font-size: 8px !important;
+    min-height: 60px !important;
+  }
+
+  /* Group-end: thick bottom border on last row of each group */
+  .result-table .group-end td,
+  .result-table tr.group-end td {
+    border-bottom: 3px solid black !important;
   }
 
   /* Character/behaviour + reports — full width, tight */
   .result-sheet .grid {
-    margin-top: 4px !important;
+    margin-top: 3px !important;
     padding: 0 4px !important;
     width: 100% !important;
   }
 
   /* Signatures — spread across full width */
   .result-sheet .signature-section {
-    margin-top: 8px !important;
+    margin-top: 6px !important;
     padding: 0 6px !important;
     width: 100% !important;
   }
+  .result-sheet .signature-section img { max-height: 36px !important; }
 
   /* Grading key — full width */
   .result-sheet .grading-key {
-    margin-top: 4px !important;
+    margin-top: 3px !important;
     padding: 2px 4px !important;
     width: 100% !important;
   }
 }
 .print-only { display: none; }
+
+/* Group-end: thick bottom border on screen too (visible in browser) */
+.result-table .group-end td,
+.result-table tr.group-end td {
+  border-bottom: 3px solid black !important;
+}
 
 /* Custom scrollbar for long lists */
 .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }

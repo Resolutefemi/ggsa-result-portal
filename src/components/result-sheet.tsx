@@ -173,109 +173,134 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
       </div>
 
-      {/* === SUBJECTS TABLE (rowspan grouping like paper template) === */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-black result-table" style={{ minWidth: '900px' }}>
+      {/* === SUBJECTS TABLE — fixed layout, vertical category headers, no scroll on print === */}
+      <div className="result-table-wrap overflow-x-auto">
+        <table className="result-table w-full border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
+          <colgroup>
+            {/* Category column (vertical text) */}
+            <col style={{ width: '40px' }} />
+            {/* Subject name column (widest) */}
+            <col style={{ width: '130px' }} />
+            {/* 12 score columns — narrow, equal width */}
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '50px' }} />
+            <col style={{ width: '45px' }} />
+            <col style={{ width: '45px' }} />
+            <col style={{ width: '70px' }} />
+          </colgroup>
           <thead>
             <tr className="bg-white text-black font-bold">
-              <th rowSpan={2} className="border border-black px-1 py-1 text-left" style={{ minWidth: '120px' }}>SUBJECT</th>
-              <th className="border border-black px-2 py-1">Test 1</th>
-              <th className="border border-black px-2 py-1">Test 2</th>
-              <th className="border border-black px-2 py-1">Term Exam</th>
-              <th className="border border-black px-2 py-1">Total</th>
-              <th className="border border-black px-2 py-1">1st Term</th>
-              <th className="border border-black px-2 py-1">2nd Term</th>
-              <th className="border border-black px-2 py-1">3rd Term</th>
-              <th className="border border-black px-2 py-1">Total Score</th>
-              <th className="border border-black px-2 py-1">Graded</th>
-              <th className="border border-black px-2 py-1">Class Avg</th>
-              <th className="border border-black px-2 py-1">Position</th>
-              <th className="border border-black px-2 py-1">Grade</th>
-              <th className="border border-black px-2 py-1">Remark</th>
+              <th rowSpan={2} className="border border-black px-1 py-1 text-center text-[10px]">CAT</th>
+              <th rowSpan={2} className="border border-black px-2 py-1 text-left text-[10px]">SUBJECT</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Test 1</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Test 2</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Term Exam</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Total</th>
+              <th className="border border-black px-1 py-1 text-[10px]">1st Term</th>
+              <th className="border border-black px-1 py-1 text-[10px]">2nd Term</th>
+              <th className="border border-black px-1 py-1 text-[10px]">3rd Term</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Total Score</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Graded</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Class Avg</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Position</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Grade</th>
+              <th className="border border-black px-1 py-1 text-[10px]">Remark</th>
             </tr>
-            <tr className="bg-gray-100 text-gray-700 font-semibold text-[11px]">
-              <th className="border border-black px-2 py-1">20</th>
-              <th className="border border-black px-2 py-1">20</th>
-              <th className="border border-black px-2 py-1">60</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">100</th>
-              <th className="border border-black px-2 py-1">-</th>
-              <th className="border border-black px-2 py-1">-</th>
-              <th className="border border-black px-2 py-1">-</th>
+            <tr className="bg-gray-100 text-gray-700 font-semibold text-[9px]">
+              <th className="border border-black px-1 py-0.5">20</th>
+              <th className="border border-black px-1 py-0.5">20</th>
+              <th className="border border-black px-1 py-0.5">60</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">100</th>
+              <th className="border border-black px-1 py-0.5">-</th>
+              <th className="border border-black px-1 py-0.5">-</th>
+              <th className="border border-black px-1 py-0.5">-</th>
             </tr>
           </thead>
           <tbody>
             {units.length === 0 && (
               <tr>
-                <td colSpan={14} className="border border-black p-4 text-center text-gray-500">
+                <td colSpan={15} className="border border-black p-4 text-center text-gray-500">
                   No subjects recorded.
                 </td>
               </tr>
             )}
             {units.map((unit, uIdx) => {
               if (unit.type === 'standalone') {
-                // === Standalone subject: one row, name spans 2 columns ===
+                // === Standalone subject: category cell empty + name + scores ===
                 const item = unit.item;
                 return (
                   <tr key={`std-${uIdx}`} className={uIdx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
-                    <td colSpan={2} className="border border-black px-2 py-1 font-medium text-xs">
+                    <td className="border border-black px-1 py-1 text-center text-[10px] text-gray-400">—</td>
+                    <td className="border border-black px-2 py-1 font-medium text-[10px]">
                       {item.subjectName}
                     </td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
-                    <td className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
-                    <td className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.test1)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.test2)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.exam)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.firstTermScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.secondTermScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.thirdTermScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{fmt(item.classAverage)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px]">{ordinal(item.position)}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[10px] font-bold">{item.grade || '-'}</td>
+                    <td className="border border-black px-1 py-1 text-center text-[9px]">{item.remark || ''}</td>
                   </tr>
                 );
               }
 
-              // === Grouped subject: parent category (rowspan) + children + ONE set of scores (rowspan) ===
+              // === Grouped subject: vertical category (rowspan) + children + ONE set of scores (rowspan) ===
               const { parent, children } = unit;
               const rs = children.length || 1;
               const allChildren = children.length > 0 ? children : [{ subjectName: '' } as any];
+              const lastChildIdx = allChildren.length - 1;
 
               return (
                 <React.Fragment key={`grp-${uIdx}`}>
-                  {/* First row: category (rowspan) + first child name + all score cells (rowspan) */}
+                  {/* First row: vertical category (rowspan) + first child name + all score cells (rowspan) */}
                   <tr className="bg-gray-50">
-                    <td rowSpan={rs} className="border border-black px-2 py-1 font-bold text-xs align-middle bg-gray-200">
-                      {parent.subjectName}
+                    <td rowSpan={rs} className="border border-black px-1 py-1 align-middle bg-gray-200">
+                      <div className="vertical-cat font-bold text-[10px] text-ggsa-purple" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', minHeight: '80px' }}>
+                        {parent.subjectName}
+                      </div>
                     </td>
-                    <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
+                    <td className="border border-black px-2 py-1 italic text-gray-700 text-[10px]">
                       {allChildren[0].subjectName}
                     </td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.test1)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.test2)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.exam)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.firstTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.secondTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.thirdTermScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.totalScore)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.classAverage)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{ordinal(parent.position)}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-bold">{parent.grade || '-'}</td>
-                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-[11px]">{parent.remark || ''}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.test1)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.test2)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.exam)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.firstTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.secondTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.thirdTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-semibold">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{fmt(parent.classAverage)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px]">{ordinal(parent.position)}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[10px] font-bold">{parent.grade || '-'}</td>
+                    <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[9px]">{parent.remark || ''}</td>
                   </tr>
                   {/* Remaining child rows: just the child name */}
                   {allChildren.slice(1).map((child, cIdx) => (
-                    <tr key={`child-${uIdx}-${cIdx}`} className="bg-white">
-                      <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
+                    <tr key={`child-${uIdx}-${cIdx}`} className={`bg-white ${cIdx === lastChildIdx - 1 ? 'group-end' : ''}`}>
+                      <td className="border border-black px-2 py-1 italic text-gray-700 text-[10px]">
                         {child.subjectName}
                       </td>
                     </tr>

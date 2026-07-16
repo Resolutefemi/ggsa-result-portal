@@ -490,23 +490,38 @@ export function TeacherEditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* SUBJECTS TABLE — rowspan grouping, horizontal scroll on mobile */}
-          <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-xs border-collapse border border-black" style={{ minWidth: '900px' }}>
+          {/* SUBJECTS TABLE — fixed layout, vertical category, horizontal scroll on mobile */}
+          <div className="result-table-wrap overflow-x-auto -mx-2">
+            <table className="result-table w-full text-xs border-collapse border border-black" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
+              <colgroup>
+                <col style={{ width: '40px' }} />
+                <col style={{ width: '150px' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '70px' }} />
+                <col style={{ width: '60px' }} />
+                <col style={{ width: '90px' }} />
+              </colgroup>
               <thead>
                 <tr className="bg-black text-white">
-                  <th className="border border-black px-2 py-1 text-left" style={{ minWidth: '120px' }}>SUBJECT</th>
-                  <th className="border border-black px-1 py-1">Test 1</th>
-                  <th className="border border-black px-1 py-1">Test 2</th>
-                  <th className="border border-black px-1 py-1">Exam</th>
-                  <th className="border border-black px-1 py-1 bg-gray-700">Total</th>
-                  <th className="border border-black px-1 py-1">1st Term</th>
-                  <th className="border border-black px-1 py-1">2nd Term</th>
-                  <th className="border border-black px-1 py-1">3rd Term</th>
-                  <th className="border border-black px-1 py-1 bg-amber-700">Grade</th>
-                  <th className="border border-black px-1 py-1">Remark</th>
+                  <th className="border border-black px-1 py-1 text-center text-[10px]">CAT</th>
+                  <th className="border border-black px-2 py-1 text-left text-[10px]">SUBJECT</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">Test 1</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">Test 2</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">Exam</th>
+                  <th className="border border-black px-1 py-1 bg-gray-700 text-[10px]">Total</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">1st Term</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">2nd Term</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">3rd Term</th>
+                  <th className="border border-black px-1 py-1 bg-amber-700 text-[10px]">Grade</th>
+                  <th className="border border-black px-1 py-1 text-[10px]">Remark</th>
                 </tr>
                 <tr className="bg-gray-100 text-gray-600 text-[9px]">
+                  <th className="border border-black px-1 py-0.5">-</th>
                   <th className="border border-black px-1 py-0.5">Max: 100</th>
                   <th className="border border-black px-1 py-0.5">20</th>
                   <th className="border border-black px-1 py-0.5">20</th>
@@ -522,11 +537,12 @@ export function TeacherEditForm({
               <tbody>
                 {units.map((unit, uIdx) => {
                   if (unit.type === 'standalone') {
-                    // === Standalone subject: one row, name spans 2 columns ===
+                    // === Standalone subject: empty CAT + name + scores ===
                     const { item, idx } = unit.item;
                     return (
                       <tr key={`std-${uIdx}`} className={uIdx % 2 ? 'bg-purple-50/30' : ''}>
-                        <td colSpan={2} className="border border-black px-2 py-1 font-medium whitespace-nowrap">{item.subjectName}</td>
+                        <td className="border border-black px-1 py-1 text-center text-[10px] text-gray-400">—</td>
+                        <td className="border border-black px-2 py-1 font-medium whitespace-nowrap">{item.subjectName}</td>
                         <td className="border border-black p-0.5">
                           <Input type="number" step="0.5" min="0" max="20" value={item.test1 ?? ''} onChange={(e) => updateItem(idx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
                         </td>
@@ -564,18 +580,21 @@ export function TeacherEditForm({
                     );
                   }
 
-                  // === Grouped subject: parent category (rowspan) + children + ONE set of score inputs (rowspan) ===
+                  // === Grouped subject: vertical category (rowspan) + children + ONE set of score inputs (rowspan) ===
                   const { parent, children } = unit;
                   const rs = children.length || 1;
                   const allChildren = children.length > 0 ? children : [{ item: { subjectName: '' } as any, idx: -1 }];
                   const pIdx = parent.idx;
+                  const lastChildIdx = allChildren.length - 1;
 
                   return (
                     <React.Fragment key={`grp-${uIdx}`}>
-                      {/* First row: category (rowspan) + first child name + all score inputs (rowspan) */}
+                      {/* First row: vertical category (rowspan) + first child name + all score inputs (rowspan) */}
                       <tr className="bg-gray-50">
-                        <td rowSpan={rs} className="border border-black px-2 py-1 font-bold align-middle bg-gray-200">
-                          {parent.item.subjectName}
+                        <td rowSpan={rs} className="border border-black px-1 py-1 align-middle bg-gray-200">
+                          <div className="vertical-cat font-bold text-[10px] text-ggsa-purple" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textAlign: 'center', minHeight: '80px' }}>
+                            {parent.item.subjectName}
+                          </div>
                         </td>
                         <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">
                           {allChildren[0].item.subjectName}
@@ -616,7 +635,7 @@ export function TeacherEditForm({
                       </tr>
                       {/* Remaining child rows: just the child name */}
                       {allChildren.slice(1).map((child, cIdx) => (
-                        <tr key={`child-${uIdx}-${cIdx}`} className="bg-white">
+                        <tr key={`child-${uIdx}-${cIdx}`} className={`bg-white ${cIdx === lastChildIdx - 1 ? 'group-end' : ''}`}>
                           <td className="border border-black px-2 py-1 italic text-gray-600 text-xs">{child.item.subjectName}</td>
                         </tr>
                       ))}

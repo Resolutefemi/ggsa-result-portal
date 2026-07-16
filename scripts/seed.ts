@@ -28,6 +28,11 @@ async function main() {
   // 0) Clean up old demo admin user (no longer used; replaced by Ariyo)
   await prisma.teacher.deleteMany({ where: { username: 'admin' } }).catch(() => {});
 
+  // 0b) Clean up old SS1-3 classes (only JSS1-3 are default now)
+  for (const name of ['SS 1', 'SS 2', 'SS 3']) {
+    await prisma.class.deleteMany({ where: { name } }).catch(() => {});
+  }
+
   // 1) Settings
   for (const [key, value] of Object.entries(SCHOOL_INFO)) {
     await prisma.setting.upsert({

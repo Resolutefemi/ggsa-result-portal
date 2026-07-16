@@ -105,9 +105,9 @@ interface SchoolClass {
 interface StudentListItem {
   id: string;
   name: string;
-  admissionNumber: string;
+  admissionNumber?: string | null;
   sex: string;
-  house: string | null;
+  house?: string | null;
   year: string | null;
   latestResult: {
     id: string;
@@ -1107,7 +1107,9 @@ function TeacherStudentsView({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm truncate">{s.name}</div>
-                      <div className="text-xs text-muted-foreground">{s.admissionNumber}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {s.admissionNumber || 'No admission number'}
+                      </div>
                     </div>
                     {isFinalized && (
                       <Badge className="bg-green-100 text-green-700 hover:bg-green-100">

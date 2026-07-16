@@ -15,9 +15,9 @@ import { SCHOOL_INFO, GRADE_SCALE } from '@/lib/constants';
 export interface ResultSheetData {
   student: {
     name: string;
-    admissionNumber: string;
+    admissionNumber?: string | null;
     sex: string;
-    house: string | null;
+    house?: string | null;
     year: string | null;
     className: string;
   };
@@ -117,10 +117,11 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
         <div><span className="font-semibold">Name:</span> {student.name || '-'}</div>
         <div><span className="font-semibold">Class:</span> {student.className}</div>
-        <div><span className="font-semibold">Admission No:</span> {student.admissionNumber}</div>
+        {student.admissionNumber && (
+          <div><span className="font-semibold">Admission No:</span> {student.admissionNumber}</div>
+        )}
         <div><span className="font-semibold">Year:</span> {result.session}</div>
         <div><span className="font-semibold">Sex:</span> {student.sex === 'F' ? 'Female' : 'Male'}</div>
-        <div><span className="font-semibold">House:</span> {student.house || '-'}</div>
         <div><span className="font-semibold">Term:</span> {result.term}</div>
         <div><span className="font-semibold">No. in Class:</span> —</div>
         <div><span className="font-semibold">No. of Times School Opened:</span> {result.timesSchoolOpened || '-'}</div>

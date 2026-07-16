@@ -67,9 +67,9 @@ interface LoadResponse {
   student: {
     id: string;
     name: string;
-    admissionNumber: string;
+    admissionNumber?: string | null;
     sex: string;
-    house: string | null;
+    house?: string | null;
     year: string | null;
     className: string;
     classId: string;
@@ -361,8 +361,10 @@ export function TeacherEditForm({
         <CardHeader>
           <CardTitle className="flex items-center justify-between gap-2">
             <span>
-              {student.name}{' '}
-              <span className="text-sm font-normal text-muted-foreground">({student.admissionNumber})</span>
+              {student.name}
+              {student.admissionNumber && (
+                <span className="text-sm font-normal text-muted-foreground"> ({student.admissionNumber})</span>
+              )}
             </span>
             <Badge variant="outline">{cls.name} • {term} • {session}</Badge>
           </CardTitle>

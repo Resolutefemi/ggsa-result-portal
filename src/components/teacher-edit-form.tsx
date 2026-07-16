@@ -464,147 +464,149 @@ export function TeacherEditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* SUBJECTS TABLE */}
+          {/* SUBJECTS TABLE — rowspan grouping, horizontal scroll on mobile */}
           <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-xs border-collapse min-w-[900px]">
+            <table className="w-full text-xs border-collapse border border-black" style={{ minWidth: '900px' }}>
               <thead>
-                <tr className="bg-purple-900 text-white">
-                  <th className="border border-purple-700 px-2 py-1 text-left">SUBJECT</th>
-                  <th className="border border-purple-700 px-1 py-1">Test 1</th>
-                  <th className="border border-purple-700 px-1 py-1">Test 2</th>
-                  <th className="border border-purple-700 px-1 py-1">Exam</th>
-                  <th className="border border-purple-700 px-1 py-1 bg-purple-800">Total</th>
-                  <th className="border border-purple-700 px-1 py-1">1st Term</th>
-                  <th className="border border-purple-700 px-1 py-1">2nd Term</th>
-                  <th className="border border-purple-700 px-1 py-1">3rd Term</th>
-                  <th className="border border-purple-700 px-1 py-1 bg-amber-700">Grade</th>
-                  <th className="border border-purple-700 px-1 py-1">Remark</th>
+                <tr className="bg-black text-white">
+                  <th className="border border-black px-2 py-1 text-left" style={{ minWidth: '120px' }}>SUBJECT</th>
+                  <th className="border border-black px-1 py-1">Test 1</th>
+                  <th className="border border-black px-1 py-1">Test 2</th>
+                  <th className="border border-black px-1 py-1">Exam</th>
+                  <th className="border border-black px-1 py-1 bg-gray-700">Total</th>
+                  <th className="border border-black px-1 py-1">1st Term</th>
+                  <th className="border border-black px-1 py-1">2nd Term</th>
+                  <th className="border border-black px-1 py-1">3rd Term</th>
+                  <th className="border border-black px-1 py-1 bg-amber-700">Grade</th>
+                  <th className="border border-black px-1 py-1">Remark</th>
+                </tr>
+                <tr className="bg-gray-100 text-gray-600 text-[9px]">
+                  <th className="border border-black px-1 py-0.5">Max: 100</th>
+                  <th className="border border-black px-1 py-0.5">20</th>
+                  <th className="border border-black px-1 py-0.5">20</th>
+                  <th className="border border-black px-1 py-0.5">60</th>
+                  <th className="border border-black px-1 py-0.5">100</th>
+                  <th className="border border-black px-1 py-0.5">100</th>
+                  <th className="border border-black px-1 py-0.5">100</th>
+                  <th className="border border-black px-1 py-0.5">100</th>
+                  <th className="border border-black px-1 py-0.5">-</th>
+                  <th className="border border-black px-1 py-0.5">-</th>
                 </tr>
               </thead>
               <tbody>
-                {data.items.map((item, idx) => {
-                  const isParentRow = item.isParent;
-                  const isChildRow = !!item.parentCode;
-                  if (isParentRow) {
-                    // Parent category header row — bold, shaded, spans all columns
-                    return (
-                      <tr key={item.subjectId} className="bg-gray-200">
-                        <td colSpan={10} className="border border-gray-300 px-2 py-1 font-bold text-sm">
-                          {item.subjectName}
-                        </td>
-                      </tr>
-                    );
-                  }
-                  return (
-                    <tr key={item.subjectId} className={isChildRow ? '' : idx % 2 ? 'bg-purple-50/30' : ''}>
-                    <td className={`border border-gray-300 px-2 py-1 whitespace-nowrap ${isChildRow ? 'pl-5 italic text-gray-700' : 'font-medium'}`}>
-                      {item.subjectName}
-                    </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        max="20"
-                        value={item.test1 ?? ''}
-                        onChange={(e) => updateItem(idx, 'test1', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
-                    </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        max="20"
-                        value={item.test2 ?? ''}
-                        onChange={(e) => updateItem(idx, 'test2', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
-                    </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        max="60"
-                        value={item.exam ?? ''}
-                        onChange={(e) => updateItem(idx, 'exam', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
-                    </td>
-                    <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-purple-100/40">
-                      {item.totalScore != null ? item.totalScore : '-'}
-                    </td>
-                    {/* 1st Term Score column */}
-                    <td className={`border border-gray-300 p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
-                      {term === '1st Term' ? (
-                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
-                          {item.firstTermScore != null ? item.firstTermScore : '-'}
-                        </div>
-                      ) : (
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={item.firstTermScore ?? ''}
-                          onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)}
-                          disabled={isFinalized}
-                          className="h-8 text-center text-xs border-0"
-                          placeholder="-"
-                        />
-                      )}
-                    </td>
-                    {/* 2nd Term Score column */}
-                    <td className={`border border-gray-300 p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
-                      {term === '2nd Term' ? (
-                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
-                          {item.secondTermScore != null ? item.secondTermScore : '-'}
-                        </div>
-                      ) : (
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={item.secondTermScore ?? ''}
-                          onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)}
-                          disabled={isFinalized}
-                          className="h-8 text-center text-xs border-0"
-                          placeholder="-"
-                        />
-                      )}
-                    </td>
-                    {/* 3rd Term Score column */}
-                    <td className={`border border-gray-300 p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
-                      {term === '3rd Term' ? (
-                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
-                          {item.thirdTermScore != null ? item.thirdTermScore : '-'}
-                        </div>
-                      ) : (
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={item.thirdTermScore ?? ''}
-                          onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)}
-                          disabled={isFinalized}
-                          className="h-8 text-center text-xs border-0"
-                          placeholder="-"
-                        />
-                      )}
-                    </td>
-                    <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-amber-100/40">
-                      {item.grade || '-'}
-                    </td>
-                    <td className="border border-gray-300 px-1 py-1 text-center text-[11px]">
-                      {item.remark || ''}
-                    </td>
-                  </tr>
-                  );
-                })}
+                {(() => {
+                  const rows: React.ReactElement[] = [];
+                  const usedIdx = new Set<number>();
+
+                  data.items.forEach((item, idx) => {
+                    if (usedIdx.has(idx)) return;
+
+                    if (item.isParent) {
+                      // Grouped subject: parent name (rowspan) + children list + ONE set of score inputs (rowspan)
+                      const children = data.items
+                        .map((it, i) => ({ it, i }))
+                        .filter(({ it }) => it.parentCode === item.subjectCode);
+                      const rs = children.length || 1;
+
+                      rows.push(
+                        <tr key={`grp-${idx}`} className="bg-gray-50">
+                          <td rowSpan={rs} className="border border-black px-2 py-1 font-bold align-middle bg-gray-200">
+                            {item.subjectName}
+                          </td>
+                          <td className="border border-black px-1 py-0.5 italic text-gray-600 text-[11px]">
+                            {children[0]?.it.subjectName || ''}
+                          </td>
+                          {/* Score inputs — rowspan'd so one set per group */}
+                          <td rowSpan={rs} className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="20" value={item.test1 ?? ''} onChange={(e) => updateItem(idx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td rowSpan={rs} className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="20" value={item.test2 ?? ''} onChange={(e) => updateItem(idx, 'test2', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td rowSpan={rs} className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="60" value={item.exam ?? ''} onChange={(e) => updateItem(idx, 'exam', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td rowSpan={rs} className="border border-black px-1 py-1 text-center font-bold bg-purple-100/40">{item.totalScore != null ? item.totalScore : '-'}</td>
+                          <td rowSpan={rs} className={`border border-black p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '1st Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.firstTermScore != null ? item.firstTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.firstTermScore ?? ''} onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td rowSpan={rs} className={`border border-black p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '2nd Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.secondTermScore != null ? item.secondTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.secondTermScore ?? ''} onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td rowSpan={rs} className={`border border-black p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '3rd Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.thirdTermScore != null ? item.thirdTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.thirdTermScore ?? ''} onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td rowSpan={rs} className="border border-black px-1 py-1 text-center font-bold bg-amber-100/40">{item.grade || '-'}</td>
+                          <td rowSpan={rs} className="border border-black px-1 py-1 text-center text-[11px]">{item.remark || ''}</td>
+                        </tr>
+                      );
+                      // Remaining children
+                      children.slice(1).forEach(({ it: child }, ci) => {
+                        rows.push(
+                          <tr key={`ch-${idx}-${ci}`} className="bg-white">
+                            <td className="border border-black px-1 py-0.5 italic text-gray-600 text-[11px]">{child.subjectName}</td>
+                          </tr>
+                        );
+                      });
+                      usedIdx.add(idx);
+                      children.forEach(({ i }) => usedIdx.add(i));
+                    } else if (!item.parentCode) {
+                      // Standalone subject: name spans 2 cols
+                      rows.push(
+                        <tr key={`std-${idx}`} className={idx % 2 ? 'bg-purple-50/30' : ''}>
+                          <td colSpan={2} className="border border-black px-2 py-1 font-medium whitespace-nowrap">{item.subjectName}</td>
+                          <td className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="20" value={item.test1 ?? ''} onChange={(e) => updateItem(idx, 'test1', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="20" value={item.test2 ?? ''} onChange={(e) => updateItem(idx, 'test2', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td className="border border-black p-0.5">
+                            <Input type="number" step="0.5" min="0" max="60" value={item.exam ?? ''} onChange={(e) => updateItem(idx, 'exam', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                          </td>
+                          <td className="border border-black px-1 py-1 text-center font-bold bg-purple-100/40">{item.totalScore != null ? item.totalScore : '-'}</td>
+                          <td className={`border border-black p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '1st Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.firstTermScore != null ? item.firstTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.firstTermScore ?? ''} onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td className={`border border-black p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '2nd Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.secondTermScore != null ? item.secondTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.secondTermScore ?? ''} onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td className={`border border-black p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
+                            {term === '3rd Term' ? (
+                              <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">{item.thirdTermScore != null ? item.thirdTermScore : '-'}</div>
+                            ) : (
+                              <Input type="number" step="0.5" value={item.thirdTermScore ?? ''} onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)} disabled={isFinalized} className="h-8 text-center text-xs border-0" placeholder="-" />
+                            )}
+                          </td>
+                          <td className="border border-black px-1 py-1 text-center font-bold bg-amber-100/40">{item.grade || '-'}</td>
+                          <td className="border border-black px-1 py-1 text-center text-[11px]">{item.remark || ''}</td>
+                        </tr>
+                      );
+                      usedIdx.add(idx);
+                    }
+                  });
+                  return rows;
+                })()}
               </tbody>
             </table>
           </div>

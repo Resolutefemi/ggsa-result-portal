@@ -9,6 +9,7 @@
  *   - All "____________" placeholders replaced with real data
  *   - "Term" field shows the current term (user said the covered "Position" at top-LHS is the term)
  */
+import React from 'react';
 import Image from 'next/image';
 import { SCHOOL_INFO, GRADE_SCALE } from '@/lib/constants';
 
@@ -80,6 +81,36 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
 
   const skillTraits = traits.filter((t) => t.section === 'SKILL');
   const behaviourTraits = traits.filter((t) => t.section === 'BEHAVIOUR');
+
+  // === Pre-group items into standalone subjects and parent groups ===
+  // This produces a clean list of "render units" that the tbody maps over.
+  type StandaloneUnit = { type: 'standalone'; item: typeof items[0] };
+  type GroupUnit = {
+    type: 'group';
+    parent: typeof items[0];
+    children: typeof items[];
+  };
+  type Unit = StandaloneUnit | GroupUnit;
+
+  const units: Unit[] = [];
+  const usedCodes = new Set<string>();
+
+  items.forEach((item) => {
+    if (usedCodes.has(item.subjectCode)) return;
+
+    if (item.isParent) {
+      // Collect all children
+      const children = items.filter((it) => it.parentCode === item.subjectCode);
+      units.push({ type: 'group', parent: item, children });
+      usedCodes.add(item.subjectCode);
+      children.forEach((c) => usedCodes.add(c.subjectCode));
+    } else if (!item.parentCode) {
+      // Standalone subject
+      units.push({ type: 'standalone', item });
+      usedCodes.add(item.subjectCode);
+    }
+    // Skip child items — they're handled by their parent group
+  });
 
   // Compute overall position (sum of totals / number of subjects)
   const totals = items.map((i) => i.totalScore).filter((t): t is number => t != null);
@@ -180,99 +211,79 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
             </tr>
           </thead>
           <tbody>
-            {items.length === 0 && (
+            {units.length === 0 && (
               <tr>
                 <td colSpan={14} className="border border-black p-4 text-center text-gray-500">
                   No subjects recorded.
                 </td>
               </tr>
             )}
-            {(() => {
-              // Group items: standalone (no parent, not parent), and groups (parent + children)
-              const rows: React.ReactElement[] = [];
-              const usedIndices = new Set<number>();
+            {units.map((unit, uIdx) => {
+              if (unit.type === 'standalone') {
+                // === Standalone subject: one row, name spans 2 columns ===
+                const item = unit.item;
+                return (
+                  <tr key={`std-${uIdx}`} className={uIdx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
+                    <td colSpan={2} className="border border-black px-2 py-1 font-medium text-xs">
+                      {item.subjectName}
+                    </td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
+                    <td className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
+                    <td className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
+                  </tr>
+                );
+              }
 
-              items.forEach((item, idx) => {
-                if (usedIndices.has(idx)) return;
+              // === Grouped subject: parent category (rowspan) + children + ONE set of scores (rowspan) ===
+              const { parent, children } = unit;
+              const rs = children.length || 1;
+              const allChildren = children.length > 0 ? children : [{ subjectName: '' } as any];
 
-                if (item.isParent) {
-                  // Find all children of this parent
-                  const children = items
-                    .map((it, i) => ({ it, i }))
-                    .filter(({ it }) => it.parentCode === item.subjectCode);
-                  const rowspan = children.length || 1;
-
-                  // First child row: include the parent name (rowspan) + first child name + all scores (rowspan)
-                  rows.push(
-                    <tr key={`group-${idx}`} className="bg-gray-50">
-                      <td
-                        rowSpan={rowspan}
-                        className="border border-black px-2 py-1 font-bold text-xs align-middle bg-gray-200"
-                      >
-                        {item.subjectName}
-                      </td>
+              return (
+                <React.Fragment key={`grp-${uIdx}`}>
+                  {/* First row: category (rowspan) + first child name + all score cells (rowspan) */}
+                  <tr className="bg-gray-50">
+                    <td rowSpan={rs} className="border border-black px-2 py-1 font-bold text-xs align-middle bg-gray-200">
+                      {parent.subjectName}
+                    </td>
+                    <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
+                      {allChildren[0].subjectName}
+                    </td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.test1)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.test2)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.exam)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.firstTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.secondTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.thirdTermScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.totalScore)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{fmt(parent.classAverage)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs">{ordinal(parent.position)}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-xs font-bold">{parent.grade || '-'}</td>
+                    <td rowSpan={rs} className="border border-black px-2 py-1 text-center text-[11px]">{parent.remark || ''}</td>
+                  </tr>
+                  {/* Remaining child rows: just the child name */}
+                  {allChildren.slice(1).map((child, cIdx) => (
+                    <tr key={`child-${uIdx}-${cIdx}`} className="bg-white">
                       <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
-                        {children[0]?.it.subjectName || ''}
+                        {child.subjectName}
                       </td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
-                      <td rowSpan={rowspan} className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
                     </tr>
-                  );
-
-                  // Remaining child rows: only the child name (scores are rowspan'd above)
-                  children.slice(1).forEach(({ it: child }, ci) => {
-                    rows.push(
-                      <tr key={`child-${idx}-${ci}`} className="bg-white">
-                        <td className="border border-black px-2 py-1 italic text-gray-700 text-xs">
-                          {child.subjectName}
-                        </td>
-                      </tr>
-                    );
-                  });
-
-                  // Mark parent + children as used
-                  usedIndices.add(idx);
-                  children.forEach(({ i }) => usedIndices.add(i));
-                } else if (!item.parentCode) {
-                  // Standalone subject: name spans 2 columns (colspan=2)
-                  rows.push(
-                    <tr key={`standalone-${idx}`} className={idx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
-                      <td colSpan={2} className="border border-black px-2 py-1 font-medium text-xs">
-                        {item.subjectName}
-                      </td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test1)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.test2)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.exam)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.firstTermScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.secondTermScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.thirdTermScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs font-semibold">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.totalScore)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{fmt(item.classAverage)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs">{ordinal(item.position)}</td>
-                      <td className="border border-black px-2 py-1 text-center text-xs font-bold">{item.grade || '-'}</td>
-                      <td className="border border-black px-2 py-1 text-center text-[11px]">{item.remark || ''}</td>
-                    </tr>
-                  );
-                  usedIndices.add(idx);
-                }
-                // Child items without a parent in the list are skipped (they'll be rendered by their parent)
-              });
-
-              return rows;
-            })()}
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>

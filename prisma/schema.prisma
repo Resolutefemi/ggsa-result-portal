@@ -18,6 +18,7 @@ model Teacher {
   email        String?
   subject      String? // main subject taught
   role         String   @default("TEACHER") // TEACHER | ADMIN
+  status       String   @default("PENDING") // PENDING (awaiting admin approval) | APPROVED | REJECTED
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

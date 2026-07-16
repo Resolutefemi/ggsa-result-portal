@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
         email,
         subject,
         role: role || 'TEACHER',
+        status: 'APPROVED', // admin-created teachers are auto-approved
         classes: classIds?.length
           ? { create: classIds.map((cid: string) => ({ classId: cid })) }
           : undefined,

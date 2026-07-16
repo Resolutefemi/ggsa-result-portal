@@ -211,9 +211,10 @@ export default function Home() {
             aria-label="Home"
           >
             <img
-              src="/logo.png"
+              src="/logo-transparent.png"
               alt="GGSA Logo"
               className="w-12 h-12 object-contain"
+              style={{ backgroundColor: 'transparent' }}
               draggable={false}
             />
             <div className="text-left hidden sm:block">
@@ -441,9 +442,10 @@ function HomeView({
             >
               <div className="absolute -inset-3 bg-amber-400/30 rounded-full blur-2xl group-hover:bg-amber-400/50 transition" />
               <img
-                src="/logo.png"
+                src="/logo-transparent.png"
                 alt="God Generals Standard Academy logo"
                 className="relative w-48 h-48 sm:w-64 sm:h-64 object-contain drop-shadow-2xl group-hover:scale-105 transition"
+                style={{ backgroundColor: 'transparent' }}
                 draggable={false}
               />
               {logoClicks > 0 && (

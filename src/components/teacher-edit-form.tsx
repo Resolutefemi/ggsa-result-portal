@@ -164,6 +164,20 @@ export function TeacherEditForm({
     item.totalScore = computeTotal(item);
     item.grade = calculateGrade(item.totalScore);
     item.remark = gradeRemark(item.grade);
+
+    // Auto-fill the current term's score column with the Total.
+    // If filling 1st Term -> 1st Term Score = Total
+    // If filling 2nd Term -> 2nd Term Score = Total
+    // If filling 3rd Term -> 3rd Term Score = Total
+    // (only auto-fill when the test/exam scores change, not when the
+    //  teacher is manually editing a different term's column)
+    const isScoreField = field === 'test1' || field === 'test2' || field === 'exam';
+    if (isScoreField && item.totalScore != null) {
+      if (term === '1st Term') item.firstTermScore = item.totalScore;
+      else if (term === '2nd Term') item.secondTermScore = item.totalScore;
+      else if (term === '3rd Term') item.thirdTermScore = item.totalScore;
+    }
+
     items[idx] = item;
     setData({ ...data, items });
   };
@@ -454,14 +468,14 @@ export function TeacherEditForm({
               <thead>
                 <tr className="bg-purple-900 text-white">
                   <th className="border border-purple-700 px-2 py-1 text-left">SUBJECT</th>
-                  <th className="border border-purple-700 px-1 py-1">(A) Test 1</th>
-                  <th className="border border-purple-700 px-1 py-1">(B) Test 2</th>
-                  <th className="border border-purple-700 px-1 py-1">(C) Exam</th>
-                  <th className="border border-purple-700 px-1 py-1 bg-purple-800">(D) Total</th>
-                  <th className="border border-purple-700 px-1 py-1">(E) 1st Term</th>
-                  <th className="border border-purple-700 px-1 py-1">(F) 2nd Term</th>
-                  <th className="border border-purple-700 px-1 py-1">(G) 3rd Term</th>
-                  <th className="border border-purple-700 px-1 py-1 bg-amber-700">(L) Grade</th>
+                  <th className="border border-purple-700 px-1 py-1">Test 1</th>
+                  <th className="border border-purple-700 px-1 py-1">Test 2</th>
+                  <th className="border border-purple-700 px-1 py-1">Exam</th>
+                  <th className="border border-purple-700 px-1 py-1 bg-purple-800">Total</th>
+                  <th className="border border-purple-700 px-1 py-1">1st Term</th>
+                  <th className="border border-purple-700 px-1 py-1">2nd Term</th>
+                  <th className="border border-purple-700 px-1 py-1">3rd Term</th>
+                  <th className="border border-purple-700 px-1 py-1 bg-amber-700">Grade</th>
                   <th className="border border-purple-700 px-1 py-1">Remark</th>
                 </tr>
               </thead>
@@ -513,38 +527,60 @@ export function TeacherEditForm({
                     <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-purple-100/40">
                       {item.totalScore != null ? item.totalScore : '-'}
                     </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        value={item.firstTermScore ?? ''}
-                        onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
+                    {/* 1st Term Score column */}
+                    <td className={`border border-gray-300 p-0.5 ${term === '1st Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '1st Term' ? (
+                        // Auto-filled from Total — read-only
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
+                          {item.firstTermScore != null ? item.firstTermScore : '-'}
+                        </div>
+                      ) : (
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={item.firstTermScore ?? ''}
+                          onChange={(e) => updateItem(idx, 'firstTermScore', e.target.value)}
+                          disabled={isFinalized}
+                          className="h-8 text-center text-xs border-0"
+                          placeholder="-"
+                        />
+                      )}
                     </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        value={item.secondTermScore ?? ''}
-                        onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
+                    {/* 2nd Term Score column */}
+                    <td className={`border border-gray-300 p-0.5 ${term === '2nd Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '2nd Term' ? (
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
+                          {item.secondTermScore != null ? item.secondTermScore : '-'}
+                        </div>
+                      ) : (
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={item.secondTermScore ?? ''}
+                          onChange={(e) => updateItem(idx, 'secondTermScore', e.target.value)}
+                          disabled={isFinalized}
+                          className="h-8 text-center text-xs border-0"
+                          placeholder="-"
+                        />
+                      )}
                     </td>
-                    <td className="border border-gray-300 p-0.5">
-                      <Input
-                        type="number"
-                        step="0.5"
-                        value={item.thirdTermScore ?? ''}
-                        onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)}
-                        disabled={isFinalized}
-                        className="h-8 text-center text-xs border-0"
-                        placeholder="-"
-                      />
+                    {/* 3rd Term Score column */}
+                    <td className={`border border-gray-300 p-0.5 ${term === '3rd Term' ? 'bg-amber-50' : ''}`}>
+                      {term === '3rd Term' ? (
+                        <div className="h-8 flex items-center justify-center text-xs font-bold text-amber-700">
+                          {item.thirdTermScore != null ? item.thirdTermScore : '-'}
+                        </div>
+                      ) : (
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={item.thirdTermScore ?? ''}
+                          onChange={(e) => updateItem(idx, 'thirdTermScore', e.target.value)}
+                          disabled={isFinalized}
+                          className="h-8 text-center text-xs border-0"
+                          placeholder="-"
+                        />
+                      )}
                     </td>
                     <td className="border border-gray-300 px-1 py-1 text-center font-bold bg-amber-100/40">
                       {item.grade || '-'}
@@ -559,7 +595,8 @@ export function TeacherEditForm({
           </div>
           <p className="text-[11px] text-muted-foreground mt-2">
             <AlertCircle className="w-3 h-3 inline mr-1" />
-            (D) Total = Test 1 + Test 2 + Exam • Grade: A(70+), B(60-69), C(50-59), D(45-49), E(40-44), F(0-39)
+            Total = Test 1 + Test 2 + Exam • The <strong>{term}</strong> column auto-fills with the Total.
+            Enter the other terms' scores manually if needed. Grade: A(70+), B(60-69), C(50-59), D(45-49), E(40-44), F(0-39)
           </p>
         </CardContent>
       </Card>

@@ -155,7 +155,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === STUDENT INFO BAR === */}
-      <div className="student-info-bar grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
         <div><span className="font-semibold">Name:</span> {student.name || '-'}</div>
         <div><span className="font-semibold">Class:</span> {student.className}</div>
         {student.admissionNumber && (
@@ -331,7 +331,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === SIGNATURES === */}
-      <div className="signature-section grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
+      <div className="grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
         <div className="text-center">
           {/* Teacher's signature (uploaded image) */}
           {teacherSignatureImage ? (
@@ -371,7 +371,7 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
       </div>
 
       {/* === GRADING KEY + NEXT TERM === */}
-      <div className="grading-key grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
+      <div className="grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
         <div className="border border-gray-400 rounded p-2 col-span-2">
           <div className="font-semibold text-ggsa-purple mb-1">KEYS TO RATING / SCORE RATING</div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2">

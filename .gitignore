@@ -71,4 +71,5 @@ tool-results/
 /mini-services/*/node_modules
 
 # Z scripts
-/.zscripts/
+/.zscripts/download/result-test.pdf
+download/*.pdf

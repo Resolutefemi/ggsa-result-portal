@@ -135,37 +135,90 @@
 .text-ggsa-gold { color: var(--ggsa-gold); }
 .border-ggsa-purple { border-color: var(--ggsa-purple); }
 
-/* Print styles for result — A4 one-page fit */
+/* Print styles for result — full A4 page */
 @media print {
-  body { background: white !important; }
+  body { background: white !important; margin: 0 !important; padding: 0 !important; }
   .no-print, .no-print * { display: none !important; }
   .print-only { display: block !important; }
+
+  /* Force the main wrapper to fill the paper */
   .result-sheet {
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    max-width: none !important;
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
-  @page {
-    size: A4 portrait;
-    margin: 10mm 15mm;
+    max-width: none !important; /* Remove any max-width cap */
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important; /* content flows top-down */
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
   }
 
-  /* Print: keep readable font sizes but tighten padding/line-height */
-  .result-sheet { font-size: 11px !important; }
-  .result-sheet h1 { font-size: 22px !important; }
-  .result-sheet h2 { font-size: 14px !important; }
-  .result-table { font-size: 10px !important; min-width: auto !important; width: 100% !important; }
-  .result-table th, .result-table td {
-    padding: 2px 3px !important;
-    font-size: 10px !important;
-    line-height: 1.15 !important;
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
   }
-  .result-sheet .print-tight { padding: 4px !important; margin: 2px 0 !important; }
+
+  /* Header: remove all margin-bottom, center across full width */
+  .result-sheet > div:first-child {
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    width: 100% !important;
+  }
+  .result-sheet h1 { font-size: 20px !important; margin: 0 !important; }
+  .result-sheet h2 { font-size: 13px !important; margin: 0 !important; }
+  .result-sheet p { margin: 0 !important; }
+
+  /* Student info bar — tight, full width */
+  .result-sheet .student-info-bar,
+  .result-sheet > div:nth-child(2) {
+    padding: 2px 4px !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Force the table to stretch to full page width */
+  .result-table {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important; /* Remove the 900px min-width cap */
+    table-layout: fixed !important; /* Columns distribute evenly */
+    font-size: 11px !important;
+    border-collapse: collapse !important;
+  }
+
+  /* Every cell: clear border + readable padding */
+  .result-table th, .result-table td {
+    border: 1px solid black !important;
+    padding: 4px 3px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    word-wrap: break-word;
+  }
+
+  /* Character/behaviour + reports — full width, tight */
+  .result-sheet .grid {
+    margin-top: 4px !important;
+    padding: 0 4px !important;
+    width: 100% !important;
+  }
+
+  /* Signatures — spread across full width */
+  .result-sheet .signature-section {
+    margin-top: 8px !important;
+    padding: 0 6px !important;
+    width: 100% !important;
+  }
+
+  /* Grading key — full width */
+  .result-sheet .grading-key {
+    margin-top: 4px !important;
+    padding: 2px 4px !important;
+    width: 100% !important;
+  }
 }
 .print-only { display: none; }
 

@@ -9,7 +9,7 @@
  * - "Finalize Result" button -> /api/finalize (computes positions, class average)
  * - "View/Download Result" button -> shows printable sheet
  */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +32,7 @@ import {
   ArrowLeft,
   Save,
   CheckCheck,
+  CheckCircle2,
   Eye,
   Lock,
   Edit3,
@@ -120,6 +121,11 @@ export function TeacherEditForm({
   const [finalizing, setFinalizing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
+  // Auto-save state (Google Forms style)
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstLoad = useRef(true);
+
   // Teacher signature state
   const [teacherSignature, setTeacherSignature] = useState<string | null>(null);
   const [signatureDirty, setSignatureDirty] = useState(false);
@@ -154,6 +160,72 @@ export function TeacherEditForm({
   useEffect(() => {
     load();
   }, [load]);
+
+  // === Auto-save (Google Forms style) ===
+  // Debounced: saves 2 seconds after the last change.
+  // Persists across reloads/logouts because the data is stored server-side.
+  useEffect(() => {
+    // Skip the initial load (don't save immediately after fetching)
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      return;
+    }
+    // Skip if no data, still loading, or finalized (can't edit finalized)
+    if (!data || loading) return;
+    if (data.result.status === 'FINALIZED') return;
+
+    // Clear any existing timer
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+
+    // Set a new timer to save after 2 seconds of inactivity
+    setAutoSaveStatus('saving');
+    autoSaveTimer.current = setTimeout(async () => {
+      try {
+        const payload = {
+          studentId: student.id,
+          term,
+          session,
+          items: data.items.map((i) => ({
+            id: i.id,
+            subjectId: i.subjectId,
+            test1: i.test1,
+            test2: i.test2,
+            exam: i.exam,
+            firstTermScore: i.firstTermScore,
+            secondTermScore: i.secondTermScore,
+            thirdTermScore: i.thirdTermScore,
+          })),
+          traits: data.traits.map((t) => ({
+            section: t.section,
+            name: t.name,
+            rating: t.rating,
+          })),
+          schoolOpened: data.result.schoolOpened,
+          timesSchoolOpened: data.result.timesSchoolOpened,
+          marksObtainable: data.result.marksObtainable,
+          teacherReport: data.result.teacherReport,
+          principalReport: data.result.principalReport,
+          teacherSignature: data.result.teacherSignature,
+          nextTermBegins: data.result.nextTermBegins,
+        };
+        await fetch('/api/teacher/result', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        setAutoSaveStatus('saved');
+        // Reset to idle after 3 seconds
+        setTimeout(() => setAutoSaveStatus('idle'), 3000);
+      } catch {
+        setAutoSaveStatus('idle');
+      }
+    }, 2000);
+
+    // Cleanup on unmount
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [data, loading]);
 
   // === Update item field with auto-calc ===
   const updateItem = (idx: number, field: keyof ItemRow, value: string) => {
@@ -364,7 +436,19 @@ export function TeacherEditForm({
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Back to {cls.name}
         </Button>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Auto-save status indicator */}
+          {autoSaveStatus === 'saving' && (
+            <span className="text-xs text-amber-600 flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              Saving...
+            </span>
+          )}
+          {autoSaveStatus === 'saved' && (
+            <span className="text-xs text-green-600 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" /> All changes saved
+            </span>
+          )}
           <Button variant="outline" onClick={handleViewResult}>
             <Eye className="w-4 h-4 mr-1" /> View Result
           </Button>

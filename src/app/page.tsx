@@ -339,6 +339,13 @@ export default function Home() {
               setSelectedStudent(s);
               setView('teacher-edit');
             }}
+            onRefresh={() => {
+              if (selectedClass) {
+                fetch(`/api/teacher/students?classId=${selectedClass.id}`)
+                  .then((r) => r.json())
+                  .then((d) => setStudents(d.students || []));
+              }
+            }}
           />
         )}
 
@@ -1045,6 +1052,7 @@ function TeacherStudentsView({
   onSessionChange,
   onBack,
   onOpenStudent,
+  onRefresh,
 }: {
   cls: SchoolClass;
   students: StudentListItem[];
@@ -1054,7 +1062,62 @@ function TeacherStudentsView({
   onSessionChange: (v: string) => void;
   onBack: () => void;
   onOpenStudent: (s: StudentListItem) => void;
+  onRefresh: () => void;
 }) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newSex, setNewSex] = useState('M');
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleAdd = async () => {
+    if (!newName.trim()) {
+      toast({ title: 'Name is required', variant: 'destructive' });
+      return;
+    }
+    setAdding(true);
+    try {
+      const r = await fetch('/api/teacher/student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName.trim(), classId: cls.id, sex: newSex, year: session }),
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        toast({ title: d.error || 'Failed to add student', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Student added', description: d.student?.admissionNumber ? `ADM: ${d.student.admissionNumber}` : undefined });
+      setNewName('');
+      setShowAdd(false);
+      onRefresh();
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Delete "${name}" and all their results? This cannot be undone.`)) return;
+    setDeletingId(id);
+    try {
+      const r = await fetch(`/api/teacher/student?id=${id}`, { method: 'DELETE' });
+      if (r.ok) {
+        toast({ title: 'Student deleted' });
+        onRefresh();
+      } else {
+        const d = await r.json().catch(() => ({}));
+        toast({ title: d.error || 'Delete failed', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Network error', variant: 'destructive' });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1062,6 +1125,9 @@ function TeacherStudentsView({
           <ArrowLeft className="w-4 h-4 mr-1" /> Back to Classes
         </Button>
         <div className="flex flex-wrap gap-2 items-end">
+          <Button size="sm" onClick={() => setShowAdd(!showAdd)} className="bg-ggsa-purple hover:bg-purple-800">
+            <UserPlus className="w-4 h-4 mr-1" /> Add Student
+          </Button>
           <div>
             <Label className="text-xs">Term</Label>
             <Select value={term} onValueChange={onTermChange}>
@@ -1084,10 +1150,46 @@ function TeacherStudentsView({
         </div>
       </div>
 
+      {/* Add Student inline form */}
+      {showAdd && (
+        <Card className="border-purple-200">
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-2 items-end">
+              <div className="flex-1 min-w-[200px]">
+                <Label className="text-xs">Full Name</Label>
+                <Input
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g., Adeyemi Johnson"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                  autoFocus
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Sex</Label>
+                <Select value={newSex} onValueChange={setNewSex}>
+                  <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="M">Male</SelectItem>
+                    <SelectItem value="F">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleAdd} disabled={adding} className="bg-ggsa-purple hover:bg-purple-800">
+                {adding ? 'Adding...' : 'Save'}
+              </Button>
+              <Button variant="outline" onClick={() => { setShowAdd(false); setNewName(''); }}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-ggsa-purple" /> {cls.name} — Students
+            <Users className="w-5 h-5 text-ggsa-purple" /> {cls.name} — Students ({students.length})
           </CardTitle>
           <CardDescription>
             Click a student to input or edit their result for <strong>{term}, {session}</strong>.
@@ -1096,7 +1198,7 @@ function TeacherStudentsView({
         <CardContent>
           {students.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No students in this class yet.
+              No students in this class yet. Click "Add Student" to create one.
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -1108,33 +1210,50 @@ function TeacherStudentsView({
                   s.latestResult?.term === term &&
                   s.latestResult?.session === session;
                 return (
-                  <button
+                  <div
                     key={s.id}
-                    onClick={() => onOpenStudent(s)}
                     className="text-left p-3 rounded-lg border border-gray-200 bg-white hover:bg-purple-50 hover:border-purple-300 transition flex items-center gap-3"
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                      s.sex === 'F' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      {s.name.charAt(0)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">{s.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {s.admissionNumber || 'No admission number'}
+                    <button
+                      onClick={() => onOpenStudent(s)}
+                      className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                        s.sex === 'F' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {s.name.charAt(0)}
                       </div>
-                    </div>
-                    {isFinalized && (
-                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                        <CheckCircle2 className="w-3 h-3 mr-1" /> Final
-                      </Badge>
-                    )}
-                    {hasDraft && (
-                      <Badge variant="outline" className="text-amber-700 border-amber-300 bg-amber-50">
-                        Draft
-                      </Badge>
-                    )}
-                  </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm truncate">{s.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {s.admissionNumber || 'No admission number'}
+                        </div>
+                      </div>
+                      {isFinalized && (
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                          <CheckCircle2 className="w-3 h-3 mr-1" /> Final
+                        </Badge>
+                      )}
+                      {hasDraft && (
+                        <Badge variant="outline" className="text-amber-700 border-amber-300 bg-amber-50">
+                          Draft
+                        </Badge>
+                      )}
+                    </button>
+                    {/* Delete button */}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive px-2 flex-shrink-0"
+                      disabled={deletingId === s.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(s.id, s.name);
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
                 );
               })}
             </div>

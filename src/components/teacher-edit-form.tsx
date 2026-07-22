@@ -37,7 +37,54 @@ import {
   Lock,
   Edit3,
   AlertCircle,
+  Download,
 } from 'lucide-react';
+
+/**
+ * Downloads the result sheet as a self-contained HTML file.
+ */
+function downloadResultHTML() {
+  const sheet = document.querySelector('.result-sheet') as HTMLElement;
+  if (!sheet) return;
+
+  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map((el) => el.outerHTML)
+    .join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Result Sheet</title>
+${styles}
+<style>
+  @media print {
+    @page { size: A4 portrait; margin: 10mm; }
+    .no-print { display: none !important; }
+  }
+  body { background: white; margin: 0; padding: 20px; }
+  .result-sheet { box-shadow: none !important; border: none !important; max-width: none !important; }
+</style>
+</head>
+<body>
+${sheet.outerHTML}
+<script>
+  window.onload = function() { setTimeout(function() { window.print(); }, 500); };
+</script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'result-sheet.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 interface ItemRow {
   id: string | null;
@@ -412,8 +459,8 @@ export function TeacherEditForm({
           <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back to Edit
           </Button>
-          <Button onClick={() => window.print()} className="bg-ggsa-purple hover:bg-purple-800">
-            Print / Save as PDF
+          <Button onClick={() => downloadResultHTML()} className="bg-ggsa-purple hover:bg-purple-800">
+            <Download className="w-4 h-4 mr-1" /> Download Result
           </Button>
         </div>
         <ResultSheet

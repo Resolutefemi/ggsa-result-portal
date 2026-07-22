@@ -271,39 +271,17 @@ export function ResultSheet({ data }: { data: ResultSheetData }) {
         </div>
       </div>
 
-      {/* === SIGNATURES === */}
+      {/* === SIGNATURES (blank lines — signed manually after printing) === */}
       <div className="signature-section grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
         <div className="text-center">
-          {/* Teacher's signature (uploaded image) */}
-          {teacherSignatureImage ? (
-            <div className="h-16 flex items-end justify-center mb-1">
-              <img
-                src={teacherSignatureImage}
-                alt="Teacher signature"
-                className="max-h-16 max-w-[180px] object-contain"
-              />
-            </div>
-          ) : (
-            <div className="h-16 mb-1" />
-          )}
+          <div className="h-12 mb-1" />
           <div className="border-t border-gray-700 pt-1">
             <div className="font-semibold">Class Teacher's Signature</div>
-            <div className="text-gray-700">{result.teacherSignature || '(Teacher name not set)'}</div>
+            <div className="text-gray-700">{result.teacherSignature || ''}</div>
           </div>
         </div>
         <div className="text-center">
-          {/* Principal's signature (uploaded image) */}
-          {principalSignatureImage ? (
-            <div className="h-16 flex items-end justify-center mb-1">
-              <img
-                src={principalSignatureImage}
-                alt="Principal signature"
-                className="max-h-16 max-w-[180px] object-contain"
-              />
-            </div>
-          ) : (
-            <div className="h-16 mb-1" />
-          )}
+          <div className="h-12 mb-1" />
           <div className="border-t border-gray-700 pt-1">
             <div className="font-semibold">Principal's Signature</div>
             <div className="text-gray-700 text-xs">God Generals Standard Academy</div>

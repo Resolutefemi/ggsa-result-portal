@@ -1,34 +1,59 @@
 'use client';
 
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 
 /**
  * Downloads the result sheet element as a PDF file.
- * Uses html2canvas to capture the element, then jsPDF to create the PDF.
+ * Uses html2canvas-pro (supports oklch/modern CSS) + jsPDF.
  */
 export async function downloadResultPDF(): Promise<void> {
   const sheet = document.querySelector('.result-sheet') as HTMLElement;
   if (!sheet) {
-    console.error('No .result-sheet element found');
+    alert('Could not find the result sheet to download.');
     return;
   }
 
-  // Show a temporary loading state
   const btn = document.activeElement as HTMLElement;
-  if (btn) btn.setAttribute('data-original-text', btn.textContent || '');
-  if (btn) btn.textContent = 'Generating PDF...';
+  const originalText = btn?.textContent || '';
+  if (btn) btn.textContent = 'Downloading...';
 
   try {
-    // Capture the result sheet as a canvas image
-    const canvas = await html2canvas(sheet, {
-      scale: 2, // Higher quality
+    // Clone the sheet and render it in an off-screen container with
+    // inline styles so html2canvas doesn't need to resolve external CSS
+    const clone = sheet.cloneNode(true) as HTMLElement;
+
+    // Create an off-screen container
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '800px';
+    container.style.background = '#ffffff';
+
+    // Force inline styles on the clone for reliable rendering
+    clone.style.maxWidth = 'none';
+    clone.style.width = '100%';
+    clone.style.boxShadow = 'none';
+    clone.style.border = 'none';
+    clone.style.margin = '0';
+    clone.style.padding = '0';
+
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    // Capture as canvas
+    const canvas = await html2canvas(container, {
+      scale: 2,
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
     });
 
-    const imgData = canvas.toDataURL('image/png');
+    // Remove the off-screen container
+    document.body.removeChild(container);
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
 
@@ -42,33 +67,36 @@ export async function downloadResultPDF(): Promise<void> {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    // Calculate the image dimensions to fit the PDF page
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    const scaledWidth = imgWidth * ratio;
+    // Fit the image to the PDF page width
+    const ratio = pdfWidth / imgWidth;
+    const scaledWidth = pdfWidth;
     const scaledHeight = imgHeight * ratio;
 
-    // Center on the page
-    const x = (pdfWidth - scaledWidth) / 2;
-    const y = 5; // Small top margin
+    if (scaledHeight <= pdfHeight) {
+      // Fits on one page
+      pdf.addImage(imgData, 'JPEG', 0, 0, scaledWidth, scaledHeight);
+    } else {
+      // Content is taller than one page — slice into multiple pages
+      let heightLeft = scaledHeight;
+      let position = 0;
 
-    pdf.addImage(imgData, 'PNG', x, y, scaledWidth, scaledHeight);
+      pdf.addImage(imgData, 'JPEG', 0, position, scaledWidth, scaledHeight);
+      heightLeft -= pdfHeight;
 
-    // If the content is taller than one page, split across pages
-    if (scaledHeight > pdfHeight - 10) {
-      // Content fits within one page after scaling — just use it
-      // (html2canvas captures everything, jsPDF scales it down)
+      while (heightLeft > 0) {
+        position = -(scaledHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, scaledWidth, scaledHeight);
+        heightLeft -= pdfHeight;
+      }
     }
 
-    // Download the PDF
     pdf.save('result-sheet.pdf');
   } catch (err) {
-    console.error('PDF generation failed:', err);
-    alert('Could not generate PDF. Please try again.');
+    console.error('PDF download failed:', err);
+    // Fallback: just trigger window.print() so user can Save as PDF
+    window.print();
   } finally {
-    // Restore button text
-    if (btn && btn.getAttribute('data-original-text')) {
-      btn.textContent = btn.getAttribute('data-original-text');
-      btn.removeAttribute('data-original-text');
-    }
+    if (btn) btn.textContent = originalText;
   }
 }

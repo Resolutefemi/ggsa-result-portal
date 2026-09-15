@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on a careful line-by-line reading of the report card, here is the information extracted:\n\n**1) Student Name:**\nABAYO OLUMAGBEMIGA\n\n**2) Class:**\nJSS 2 (or J S S 2)\n\n**3) Term:**\nSECOND TERM (written in the top left corner)\n\n**4) Results Table (Subject by Subject):**\n\n*   **English Studies**\n    *   Test 1: 10\n    *   Test 2: 19\n    *   Exam: 45\n    *   Total/Marks Obtained: 74\n    *   *(Note: Other columns contain 76, 74, —, 74, 86, 50, 55, 2nd, A, Excellent)*\n\n*   **Mathematics**\n    *   Test 1: 10\n    *   Test 2: 20\n    *   Exam: 46\n    *   Total/Marks Obtained: 76\n    *   *(Note: Other columns contain 74, 76, —, 76, 58, 53, 1st, A, excellent)*\n\n*   **Yoruba Studies** (The first letter looks like 'Y' or 'a', but contextually it is Yoruba)\n    *   Test 1: 15\n    *   Test 2: 16\n    *   Exam: 51\n    *   Total/Marks Obtained: 82\n    *   *(Note: Other columns contain 75, 82, —, 82, 57, 57, 1st, A', Excellent)*\n\n*   **Business Studies**\n    *   Test 1: 18\n    *   Test 2: 16\n    *   Exam: 56\n    *   Total/Marks Obtained: 90\n    *   *(Note: Other columns contain 88, 90, —, 90, 94, 46, 62, 2nd, A, Excellent)*\n\n*   **Basic Science** (Labeled as \"Basic Scjence\")\n    *   Test 1: 14\n    *   Test 2: 19\n    *   Exam: 47\n    *   Total/Marks Obtained: 80\n    *   *(Note: Other columns contain 84, 80, —, 80, 80, 59, 57, 1st, A, Excellent)*\n\n*   **Civic Edu** (Civic Education)\n    *   Test 1: 20\n    *   Test 2: 20\n    *   Exam: 50\n    *   Total/Marks Obtained: 90\n    *   *(Note: Other columns contain 70, 90, —, 90, 92, 54, 61, 2nd, A, Excellent)*\n\n*   **Cult & Creat Arts** (Cultural and Creative Arts)\n    *   Test 1: 19\n    *   Test 2: 17\n    *   Exam: 51\n    *   Total/Marks Obtained: 87\n    *   *(Note: Other columns contain —, 87, —, 87, 92, 40, 52, 2nd, A, Excellent)*\n\n*   **Agric Scieñce** (Agricultural Science)\n    *   Test 1: 16\n    *   Test 2: 14\n    *   Exam: 50\n    *   Total/Marks Obtained: 80 (or possibly 86, the digit is slightly unclear but looks like 80/86)\n    *   *(Note: Other columns contain 83, 80, —, 71, 80, 60, 43, 1st, A, Excellent)*\n\n*   **Home Economics**\n    *   Test 1: 20\n    *   Test 2: 20\n    *   Exam: 60\n    *   Total/Marks Obtained: 100\n    *   *(Note: Other columns contain 92, 100, 91, 100, 70, 51, 1st, A, Excellent)*\n\n**5) Remarks:**\n\n*   **Teacher's Report:** \"Outstanding result. Keep it up.\" (The handwriting is cursive; \"Outstanding\" is clearly visible, followed by \"result\". The next line looks like \"Keep it up\").\n*   **Principal's Remark:** This section is blank/not filled in on this duplicate copy.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506798,
+  "id": "2026091605125976027610fd6d4bfa",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026091605125976027610fd6d4bfa",
+  "usage": {
+    "completion_tokens": 980,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 7007
+  }
+}

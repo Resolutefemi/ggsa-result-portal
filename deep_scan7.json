@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card image, here is the detailed information:\n\n**1. Student Name:**\nARIYO OLUMASEGUN\n\n**2. Class:**\nJSS 3 (Junior Secondary School 3)\n\n**3. Term:**\nSECOND TERM\n*(Note: The year is written as 2025/2026)*\n\n---\n\n**4. Results Table (Subject by Subject):**\n\n*   **English Studies**\n    *   Test 1: 18 | Test 2: 20 | Exam: 48 | Total: 86\n    *   *(Other visible scores: 1st Term Score: 74, 2nd Term Score: 86, Cumulative Score: 86, Overall Score: 86, Highest Score: 50, Class Average: 55, Position: 1st, Grade: A, Remark: Excellent)*\n\n*   **Mathematics**\n    *   Test 1: 12 | Test 2: 20 | Exam: 42 | Total: 74\n    *   *(Other visible scores: 1st Term: 74, 2nd Term: 74, Cumulative: 74, Overall: 76, Highest: 58, Class Avg: 53, Position: 2nd, Grade: A, Remark: Excellent)*\n\n*   **Yoruba Studies**\n    *   Test 1: 16 | Test 2: 15 | Exam: 47 | Total: 78\n    *   *(Other visible scores: 1st Term: 74, 2nd Term: 78, Cumulative: 78, Overall: 82, Highest: 57, Class Avg: 57, Position: 2nd, Grade: A, Remark: excellent)*\n\n*   **Business Studies**\n    *   Test 1: 16 | Test 2: 19 | Exam: 59 | Total: 94\n    *   *(Other visible scores: 1st Term: 81, 2nd Term: 94, Cumulative: 94, Overall: 94, Highest: 46, Class Avg: 62, Position: 1st, Grade: A, Remark: Excellent)*\n\n*   **Basic Science / Basic Technology** *(Written as \"Basic Scien\" and \"ation Tech\")*\n    *   Test 1: 12 | Test 2: 19 | Exam: 46 | Total: 77\n    *   *(Other visible scores: 1st Term: 81, 2nd Term: 77, Cumulative: 77, Overall: 80, Highest: 59, Class Avg: 57, Position: 2nd, Grade: A, Remark: Excellent)*\n\n*   **Social Studies / Civic Education** *(Written as \"Social Studies\" and \"Civic Edu.\")*\n    *   Test 1: 20 | Test 2: 20 | Exam: 52 | Total: 92\n    *   *(Other visible scores: 1st Term: 70, 2nd Term: 92, Cumulative: 92, Overall: 92, Highest: 54, Class Avg: 61, Position: 1st, Grade: A, Remark: excellent)*\n\n*   **Cultural & Creative Arts** *(Written as \"Cult & Creat. Arts\")*\n    *   Test 1: 16 | Test 2: 19 | Exam: 57 | Total: 92\n    *   *(Other visible scores: 2nd Term: 92, Cumulative: 92, Overall: 92, Highest: 40, Class Avg: 52, Position: 1st, Grade: A, Remark: excellent)*\n\n*   **Agricultural Science** *(Written as \"Agric Science\")*\n    *   Test 1: 15 | Test 2: 13 | Exam: 48 | Total: 76\n    *   *(Other visible scores: 1st Term: 83, 2nd Term: 76, Cumulative: 71, Overall: 80, Highest: 60, Class Avg: 43, Position: 2nd, Grade: A, Remark: Excellent)*\n\n*   **Home Economics**\n    *   Test 1: 20 | Test 2: 20 | Exam: 60 | Total: 100\n    *   *(Other visible scores: 1st Term: 81, 2nd Term: 100, Cumulative: 91, Overall: 100, Highest: 70, Class Avg: 51, Position: 1st, Grade: A, Remark: Excellent)*\n\n---\n\n**5. Remarks:**\n\n*   **Teacher's Report:** \"Consistently delivers keys to outstanding performance. Keep it up.\"\n*   **Principal's Report/Stamp:** The principal's signature area contains a stamp that reads \"**OKOYA B.A.K.**\" (likely the Principal's name) with \"**PRINCIPAL**\" underneath. There is no separate handwritten remark from the principal visible in the designated space.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506778,
+  "id": "20260916051231323cfbb001d74536",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916051231323cfbb001d74536",
+  "usage": {
+    "completion_tokens": 1078,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 7105
+  }
+}

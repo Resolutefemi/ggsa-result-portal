@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on a careful line-by-line reading of the report card, here are the details:\n\n**1. Student Name:**\nJOHNSON GABRIELLA (The handwriting shows \"Johnlson\" or \"Johnson\" for the first name and \"Gabemisal-A\" or \"Gabriella\" for the second. The most accurate reading of the cursive is **JOHNSON GABRIELLA**).\n\n**2. Class:**\nJSS 3 (or **JSS3**)\n\n**3. Term:**\nSECOND TERM (or **2nd Term**)\n\n**4. Results Table (Subject by Subject):**\n\n*   **English Studies:** Test 1: **06**, Test 2: **18**, Exam: **40**, Total/Aggregate: **64**, Cumulative Score: **74**, Class Average: **58**, Position: **8th**, Grade: **B**, Remark: *Average*\n*   **Mathematics:** Test 1: **03**, Test 2: **16**, Exam: **34**, Total/Aggregate: **55**, Cumulative Score: **50**, Class Average: **57**, Position: **13th**, Grade: **C**, Remark: *Good*\n*   **Yoruba Studies:** (No scores filled in for this row)\n*   **Business Studies:** Test 1: **11**, Test 2: **17**, Exam: **51**, Total/Aggregate: **79**, Cumulative Score: **66**, Class Average: **62**, Position: **2nd**, Grade: **A**, Remark: *Excellent*\n*   **Basic Science / Information Technology:** (Combined row) Test 1: **10**, Test 2: **17**, Exam: **42**, Total/Aggregate: **69**, Cumulative Score: **69**, Class Average: **57**, Position: **3rd**, Grade: **B**, Remark: *Good*\n*   **Social Studies / Civic Education / Security Education:** (Combined row) Test 1: **16**, Test 2: **14**, Exam: **40**, Total/Aggregate: **70**, Cumulative Score: **70**, Class Average: **61**, Position: **1st**, Grade: **A**, Remark: *Excellent*\n*   **Cultural & Creative Arts (C.C.A) / Igbo/Music:** (Combined row) Test 1: **02**, Test 2: **10**, Exam: **28**, Total/Aggregate: **40**, Cumulative Score: **49**, Class Average: **52**, Position: **14th**, Grade: **E**, Remark: *Fair*\n*   **Agricultural Science:** Test 1: **14**, Test 2: **13**, Exam: **42**, Total/Aggregate: **69**, Cumulative Score: **71**, Class Average: **43**, Position: **3rd**, Grade: **B**, Remark: *Good*\n*   **Home Economics:** Test 1: **30**, Test 2: **20**, Exam: **54**, Total/Aggregate: **94**, Cumulative Score: **91**, Class Average: **51**, Position: **1st**, Grade: **A**, Remark: *Excellent*\n\n**5. Remarks:**\n\n*   **Teacher's Report/Remark:** \"Fair performance. Put in more effort.\" (Handwritten text reads: *\"Fair performance / Put more effort\"*).\n*   **Principal's Remark:** Not visible/filled in on this document.\n\n**Additional Note:** The next term is scheduled to begin on **4th April, 2026**.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506821,
+  "id": "20260916051318c1a74cfd6d0d420c",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916051318c1a74cfd6d0d420c",
+  "usage": {
+    "completion_tokens": 753,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6780
+  }
+}

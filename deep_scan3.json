@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card from **GOD GENERAL'S STANDARD ACADEMY**, here is the detailed information:\n\n**1) Student Name:**\nAKIYOD ADEWUNMI EMMANUEL\n\n**2) Class:**\nJSS 3\n\n**3) Term:**\nSECOND TERM\n\n**4) Results Table (Subject by Subject):**\n\n*   **English Studies:** Test 1: 18, Test 2: 11, Exam: 45, Total: **74**, Grade: **A**, Remark: Excellent\n*   **Mathematics:** Test 1: 10, Test 2: 14, Exam: 44, Total: **71**, Grade: **A**, Remark: Excellent\n*   **Basic Science:** Test 1: 15, Test 2: 16, Exam: 51, Total: **82**, Grade: **A**, Remark: Excellent\n*   **Business Studies:** Test 1: 16, Test 2: 16, Exam: 54, Total: **70**, Grade: **A**, Remark: Excellent\n*   **Physical & Health Education:** Test 1: N/D, Test 2: D, Exam: 47, Total: **60**, Grade: **A**, Remark: Excellent\n*   **Civic Education:** Test 1: 20, Test 2: 20, Exam: 50, Total: **90**, Grade: **A**, Remark: Excellent\n*   **Cultural & Creative Arts:** Test 1: 19, Test 2: 19, Exam: 51, Total: **89**, Grade: **A**, Remark: Excellent\n*   **Agricultural Science:** Test 1: 16, Test 2: 14, Exam: 50, Total: **77**, Grade: **A**, Remark: Excellent\n*   **Home Economics:** Test 1: 20, Test 2: 20, Exam: 60, Total: **81**, Grade: **A**, Remark: Excellent\n\n*(Note: The columns appear to be Test 1, Test 2, Exam Score, and Total/Aggregate. Some numbers in the \"Test\" columns for Physical & Health Education are unclear or marked as \"N/D\".)*\n\n**5) Remarks:**\n\n*   **Teacher's Remark:** Outstanding result. Keep it up.\n*   **Principal's Remark:** *(Not visible/filled in)*",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506675,
+  "id": "2026091605104801bf2f4998b3484f",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026091605104801bf2f4998b3484f",
+  "usage": {
+    "completion_tokens": 515,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 6542
+  }
+}

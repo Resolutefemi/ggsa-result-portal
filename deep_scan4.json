@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card from **GOD GENERALS STANDARD ACADEMY**, here is the information extracted line by line:\n\n**1. EXACT Student Name:**\nABINO CLUMNSI GOD\n\n**2. EXACT Class:**\nJSS 2 (or JSS2)\n\n**3. EXACT Term:**\n2nd Term\n\n---\n\n**4. Results Table (Subject by Subject):**\n*Note: The columns appear to be Test 1, Test 2, CA/Assessment, Exam, Total, and Class Average/Position based on the \"MAXIMUM MARKS OBTAINABLE\" row (20, 20, 60, 100, 100).*\n\n*   **English Studies:** 18 | 20 | 48 | 86 | 74 | **86**\n*   **Mathematics:** 12 | 20 | 42 | 74 | 74 | **74**\n*   **Yoruba Studies:** 16 | 15 | 47 | 78 | 74 | **78**\n*   **Business Studies:** 16 | 19 | 51 | 94 | 81 | **94**\n*   **Physical & H Edu / Basic Science / Information Tech / Phonology:** 10 | 19 | 48 | 77 | 81 | **77**\n*   **Civic Edu:** 20 | 20 | 52 | 92 | 70 | **92**\n*   **Cult & Creat Arts:** 16 | 19 | 57 | 92 | — | **92**\n*   **Basic Science:** 15 | 13 | 48 | 76 | 83 | **76**\n*   **Home Economics:** 20 | 20 | 60 | 100 | 81 | **100**\n\n*(Note: Some subjects like Social Studies, Security Education, Igbo/Music, and R.S/I.R.S have no scores entered in the visible columns.)*\n\n---\n\n**5. Remarks:**\n\n*   **Teacher's Remark:**\n    \"Consistently diligent. Outstanding performance. Keep it up.\"\n\n*   **Principal's Remark:**\n    *(Not clearly visible or left blank in the designated space)*",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506691,
+  "id": "20260916051115b4e307ad7edc40f2",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916051115b4e307ad7edc40f2",
+  "usage": {
+    "completion_tokens": 461,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6488
+  }
+}

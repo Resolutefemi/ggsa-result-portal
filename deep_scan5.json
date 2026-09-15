@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card image, here is the detailed information you requested:\n\n**1. Student Name (EXACT as written):**\n**ARIYO OLuwASEGUN**\n\n**2. Class (EXACT as written):**\n**JSS 3**\n\n**3. Term:**\n**SECOND TERM**\n*(Note: The handwritten text at the top left says \"2ND TERM\" or \"SECOND TERM\")*\n\n---\n\n**4. Results Table (Subject by Subject):**\n\n*   **English Studies**\n    *   Test 1: **18**\n    *   Test 2: **20**\n    *   Exam: **48**\n    *   Total: **86**\n\n*   **Mathematics**\n    *   Test 1: **12**\n    *   Test 2: **20**\n    *   Exam: **42**\n    *   Total: **74**\n\n*   **Yoruba Studies**\n    *   Test 1: **16**\n    *   Test 2: **15**\n    *   Exam: **47**\n    *   Total: **78**\n\n*   **Business Studies**\n    *   Test 1: **16**\n    *   Test 2: **19**\n    *   Exam: **59**\n    *   Total: **94**\n\n*   **Basic Science**\n    *   *(No scores are filled in for this row)*\n\n*   **Information Tech** (or **Nation Tech**)\n    *   Test 1: **12**\n    *   Test 2: **19**\n    *   Exam: **46**\n    *   Total: **77**\n\n*   **Civic Edu.** (or **Civic Education**)\n    *   Test 1: **20**\n    *   Test 2: **20**\n    *   Exam: **52**\n    *   Total: **92**\n\n*   **Cult & Creat. Arts** (or **Cultural and Creative Arts**)\n    *   Test 1: **16**\n    *   Test 2: **19**\n    *   Exam: **57**\n    *   Total: **92**\n\n*   **Agric Science**\n    *   Test 1: **15**\n    *   Test 2: **13**\n    *   Exam: **48**\n    *   Total: **76**\n\n*   **Home Economics**\n    *   Test 1: **20**\n    *   Test 2: **20**\n    *   Exam: **60**\n    *   Total: **100**\n\n*(Note: Other columns like Class Average, Position, and Grade contain data, but you specifically asked for the score columns. All grades listed are \"A\" with remarks of \"Excellent\".)*\n\n---\n\n**5. Remarks:**\n\n*   **Teacher's Report/Remark:**\n    \"Consistently diligent/outstanding performance. Keep it up\"\n    *(The handwriting is slightly cursive; it appears to say \"Consistently diligent\" or similar, followed by \"outstanding performance. Keep it up\")*\n\n*   **Principal's Remark:**\n    **Not visible/filled in** on this duplicate copy.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506733,
+  "id": "202609160511310f12c3483d7f47c1",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609160511310f12c3483d7f47c1",
+  "usage": {
+    "completion_tokens": 657,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 135
+    },
+    "total_tokens": 6684
+  }
+}

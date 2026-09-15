@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on a careful line-by-line reading of the report card, here is the exact information:\n\n**1) Student Name:**\nJOHNSON GBBEMISOLA\n\n**2) Class:**\nJSS 3\n\n**3) Term:**\nSECOND TERM (written in the top left corner)\n\n**4) Results Table (Subject, Test 1, Test 2, Exam, Total, Grade, Remark):**\n\n*   **English Studies:** 06, 18, 40, **84**, B, Average\n*   **Mathematics:** 08, 16, 34, **55**, C, Good\n*   **Yoruba Studies:** 11, 14, 51, **79**, A, Excellent\n*   **Basic Science:** 10, 17, 42, **69**, B, Good\n*   **Civic Education:** 16, 14, 40, **70**, A, Excellent\n*   **Cultural & Creative Arts:** 02, 10, 28, **40**, E, Fair\n*   **Agricultural Science:** 04, 13, 42, **59**, B, Good\n*   **Home Economics:** 20, 20, 54, **94**, A, Excellent\n\n*(Note: The columns appear to be Test 1, Test 2, CA/Exam component, and Total Score. Some subjects have dashes or missing values in certain columns as written on the card.)*\n\n**5) Remarks:**\n\n*   **Teacher's Report/Remark:** \"Fair Performance\" (The handwriting shows \"Fair\" on the first line and \"Performance\" on the second, with \"Poor\" or similar written below it and crossed out).\n*   **Principal's Remark:** Not visible/filled in on this document.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506615,
+  "id": "20260916051001980539cc9e1c452a",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916051001980539cc9e1c452a",
+  "usage": {
+    "completion_tokens": 383,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 6410
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card image, here is the information extracted line by line:\n\n**1. Student Name:**\nBALOGUN AYU O.\n\n**2. Class:**\nJSS 3\n\n**3. Term:**\nSECOND TERM\n\n**4. Results Table (Subject, Test 1, Test 2, Exam, Total, and other visible scores):**\n\n*   **English Studies:** 01, 19, 30, 50, 56, 50, —, 52, 86, 50, 55, **14th**, C Average\n*   **Mathematics:** 04, 20, 34, 58, 52, 58, —, 58, 76, 58, 53, **14th**, C Average\n*   **Yoruba Studies:** 14, 13, 30, 57, 70, 46, —, 47, 82, 57, 58, **14th**, C Average\n*   **Business Studies:** 06, 18, 22, 46, 54, 57, —, 46, (unclear), 62, 54, **14th**, D Pass\n*   **Information Tech.:** 08, 16, 35, 59, 45, 51, —, 57, 80, 59, 57, **14th**, Good\n*   **Social Studies:** 10, 14, 30, 54, 47, 54, —, 54, 92, (unclear), 61, **14th**, Credit\n*   **Igbo/Music:** 08, 14, 28, 48, 44, 43, —, 43, 92, 40, 52, **3rd**, O Pass\n*   **Agric Science:** 20, 20, 30, 90, 78, 70, —, 90, 100, 70, 54, **1st**, A Excellent\n*   **Home Economics:** 16, 14, 60, 71, 59, 71, —, 80, 80, 71, 43, **4th**, A Excellent\n\n*(Note: Columns for Physical & H Edu, Basic Science, Basic Techonology, C.R.S/I.R.S, Civic Edu, Security Education, and Cult & Creat Arts appear to be blank or have no legible entries.)*\n\n**5. Remarks:**\n*   **Teacher's Report:** \"A fair result put more effort Next TERM\"\n*   **Principal's Report:** (This field is left blank on the card)",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506750,
+  "id": "2026091605121323820b4f1f834fa9",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026091605121323820b4f1f834fa9",
+  "usage": {
+    "completion_tokens": 579,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5899,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6478
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card from **GOD GENERALS STANDARD ACADEMY**, here is the exact information extracted:\n\n**1. Student Name:**\n**ARIYO OLUWAGBEMIGA**\n\n**2. Class:**\n**JSS 2** (or **JSS 2**)\n\n**3. Term:**\n**SECOND TERM** (written in the top left corner)\n\n---\n\n**4. Results Table (Row by Row):**\n\n*   **English Studies:** Test 1: **10**, Test 2: **19**, Exam: **45**, Total: **74**, 1st Term Score: **76**, 2nd Term Score: **74**, Cumulative Score: **74**, Overall Score: **86**, Class Average: **50**, Position: **55 2nd**, Grade: **A**, Remark: **Excellent**\n*   **Mathematics:** Test 1: **10**, Test 2: **20**, Exam: **46**, Total: **76**, 1st Term Score: **74**, 2nd Term Score: **76**, Cumulative Score: **76**, Overall Score: **76**, Class Average: **58**, Position: **53 1st**, Grade: **A**, Remark: **excellent**\n*   **Yoruba Studies:** Test 1: **15**, Test 2: **16**, Exam: **51**, Total: **82**, 1st Term Score: **75**, 2nd Term Score: **82**, Cumulative Score: **82**, Overall Score: **82**, Class Average: **57**, Position: **57 1st**, Grade: **A'**, Remark: **excellent**\n*   **Business Studies:** Test 1: **18**, Test 2: **16**, Exam: **56**, Total: **90**, 1st Term Score: **88**, 2nd Term Score: **90**, Cumulative Score: **90**, Overall Score: **94**, Class Average: **46**, Position: **62 2nd**, Grade: **A**, Remark: **Excellent**\n*   **Basic Science:** Test 1: **14**, Test 2: **19**, Exam: **47**, Total: **80**, 1st Term Score: **84**, 2nd Term Score: **80**, Cumulative Score: **80**, Overall Score: **80**, Class Average: **59**, Position: **57 1st**, Grade: **A**, Remark: **Excellent**\n*   **Civic Edu.:** Test 1: **20**, Test 2: **20**, Exam: **50**, Total: **90**, 1st Term Score: **70**, 2nd Term Score: **90**, Cumulative Score: **90**, Overall Score: **92**, Class Average: **54**, Position: **61 2nd**, Grade: **A**, Remark: **Excellent**\n*   **Cult & Creat. Arts:** Test 1: **19**, Test 2: **17**, Exam: **51**, Total: **87**, 1st Term Score: **—** (dash/blank), 2nd Term Score: **87**, Cumulative Score: **87**, Overall Score: **92**, Class Average: **40**, Position: **52 2nd**, Grade: **A**, Remark: **Excellent**\n*   **Agric Science:** Test 1: **16**, Test 2: **14**, Exam: **56**, Total: **86**, 1st Term Score: **83**, 2nd Term Score: **80**, Cumulative Score: **71**, Overall Score: **80**, Class Average: **60**, Position: **43 1st**, Grade: **A**, Remark: **excellent**\n*   **Home Economics:** Test 1: **20**, Test 2: **20**, Exam: **60**, Total: **100**, 1st Term Score: **92**, 2nd Term Score: **100**, Cumulative Score: **91**, Overall Score: **100**, Class Average: **70**, Position: **51 1st**, Grade: **A**, Remark: **Excellent**\n\n*(Note: Columns G, K, and L for some subjects contain dashes \"—\" indicating no data or not applicable for that term).*\n\n---\n\n**5. Remarks:**\n\n*   **Teacher's Report:** **Outstanding result. Keep it up.**\n*   **Principal's Remark:** Not visible (the space is covered by the school stamp and is blank).\n\n**Additional Info:**\n*   **Year:** 2025/2026\n*   **No. in Class:** 5\n*   **Next Term Begins:** 27 Apr, 2026",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506648,
+  "id": "202609160510154c93990cb8b94db3",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609160510154c93990cb8b94db3",
+  "usage": {
+    "completion_tokens": 994,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6027,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 7021
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "**1) Student Name:** ABIYOD OLUMAGBEMIGA\n**2) Class:** JSS 2\n**3) Term:** SECOND TERM\n\n**4) Subject Scores:**\n\n*   **English Studies:** T1=10 T2=19 Exam=45 Total=74\n*   **Mathematics:** T1=10 T2=20 Exam=46 Total=76\n*   **Yoruba Studies:** T1=15 T2=16 Exam=51 Total=82\n*   **Business Studies:** T1=18 T2=16 Exam=56 Total=90\n*   **Basic Science:** T1=14 T2=19 Exam=47 Total=80\n*   **Civic Education:** T1=20 T2=20 Exam=50 Total=90\n*   **Cultural & Creative Arts:** T1=19 T2=17 Exam=51 Total=87\n*   **Agricultural Science:** T1=16 T2=14 Exam=50 Total=80\n*   **Home Economics:** T1=20 T2=20 Exam=60 Total=100",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506013,
+  "id": "20260916050007c24a1d92ffc04faf",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916050007c24a1d92ffc04faf",
+  "usage": {
+    "completion_tokens": 239,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5957,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6196
+  }
+}

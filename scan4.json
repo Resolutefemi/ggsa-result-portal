@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "**Student Name:** ABINO CLINTON GUN\n**Class:** JSS 2 (or Junior Secondary School 2)\n**Term:** 2nd Term (or Second Term)\n\n**Subject Scores:**\n\n*   **English Studies:** T1=18 T2=20 Exam=48 Total=86\n*   **Mathematics:** T1=12 T2=20 Exam=42 Total=74\n*   **Yoruba Studies:** T1=16 T2=15 Exam=47 Total=78\n*   **Business Studies:** T1=16 T2=19 Exam=51 Total=86\n*   **Basic Science:** T1=10 T2=19 Exam=46 Total=75\n*   **Civic Education:** T1=20 T2=20 Exam=52 Total=92\n*   **Cultural & Creative Arts:** T1=16 T2=19 Exam=54 Total=89\n*   **Basic Science (2nd entry):** T1=15 T2=13 Exam=48 Total=76\n*   **Home Economics:** T1=20 T2=20 Exam=60 Total=100",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789505976,
+  "id": "20260916045927998092e83cd745b7",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916045927998092e83cd745b7",
+  "usage": {
+    "completion_tokens": 244,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5957,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6201
+  }
+}

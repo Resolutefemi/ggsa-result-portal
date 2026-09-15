@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the school result sheet, here is the extracted information:\n\n**1) Student Name:** BALOGUN AMY O.\n**2) Class:** JSS 3\n**3) Term:** SECOND TERM\n\n**4) Subject Scores:**\n\n*   **English Studies:** T1=01 T2=19 Exam=30 Total=50\n*   **Mathematics:** T1=04 T2=20 Exam=34 Total=58\n*   **Yoruba Studies:** T1=14 T2=13 Exam=30 Total=57\n*   **Business Studies:** T1=06 T2=18 Exam=22 Total=46\n*   **Information Tech.:** T1=08 T2=16 Exam=35 Total=59\n*   **Social Studies:** T1=10 T2=14 Exam=30 Total=54\n*   **Igbo/Music:** T1=08 T2=14 Exam=28 Total=48\n*   **Agric Science:** T1=20 T2=20 Exam=30 Total=90\n*   **Home Economics:** T1=16 T2=14 Exam=60 Total=71",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789505997,
+  "id": "202609160459493848011b914443f9",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609160459493848011b914443f9",
+  "usage": {
+    "completion_tokens": 247,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5829,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6076
+  }
+}

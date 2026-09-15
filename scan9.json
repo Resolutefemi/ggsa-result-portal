@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "**Student Name:** Johnlson Gabriel\n**Class:** JSS 3\n**Term:** Second Term\n\n**Subject Scores:**\n\n*   **English Studies:** T1=06 T2=18 Exam=40 Total=64\n*   **Mathematics:** T1=03 T2=16 Exam=34 Total=55\n*   **Yoruba Studies:** T1=11 T2=17 Exam=51 Total=79\n*   **Business Studies:** T1=11 T2=17 Exam=51 Total=79\n*   **Basic Science:** (No individual scores listed, Cumulative: 74)\n*   **Information Tech:** T1=10 T2=17 Exam=42 Total=69\n*   **Social Studies:** (No individual scores listed, Cumulative: 70)\n*   **Civic Education:** T1=16 T2=14 Exam=40 Total=70\n*   **Cultural & Creative Arts:** T1=02 T2=10 Exam=28 Total=40\n*   **Agricultural Science:** T1=14 T2=13 Exam=42 Total=69\n*   **Home Economics:** T1=20 T2=20 Exam=54 Total=94",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506019,
+  "id": "202609160500136fbcff46fbb94224",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609160500136fbcff46fbb94224",
+  "usage": {
+    "completion_tokens": 261,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5957,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 6218
+  }
+}

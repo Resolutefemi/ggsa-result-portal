@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the report card from **God Generals Standard Academy**, here is the extracted information:\n\n**Student Information:**\n*   **Student Name:** JOHNSON GBEDAMISOLA\n*   **Class:** JSS 3\n*   **Term:** SECOND TERM (2nd Term)\n*   **Year:** 2025/2026\n\n**Subject Scores:**\n\n| Subject | Test 1 | Test 2 | Exam | Total |\n| :--- | :---: | :---: | :---: | :---: |\n| **English Studies** | 06 | 18 | 74 | **84** |\n| **Mathematics** | 08 | 16 | 34 | **55** |\n| **Yoruba Studies** | 11 | 17 | 51 | **79** |\n| **Business Studies** | 11 | 17 | 37 | **66** |\n| **Basic Science / Info Tech** | 10 | 17 | 42 | **69** |\n| **Social Studies / Civic Edu.** | 16 | 14 | 40 | **70** |\n| **Cultural & Creative Art (CCA)** | 02 | 10 | 28 | **40** |\n| **Agric Science** | 14 | 13 | 42 | **69** |\n| **Home Economics** | 30 | 20 | 54 | **94** |\n\n*(Note: The \"Total\" column represents the final score for each subject, which includes Test 1, Test 2, and the Exam score.)*",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789505931,
+  "id": "20260916045841392c902abf7449f2",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916045841392c902abf7449f2",
+  "usage": {
+    "completion_tokens": 334,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5931,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6265
+  }
+}

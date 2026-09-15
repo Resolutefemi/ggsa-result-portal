@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "**Student Name:** ARIYO OLUMASEGUN\n**Class:** JSS 3\n**Term:** SECOND TERM\n\n**Subject Scores:**\n\n*   **English Studies:** T1=18 T2=20 Exam=48 Total=86\n*   **Mathematics:** T1=12 T2=20 Exam=42 Total=74\n*   **Yoruba Studies:** T1=16 T2=15 Exam=47 Total=78\n*   **Business Studies:** T1=16 T2=19 Exam=59 Total=94\n*   **Basic Science:** T1=10 T2=19 Exam=46 Total=77\n*   **Civic Education:** T1=20 T2=20 Exam=52 Total=92\n*   **Cultural & Creative Arts:** T1=16 T2=19 Exam=57 Total=92\n*   **Agricultural Science:** T1=15 T2=13 Exam=48 Total=76\n*   **Home Economics:** T1=20 T2=20 Exam=60 Total=100",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1789506007,
+  "id": "20260916045957515022d3704c44dc",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260916045957515022d3704c44dc",
+  "usage": {
+    "completion_tokens": 229,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5957,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 6186
+  }
+}

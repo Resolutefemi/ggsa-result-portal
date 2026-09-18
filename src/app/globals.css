@@ -3,6 +3,42 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* === GGSA brand palette (Stitch result-sheet design) === */
+@theme {
+  --color-brand-50: #faf5ff;
+  --color-brand-100: #f3e8ff;
+  --color-brand-200: #e9d5ff;
+  --color-brand-300: #d8b4fe;
+  --color-brand-400: #c084fc;
+  --color-brand-500: #a855f7;
+  --color-brand-600: #7e22ce;
+  --color-brand-700: #6b21a8;
+  --color-brand-800: #581c87;
+  --color-brand-900: #3b0764;
+  --color-brand-950: #240046;
+}
+
+/* Result-sheet typography: Cinzel for the school title, Inter for body */
+.school-title {
+  font-family: var(--font-cinzel), Georgia, 'Times New Roman', serif;
+}
+.result-sheet {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Report table — subtle zebra + fine borders (screen) */
+.table-report th,
+.table-report td {
+  border: 1px solid #cbd5e1;
+}
+.table-report tbody tr:nth-child(even) {
+  background-color: #fcfaff;
+}
+.table-report tbody tr:hover {
+  background-color: #f3e8ff30;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -135,131 +171,187 @@
 .text-ggsa-gold { color: var(--ggsa-gold); }
 .border-ggsa-purple { border-color: var(--ggsa-purple); }
 
-/* Print styles for result — static A4 print-ready, no scroll */
+/* =====================================================================
+   PRINT STYLES — Stitch result sheet on a single A4 page
+   (size: A4 portrait · colours preserved · compact typography)
+   ===================================================================== */
 @media print {
-  body { background: white !important; margin: 0 !important; padding: 0 !important; }
-  .no-print, .no-print * { display: none !important; }
-  .print-only { display: block !important; }
-
-  .result-sheet {
-    box-shadow: none !important;
-    border: none !important;
+  body {
+    background: white !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    page-break-inside: avoid !important;
-    page-break-after: auto !important;
+  }
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+  /* Neutralise the screen layout wrapper's padding/background so the printed
+     sheet starts right at the @page margin (no extra band above the header)
+     and is centred inside the printable area. */
+  .no-print-pad {
+    padding: 0 !important;
+    background: none !important;
+  }
+  .print-only {
+    display: block !important;
   }
 
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 9mm;
   }
 
-  /* Table container: NO scroll, hidden overflow */
-  .result-table-wrap {
-    overflow: hidden !important;
-    overflow-x: hidden !important;
-    width: 100% !important;
+  /* Sheet container: slightly narrower than the A4 paper (186mm content in a
+     192mm printable area → ~12mm white margin from each paper edge),
+     centred, colours preserved, compact typography */
+  .result-sheet {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 186mm !important;
+    max-width: 186mm !important;
+    font-size: 10px !important;
+    page-break-inside: avoid !important;
   }
 
-  /* Header: remove all margin-bottom */
-  .result-sheet > div:first-child {
-    margin: 0 !important;
-    padding: 4px 6px !important;
-    width: 100% !important;
+  /* Compress the vertical rhythm between sections */
+  .result-sheet > * + * {
+    margin-top: 10px !important;
   }
-  .result-sheet h1 { font-size: 16px !important; margin: 0 !important; }
-  .result-sheet h2 { font-size: 11px !important; margin: 0 !important; }
-  .result-sheet p { margin: 0 !important; font-size: 8px !important; }
 
-  /* Student info bar — tight */
-  .result-sheet .student-info-bar {
-    padding: 2px 4px !important;
-    margin: 0 !important;
-    width: 100% !important;
+  /* ---- Header ---- */
+  .result-sheet .rs-header {
+    padding-bottom: 8px !important;
+  }
+  .result-sheet .rs-header img {
+    width: 74px !important;
+    height: 74px !important;
+  }
+  .result-sheet .school-title {
+    font-size: 19px !important;
+  }
+  .result-sheet .rs-addr {
+    font-size: 9.5px !important;
+    margin-top: 3px !important;
+  }
+  .result-sheet .rs-contact {
+    font-size: 9px !important;
+  }
+  .result-sheet .rs-motto {
+    padding: 4px 8px !important;
+    font-size: 8.5px !important;
+  }
+  .result-sheet .rs-motto span {
+    font-size: 8.5px !important;
+  }
+  .result-sheet .rs-pill {
+    font-size: 10px !important;
+    padding: 3px 14px !important;
+  }
+
+  /* ---- Student bio grid ---- */
+  .result-sheet .rs-bio {
+    padding: 9px 10px !important;
+    font-size: 10px !important;
+  }
+  .result-sheet .rs-bio span {
+    font-size: 10px !important;
+  }
+  .result-sheet .rs-bio .text-\[11px\] {
     font-size: 8px !important;
   }
 
-  /* Table — flat, 8 rows, A4-optimized, bold and readable */
-  .result-table {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    table-layout: fixed !important;
-    font-size: 13px !important;
-    border-collapse: collapse !important;
+  /* ---- Academic table ---- */
+  .result-sheet .rs-table-wrap {
+    overflow: visible !important;
+    overflow-x: visible !important;
   }
-
-  /* Every cell: bold, clear, generous padding for vertical expansion */
-  .result-table th, .result-table td {
-    border: 1px solid black !important;
-    padding: 8px 6px !important;
-    font-size: 12px !important;
+  .result-sheet .table-report {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 10px !important;
+  }
+  .result-sheet .table-report th {
+    font-size: 8.5px !important;
+    padding: 4.5px 2px !important;
+    letter-spacing: 0.02em !important;
+  }
+  .result-sheet .table-report td {
+    padding: 7px 2px !important;
+    font-size: 10px !important;
     line-height: 1.3 !important;
     word-wrap: break-word;
     overflow: hidden;
   }
 
-  /* Category cell — vertical text, professional look */
-  .result-table .category-cell {
-    writing-mode: vertical-rl !important;
-    transform: rotate(180deg) !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    padding: 6px 4px !important;
-    font-weight: bold !important;
-    border-right: 3px solid black !important;
-    font-size: 8px !important;
+  /* ---- Skills / Behaviour cards ---- */
+  .result-sheet .rs-card .bg-brand-900 {
+    padding: 4px 10px !important;
+    font-size: 9px !important;
+  }
+  .result-sheet .rs-card > div:last-child {
+    padding: 8px 10px !important;
+  }
+  .result-sheet .rs-card span {
+    font-size: 9.5px !important;
   }
 
-  /* Group-end: thick bottom border */
-  .result-table .group-end td,
-  .result-table tr.group-end td {
-    border-bottom: 3px solid black !important;
+  /* ---- Reports ---- */
+  .result-sheet .rs-report {
+    padding: 9px 10px !important;
   }
-
-  /* Character/behaviour + reports — tight */
-  .result-sheet .grid {
+  .result-sheet .rs-report p {
+    font-size: 10px !important;
     margin-top: 3px !important;
-    padding: 0 4px !important;
-    width: 100% !important;
+  }
+  .result-sheet .rs-report span {
+    font-size: 9.5px !important;
+  }
+  .result-sheet .rs-report img {
+    max-height: 30px !important;
+  }
+  .result-sheet .rs-report .mt-3 {
+    margin-top: 5px !important;
+  }
+  .result-sheet .rs-report .mt-4 {
+    margin-top: 5px !important;
   }
 
-  /* Signatures */
-  .result-sheet .signature-section {
-    margin-top: 6px !important;
-    padding: 0 6px !important;
-    width: 100% !important;
+  /* ---- Rating keys / next term ---- */
+  .result-sheet .rs-keys {
+    padding: 8px 10px !important;
   }
-  .result-sheet .signature-section img { max-height: 36px !important; }
+  .result-sheet .rs-keys h4 {
+    font-size: 9.5px !important;
+    margin-bottom: 3px !important;
+  }
+  .result-sheet .rs-keys div {
+    font-size: 9px !important;
+  }
+  .result-sheet .rs-next {
+    padding: 8px 8px !important;
+  }
+  .result-sheet .rs-next span {
+    font-size: 9px !important;
+  }
+  .result-sheet .rs-next div {
+    font-size: 10.5px !important;
+    margin-top: 2px !important;
+  }
 
-  /* Grading key */
-  .result-sheet .grading-key {
-    margin-top: 3px !important;
-    padding: 2px 4px !important;
-    width: 100% !important;
+  /* ---- Footer ---- */
+  .result-sheet .rs-footer {
+    padding-top: 6px !important;
+  }
+  .result-sheet .rs-footer div {
+    font-size: 8.5px !important;
   }
 }
 .print-only { display: none; }
-
-/* Category cell — vertical text (screen + print) */
-.category-cell {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  text-align: center;
-  white-space: nowrap;
-  padding: 10px;
-  font-weight: bold;
-  border-right: 3px solid black;
-}
-
-/* Group-end: thick bottom border on screen too */
-.result-table .group-end td,
-.result-table tr.group-end td {
-  border-bottom: 3px solid black !important;
-}
 
 /* Custom scrollbar for long lists */
 .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }

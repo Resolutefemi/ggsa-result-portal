@@ -1,16 +1,21 @@
 'use client';
 
 /**
- * Printable result sheet that mirrors the paper report card.
+ * Printable result sheet — "Stitch" design (A4 Table Layout Optimizer).
  *
- * Differences from the paper template (per user requirements):
- *   - "DUPLICATE" word is REMOVED
- *   - "Sign" column is REMOVED (principal signature is auto-shown, teacher signature is text/name)
- *   - All "____________" placeholders replaced with real data
- *   - "Term" field shows the current term (user said the covered "Position" at top-LHS is the term)
+ * Design tokens:
+ *   - Brand purple palette (see @theme in globals.css): brand-50 … brand-950
+ *   - Cinzel serif for the school title, Inter for everything else
+ *   - Purple-tinted score cells, grade chips, zebra table rows
+ *
+ * Data notes (unchanged behaviour):
+ *   - "DUPLICATE" word removed
+ *   - "Sign" column removed; signature lines are left BLANK so the teacher
+ *     and principal sign by hand on the printed/downloaded sheet
+ *   - All placeholders replaced with real data from /api/student/check
+ *   - "No. in Class" shows "—" (positions are shown per-subject)
  */
 import React from 'react';
-import Image from 'next/image';
 import { SCHOOL_INFO, GRADE_SCALE } from '@/lib/constants';
 
 export interface ResultSheetData {
@@ -76,240 +81,405 @@ function fmt(n: number | null | undefined): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
+function dash(n: number | null | undefined): string {
+  if (n == null) return '-';
+  return fmt(n);
+}
+
+/* Grade chip colouring (matches the Stitch design) */
+const GRADE_CELL: Record<string, string> = {
+  A: 'font-bold text-emerald-800 bg-emerald-50',
+  B: 'font-bold text-brand-800 bg-purple-100/50',
+  C: 'font-bold text-slate-800 bg-slate-100',
+  D: 'font-bold text-sky-800 bg-sky-50',
+  E: 'font-bold text-amber-800 bg-amber-50',
+  F: 'font-bold text-red-800 bg-red-50',
+};
+
+const GRADE_REMARK: Record<string, string> = {
+  A: 'text-xs text-emerald-700 font-medium',
+  B: 'text-xs text-slate-700',
+  C: 'text-xs text-slate-700',
+  D: 'text-xs text-sky-700',
+  E: 'text-xs text-amber-700',
+  F: 'text-xs text-red-700',
+};
+
+const BIO_LABEL = 'text-slate-500 font-medium block text-[11px] leading-tight';
+
 export function ResultSheet({ data }: { data: ResultSheetData }) {
-  const { student, result, items, traits, teacherSignatureImage, principalSignatureImage } = data;
+  const { student, result, items, traits } = data;
 
   const skillTraits = traits.filter((t) => t.section === 'SKILL');
   const behaviourTraits = traits.filter((t) => t.section === 'BEHAVIOUR');
 
-  // Compute overall position (sum of totals / number of subjects)
+  // Overall average (mean of subject totals)
   const totals = items.map((i) => i.totalScore).filter((t): t is number => t != null);
-  const overallTotal = totals.reduce((a, b) => a + b, 0);
-  const overallAvg = totals.length > 0 ? overallTotal / totals.length : 0;
+  const overallAvg = totals.length > 0 ? totals.reduce((a, b) => a + b, 0) / totals.length : 0;
 
-  // Class info
-  const numInClass = items.length > 0 ? '(see position)' : '';
+  const isSenior = (student.className || '').toUpperCase().startsWith('SS');
+  const termNum = result.term
+    ? result.term.toLowerCase().startsWith('1')
+      ? 1
+      : result.term.toLowerCase().startsWith('2')
+        ? 2
+        : 3
+    : 0;
+
+  const dateIssued = new Date().toLocaleDateString('en-US', {
+    month: 'numeric',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return (
-    <div className="result-sheet bg-white text-black mx-auto w-full shadow-xl border border-gray-200 print:shadow-none print:border-0" style={{ maxWidth: 'none' }}>
-      {/* === HEADER (school name + logo + address) — condensed === */}
-      <div className="flex items-center gap-3 px-3 py-2 border-b-2 border-black">
-        <div className="w-[90px] h-[90px] flex-shrink-0 flex items-center justify-center">
-          <img
-            src="/logo-transparent.png"
-            alt="GGSA Logo"
-            className="w-full h-full object-contain"
-            style={{ backgroundColor: 'transparent' }}
-          />
-        </div>
-        <div className="flex-1 text-center">
-          <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-ggsa-purple uppercase whitespace-nowrap" style={{ margin: 0 }}>
-            {SCHOOL_INFO.name}
-          </h1>
-          <p className="text-[10px] text-gray-700" style={{ margin: 0 }}>
-            {SCHOOL_INFO.address}
-          </p>
-          <p className="text-[10px] text-gray-700" style={{ margin: 0 }}>
-            Tel: {SCHOOL_INFO.phones} • E-mail: {SCHOOL_INFO.email}
-          </p>
-          <h2 className="text-sm font-bold text-ggsa-purple" style={{ margin: 0 }}>
-            REPORT CARD FOR {student.className.startsWith('SS') ? 'SENIOR' : 'JUNIOR'} SECONDARY SCHOOL
-          </h2>
-        </div>
-        <div className="w-16 flex-shrink-0 hidden sm:block">
-          <div className="text-[9px] text-center italic text-ggsa-gold font-semibold bg-ggsa-purple rounded px-1 py-0.5">
-            {SCHOOL_INFO.motto}
+    <main className="result-sheet page-sheet w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden flex flex-col p-4 sm:p-6 md:p-7 space-y-3 text-slate-800">
+      {/* ==================== HEADER ==================== */}
+      <header className="rs-header border-b-2 border-brand-900 pb-3">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+          {/* School Crest */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-emblem.png"
+                alt="God Generals Standard Academy Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+          {/* School Names & Details */}
+          <div className="flex-1 px-1 sm:px-3 text-center">
+            <h1 className="school-title text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-brand-900 leading-tight">
+              {SCHOOL_INFO.name}
+            </h1>
+            <p className="rs-addr text-[11px] sm:text-xs text-slate-600 mt-1 font-medium leading-snug max-w-xl mx-auto">
+              {SCHOOL_INFO.address}
+            </p>
+            <p className="rs-contact text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+              <span>
+                <strong>Tel:</strong> {SCHOOL_INFO.phones}
+              </span>
+              <span className="inline-block text-slate-300 mx-1 sm:mx-2">|</span>
+              <span>
+                <strong>E-mail:</strong> {SCHOOL_INFO.email}
+              </span>
+            </p>
+          </div>
+          {/* Academic Motto Badge */}
+          <div className="shrink-0 flex items-center">
+            <div className="rs-motto bg-brand-900 text-amber-300 px-3 py-2 rounded-lg text-center shadow-sm border border-brand-700 max-w-[130px]">
+              <span className="block text-[10px] italic leading-tight font-medium">{SCHOOL_INFO.motto}</span>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* === STUDENT INFO BAR === */}
-      <div className="student-info-bar grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 p-3 text-[11px] sm:text-xs border-b border-gray-300">
-        <div><span className="font-semibold">Name:</span> {student.name || '-'}</div>
-        <div><span className="font-semibold">Class:</span> {student.className}</div>
-        {student.admissionNumber && (
-          <div><span className="font-semibold">Admission No:</span> {student.admissionNumber}</div>
-        )}
-        <div><span className="font-semibold">Year:</span> {result.session}</div>
-        <div><span className="font-semibold">Sex:</span> {student.sex === 'F' ? 'Female' : 'Male'}</div>
-        <div><span className="font-semibold">Term:</span> {result.term}</div>
-        <div><span className="font-semibold">No. in Class:</span> —</div>
-        <div><span className="font-semibold">No. of Times School Opened:</span> {result.timesSchoolOpened || '-'}</div>
-        <div><span className="font-semibold">No. of Attendance:</span> {result.schoolOpened || '-'}</div>
-        <div><span className="font-semibold">Marks Obtainable:</span> {result.marksObtainable || 100}</div>
-        <div>
-          <span className="font-semibold">Overall Average:</span>{' '}
-          {overallAvg ? overallAvg.toFixed(1) + '%' : '-'}
+        {/* Report Card Subheading */}
+        <div className="mt-2 pt-1.5 border-t border-purple-100 flex items-center justify-center">
+          <div className="rs-pill inline-block bg-brand-100 border border-brand-200 text-brand-900 text-xs sm:text-sm font-bold tracking-wider uppercase px-4 py-1 rounded-full">
+            REPORT CARD FOR {isSenior ? 'SENIOR' : 'JUNIOR'} SECONDARY SCHOOL
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* === SUBJECTS TABLE — flat, 8 rows, A4-optimized === */}
-      <div className="result-table-wrap" style={{ overflowX: 'hidden', width: '100%' }}>
-        <table className="result-table w-full border-collapse border border-black" style={{ tableLayout: 'fixed', width: '100%' }}>
+      {/* ==================== STUDENT PROFILE GRID ==================== */}
+      <section className="rs-bio bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs leading-relaxed">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-y-2 gap-x-4">
+          <div>
+            <span className={BIO_LABEL}>Pupil Name</span>
+            <span className="font-bold text-slate-900 uppercase">{student.name || '—'}</span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Class &amp; Year</span>
+            <span className="font-bold text-slate-900">
+              {student.className || '—'} • {result.session || '—'}
+            </span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Admission No</span>
+            <span className="font-bold text-slate-900 font-mono tracking-tight">
+              {student.admissionNumber || '—'}
+            </span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Term</span>
+            <span className="font-bold text-brand-900">{result.term || '—'}</span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Sex</span>
+            <span className="font-semibold text-slate-800">
+              {student.sex === 'F' ? 'Female' : student.sex === 'M' ? 'Male' : student.sex || '—'}
+            </span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>No. in Class</span>
+            <span className="font-semibold text-slate-800">—</span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Attendance / Opened</span>
+            <span className="font-semibold text-slate-800">
+              {result.schoolOpened != null ? result.schoolOpened : '-'} /{' '}
+              {result.timesSchoolOpened != null ? result.timesSchoolOpened : '-'} Times
+            </span>
+          </div>
+          <div>
+            <span className={BIO_LABEL}>Marks Obtainable</span>
+            <span className="font-semibold text-slate-800">{result.marksObtainable ?? 100}</span>
+          </div>
+          <div className="col-span-2 sm:col-span-3 lg:col-span-4 pt-1.5 border-t border-slate-200/75 flex items-center justify-between gap-2">
+            <div className="text-slate-600 font-medium text-xs">
+              Academic Status:{' '}
+              <span className="text-emerald-700 font-semibold">
+                {result.status === 'FINALIZED' ? 'Active Enrollment' : 'Pending Review'}
+              </span>
+            </div>
+            <div className="text-xs font-bold text-brand-900 bg-brand-50 px-3 py-0.5 rounded border border-brand-200 whitespace-nowrap">
+              Overall Average:{' '}
+              <span className="text-sm font-extrabold text-brand-700">
+                {overallAvg ? overallAvg.toFixed(1) + '%' : '—'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== ACADEMIC PERFORMANCE TABLE ==================== */}
+      <section className="rs-table-wrap overflow-x-auto rounded-lg border border-slate-300">
+        <table className="table-report w-full border-collapse text-left text-xs bg-white min-w-[700px]">
           <colgroup>
-            {/* Subject column ~22% */}
-            <col style={{ width: '22%' }} />
-            {/* 13 score columns — fixed equal width */}
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
-            <col style={{ width: '6%' }} />
+            <col style={{ width: '20%' }} />
             <col style={{ width: '5%' }} />
             <col style={{ width: '5%' }} />
-            <col style={{ width: '8%' }} />
+            <col style={{ width: '6.5%' }} />
+            <col style={{ width: '6%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '6.5%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '5.5%' }} />
+            <col style={{ width: '5%' }} />
+            <col style={{ width: '8.5%' }} />
           </colgroup>
           <thead>
-            <tr className="bg-white text-black font-bold">
-              <th rowSpan={2} className="border border-black px-2 py-1 text-left text-[11px]">SUBJECT</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Test 1</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Test 2</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Term Exam</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Total</th>
-              <th className="border border-black px-1 py-1 text-[10px]">1st Term</th>
-              <th className="border border-black px-1 py-1 text-[10px]">2nd Term</th>
-              <th className="border border-black px-1 py-1 text-[10px]">3rd Term</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Total Score</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Graded</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Class Avg</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Position</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Grade</th>
-              <th className="border border-black px-1 py-1 text-[10px]">Remark</th>
+            <tr className="bg-white text-slate-900 font-bold text-[11px] uppercase tracking-wider text-center border-b border-slate-300">
+              <th className="p-2 text-left border-b border-slate-300 text-slate-900">Subject</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Test 1</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Test 2</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Term Exam</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900 bg-slate-50 font-extrabold">
+                Total
+              </th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-700">1st Term</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-700">2nd Term</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-700">3rd Term</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900 font-extrabold bg-slate-50">
+                Total Score
+              </th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Graded</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Class Avg</th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Position</th>
+              <th className="p-1.5 border-b border-slate-300 text-amber-800 bg-amber-50 font-black">
+                Grade
+              </th>
+              <th className="p-1.5 border-b border-slate-300 text-slate-900">Remark</th>
             </tr>
-            <tr className="bg-gray-100 text-gray-700 font-semibold text-[9px]">
-              <th className="border border-black px-1 py-0.5">20</th>
-              <th className="border border-black px-1 py-0.5">20</th>
-              <th className="border border-black px-1 py-0.5">60</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">100</th>
-              <th className="border border-black px-1 py-0.5">-</th>
-              <th className="border border-black px-1 py-0.5">-</th>
-              <th className="border border-black px-1 py-0.5">-</th>
+            <tr className="bg-white text-slate-700 font-semibold text-[10px] text-center border-b-2 border-slate-300">
+              <td className="p-1 text-left font-normal italic pl-2 text-slate-600">Marks Obtainable</td>
+              <td className="p-1 text-slate-700">20</td>
+              <td className="p-1 text-slate-700">20</td>
+              <td className="p-1 text-slate-700">60</td>
+              <td className="p-1 font-bold text-slate-900 bg-slate-50">100</td>
+              <td className="p-1 text-slate-700">100</td>
+              <td className="p-1 text-slate-700">100</td>
+              <td className="p-1 text-slate-700">100</td>
+              <td className="p-1 font-bold text-slate-900 bg-slate-50">100</td>
+              <td className="p-1 text-slate-700">100</td>
+              <td className="p-1 text-slate-700">100</td>
+              <td className="p-1 text-slate-500">-</td>
+              <td className="p-1 text-slate-500">-</td>
+              <td className="p-1 text-slate-500">-</td>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-200 text-center font-medium text-slate-700">
             {items.length === 0 && (
               <tr>
-                <td colSpan={14} className="border border-black p-4 text-center text-gray-500">
+                <td colSpan={14} className="p-4 text-center text-slate-500">
                   No subjects recorded.
                 </td>
               </tr>
             )}
-            {items.map((item, idx) => (
-              <tr key={idx} className={idx % 2 ? 'bg-purple-50/30' : 'bg-white'}>
-                <td className="border border-black px-2 py-1 font-medium text-[11px]">
-                  {item.subjectName}
+            {items.map((item, idx) => {
+              const g = item.grade || '';
+              const termCell = (col: number, score: number | null) => (
+                <td
+                  className={`p-1.5 ${
+                    score == null
+                      ? 'text-slate-400'
+                      : col === termNum
+                        ? 'font-semibold text-slate-800'
+                        : 'text-slate-700'
+                  }`}
+                >
+                  {dash(score)}
                 </td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.test1)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.test2)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.exam)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px] font-semibold">{fmt(item.totalScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.firstTermScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.secondTermScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.thirdTermScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px] font-semibold">{fmt(item.totalScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.totalScore)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{fmt(item.classAverage)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px]">{ordinal(item.position)}</td>
-                <td className="border border-black px-1 py-1 text-center text-[11px] font-bold">{item.grade || '-'}</td>
-                <td className="border border-black px-1 py-1 text-center text-[10px]">{item.remark || ''}</td>
-              </tr>
-            ))}
+              );
+              return (
+                <tr key={idx}>
+                  <td className="p-1.5 text-left font-semibold text-slate-900 pl-2">{item.subjectName}</td>
+                  <td className="p-1.5">{dash(item.test1)}</td>
+                  <td className="p-1.5">{dash(item.test2)}</td>
+                  <td className="p-1.5">{dash(item.exam)}</td>
+                  <td className="p-1.5 font-bold text-slate-900 bg-purple-50/50">{dash(item.totalScore)}</td>
+                  {termCell(1, item.firstTermScore)}
+                  {termCell(2, item.secondTermScore)}
+                  {termCell(3, item.thirdTermScore)}
+                  <td className="p-1.5 font-bold text-brand-900 bg-purple-50">{dash(item.totalScore)}</td>
+                  <td className="p-1.5">{dash(item.totalScore)}</td>
+                  <td className="p-1.5">{dash(item.classAverage)}</td>
+                  <td className="p-1.5 text-slate-500">
+                    {item.position != null ? ordinal(item.position) : '-'}
+                  </td>
+                  <td className={`p-1.5 ${GRADE_CELL[g] || 'font-bold text-slate-800'}`}>{g || '-'}</td>
+                  <td className={`p-1.5 ${GRADE_REMARK[g] || 'text-xs text-slate-700'}`}>
+                    {item.remark || ''}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-      </div>
+      </section>
 
-      {/* === CHARACTER / BEHAVIOUR === */}
-      <div className="grid grid-cols-2 gap-2 mt-2 px-2 text-xs sm:text-xs">
-        <div className="border border-gray-400 rounded">
-          <div className="bg-black text-white px-2 py-0.5 font-semibold">DEVELOPMENT (Skills)</div>
-          <div className="grid grid-cols-2 gap-x-2 p-1">
-            {skillTraits.map((t) => (
-              <div key={t.name} className="flex justify-between">
-                <span>{t.name}</span>
-                <span className="font-bold">{t.rating || '-'}</span>
+      {/* ==================== SKILLS & BEHAVIOUR ==================== */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Development (Skills) Card */}
+        <div className="rs-card border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
+          <div className="bg-brand-900 text-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>DEVELOPMENT (Skills)</span>
+            <span className="text-[10px] text-amber-300 font-normal">Grade</span>
+          </div>
+          <div className="p-2.5 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+            {skillTraits.length === 0 && (
+              <div className="col-span-2 text-slate-400">No ratings recorded.</div>
+            )}
+            {skillTraits.map((t, i) => (
+              <div
+                key={t.name}
+                className={`flex justify-between py-0.5 ${
+                  i < skillTraits.length - 1 ? 'border-b border-slate-100' : 'col-span-2 sm:col-span-1'
+                }`}
+              >
+                <span className="text-slate-600">{t.name}</span>
+                <span className="font-bold text-brand-900">{t.rating || '-'}</span>
               </div>
             ))}
           </div>
         </div>
-        <div className="border border-gray-400 rounded">
-          <div className="bg-black text-white px-2 py-0.5 font-semibold">BEHAVIOUR</div>
-          <div className="grid grid-cols-2 gap-x-2 p-1">
-            {behaviourTraits.map((t) => (
-              <div key={t.name} className="flex justify-between">
-                <span>{t.name}</span>
-                <span className="font-bold">{t.rating || '-'}</span>
+        {/* Behaviour Card */}
+        <div className="rs-card border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
+          <div className="bg-brand-900 text-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>BEHAVIOUR (Character)</span>
+            <span className="text-[10px] text-amber-300 font-normal">Grade</span>
+          </div>
+          <div className="p-2.5 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+            {behaviourTraits.length === 0 && (
+              <div className="col-span-2 text-slate-400">No ratings recorded.</div>
+            )}
+            {behaviourTraits.map((t, i) => (
+              <div
+                key={t.name}
+                className={`flex justify-between py-0.5 ${
+                  i < behaviourTraits.length - 1
+                    ? 'border-b border-slate-100'
+                    : 'col-span-2 sm:col-span-1'
+                }`}
+              >
+                <span className="text-slate-600">{t.name}</span>
+                <span className="font-bold text-brand-900">{t.rating || '-'}</span>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* === REPORTS === */}
-      <div className="grid sm:grid-cols-2 gap-2 mt-2 px-2 text-[11px]">
-        <div className="border border-gray-400 rounded p-2 min-h-[60px]">
-          <div className="font-semibold text-ggsa-purple mb-1">Class Teacher's Report:</div>
-          <div className="text-gray-800">
-            {result.teacherReport || '(No teacher report yet.)'}
+      {/* ==================== REMARKS & REPORTS ==================== */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Teacher Remark Box */}
+        <div className="rs-report border border-purple-200 bg-purple-50/40 rounded-lg p-3 flex flex-col justify-between">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-900 block">
+              Class Teacher&apos;s Report:
+            </span>
+            <p className="text-xs text-slate-800 italic mt-1.5 font-medium leading-relaxed">
+              {result.teacherReport || '(No teacher report yet.)'}
+            </p>
+          </div>
+          <div className="mt-3 pt-2 border-t border-dashed border-slate-300">
+            <div className="flex items-end justify-between text-xs gap-2">
+              <span className="text-slate-500 font-medium">Class Teacher&apos;s Signature:</span>
+              {/* Left blank on purpose — the teacher signs by hand on the printed sheet */}
+              <span className="inline-block w-28 border-b border-slate-400">&nbsp;</span>
+            </div>
           </div>
         </div>
-        <div className="border border-gray-400 rounded p-2 min-h-[60px]">
-          <div className="font-semibold text-ggsa-purple mb-1">Principal's Report:</div>
-          <div className="text-gray-800">
-            {result.principalReport || '(No principal report yet.)'}
+        {/* Principal Remark Box */}
+        <div className="rs-report border border-purple-200 bg-purple-50/40 rounded-lg p-3 flex flex-col justify-between">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-900 block">
+              Principal&apos;s Report:
+            </span>
+            <p className="text-xs text-slate-800 italic mt-1.5 font-medium leading-relaxed">
+              {result.principalReport || '(No principal report yet.)'}
+            </p>
+          </div>
+          <div className="mt-3 pt-2 border-t border-dashed border-slate-300">
+            <div className="flex items-end justify-between text-xs gap-2">
+              <span className="text-slate-500 font-medium">Principal&apos;s Signature:</span>
+              {/* Left blank on purpose — the principal signs by hand on the printed sheet */}
+              <span className="inline-block w-28 border-b border-slate-400">&nbsp;</span>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* === SIGNATURES (blank lines — signed manually after printing) === */}
-      <div className="signature-section grid grid-cols-2 gap-4 mt-4 px-4 pb-3 text-[11px]">
-        <div className="text-center">
-          <div className="h-12 mb-1" />
-          <div className="border-t border-gray-700 pt-1">
-            <div className="font-semibold">Class Teacher's Signature</div>
-            <div className="text-gray-700">{result.teacherSignature || ''}</div>
-          </div>
-        </div>
-        <div className="text-center">
-          <div className="h-12 mb-1" />
-          <div className="border-t border-gray-700 pt-1">
-            <div className="font-semibold">Principal's Signature</div>
-            <div className="text-gray-700 text-xs">God Generals Standard Academy</div>
-          </div>
-        </div>
-      </div>
-
-      {/* === GRADING KEY + NEXT TERM === */}
-      <div className="grading-key grid sm:grid-cols-3 gap-2 px-2 pb-4 text-xs">
-        <div className="border border-gray-400 rounded p-2 col-span-2">
-          <div className="font-semibold text-ggsa-purple mb-1">KEYS TO RATING / SCORE RATING</div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2">
+      {/* ==================== RATING KEYS & NEXT TERM ==================== */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        {/* Grading Scale Legend */}
+        <div className="rs-keys md:col-span-2 border border-slate-200 bg-slate-50/80 rounded-lg p-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-brand-900 mb-2">
+            Keys to Rating / Score Rating
+          </h4>
+          <div className="grid grid-cols-3 gap-y-1.5 gap-x-2 text-[11px] text-slate-700">
             {GRADE_SCALE.map((g) => (
               <div key={g.grade}>
-                <span className="font-bold">{g.grade}</span> = {g.remark} ({g.min}{g.max < 100 ? `-${g.max}` : '+'})
+                <strong className="text-brand-900 font-bold">{g.grade}</strong> = {g.remark} ({g.min}
+                {g.max < 100 ? `-${g.max}` : '+'})
               </div>
             ))}
           </div>
         </div>
-        <div className="border border-gray-400 rounded p-2">
-          <div className="font-semibold text-ggsa-purple">Next Term Begins:</div>
-          <div className="text-gray-800">{result.nextTermBegins || '(To be announced)'}</div>
+        {/* Resumption Date Callout */}
+        <div className="rs-next border-2 border-purple-300 bg-brand-50 rounded-lg p-3 flex flex-col justify-center items-center text-center">
+          <span className="text-[11px] font-bold uppercase text-brand-900 tracking-wider">
+            Next Term Begins
+          </span>
+          <div className="text-sm font-extrabold text-brand-950 mt-1">
+            {result.nextTermBegins || 'To be announced'}
+          </div>
+          <span className="text-[10px] text-slate-500 mt-0.5">Please ensure prompt resumption</span>
         </div>
-      </div>
+      </section>
 
-      <div className="text-center text-[11px] text-gray-500 pb-2 px-2">
-        Generated by God Generals Standard Academy Result Portal • {new Date().toLocaleDateString()}
-      </div>
-    </div>
+      {/* ==================== VERIFICATION FOOTER ==================== */}
+      <footer className="rs-footer pt-1.5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-1">
+        <div>
+          Generated by <span className="font-medium text-slate-700">God Generals Standard Academy Result Portal</span>
+        </div>
+        <div className="font-mono text-[10px] text-slate-400">
+          Date Issued: {dateIssued} • Official Digital Copy
+        </div>
+      </footer>
+    </main>
   );
 }

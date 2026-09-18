@@ -70,6 +70,7 @@ import {
   MapPin,
   Shield,
   Menu,
+  Printer,
 } from 'lucide-react';
 import { ResultSheet } from '@/components/result-sheet';
 import { TeacherEditForm } from '@/components/teacher-edit-form';
@@ -269,7 +270,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+      <main className="no-print-pad flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {view === 'home' && (
           <HomeView
             onCheckResult={() => setView('student-check')}
@@ -653,9 +654,21 @@ function StudentResultView({
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Back
         </Button>
-        <Button onClick={() => downloadResultPDF()} className="bg-ggsa-purple hover:bg-purple-800">
-          <Download className="w-4 h-4 mr-2" /> Download Result
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => window.print()}
+            variant="outline"
+            className="border-ggsa-purple text-ggsa-purple hover:bg-purple-50"
+          >
+            <Printer className="w-4 h-4 mr-2" /> Print / Save PDF
+          </Button>
+          <Button
+            onClick={() => downloadResultPDF(data.student?.name)}
+            className="bg-ggsa-purple hover:bg-purple-800"
+          >
+            <Download className="w-4 h-4 mr-2" /> Download Result
+          </Button>
+        </div>
       </div>
       <ResultSheet data={data} />
     </div>
